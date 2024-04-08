@@ -6,3 +6,5 @@ global.difficulty = 1;
 
 wait_timer = 0;
 proceed_to_level = false;
+
+init_data();

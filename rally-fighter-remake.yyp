@@ -32,7 +32,9 @@
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Tile Sets","folderPath":"folders/Tile Sets.yy",},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Timelines","folderPath":"folders/Timelines.yy",},
   ],
-  "IncludedFiles": [],
+  "IncludedFiles": [
+    {"resourceType":"GMIncludedFile","resourceVersion":"1.0","name":"rpm.txt","CopyToMask":-1,"filePath":"datafiles",},
+  ],
   "isEcma": false,
   "LibraryEmitters": [],
   "MetaData": {
@@ -53,6 +55,7 @@
     {"id":{"name":"obj_racers","path":"objects/obj_racers/obj_racers.yy",},},
     {"id":{"name":"spr_cross","path":"sprites/spr_cross/spr_cross.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_crashed","path":"sprites/spr_bike_3d_detail_2_crashed/spr_bike_3d_detail_2_crashed.yy",},},
+    {"id":{"name":"spr_cloud2","path":"sprites/spr_cloud2/spr_cloud2.yy",},},
     {"id":{"name":"spr_building_front","path":"sprites/spr_building_front/spr_building_front.yy",},},
     {"id":{"name":"obj_traffic_prop","path":"objects/obj_traffic_prop/obj_traffic_prop.yy",},},
     {"id":{"name":"spr_car","path":"sprites/spr_car/spr_car.yy",},},
@@ -74,6 +77,7 @@
     {"id":{"name":"spr_bike_detail","path":"sprites/spr_bike_detail/spr_bike_detail.yy",},},
     {"id":{"name":"camera_in_view","path":"scripts/camera_in_view/camera_in_view.yy",},},
     {"id":{"name":"constants","path":"scripts/constants/constants.yy",},},
+    {"id":{"name":"init_data","path":"scripts/init_data/init_data.yy",},},
     {"id":{"name":"spr_ui_ahead_behind","path":"sprites/spr_ui_ahead_behind/spr_ui_ahead_behind.yy",},},
     {"id":{"name":"spr_bike","path":"sprites/spr_bike/spr_bike.yy",},},
     {"id":{"name":"spr_starting_number","path":"sprites/spr_starting_number/spr_starting_number.yy",},},

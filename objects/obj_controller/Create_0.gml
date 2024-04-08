@@ -53,7 +53,7 @@ for (var i = 0; i < array_length(participating_vehicles); i++) {
 	car.race_rank = (array_length(participating_vehicles) - i);
 	var road = obj_road_generator.road_list[(i*2) + 5];//obj_road_generator.road_list[(i div 3) + 1];
 	var lane_position_x = 0;//(((i % 3) / 3) * road.length) + (road.length * (i div 3));
-	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2);
+	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (irandom(road.lane_width / 2) * choose(-1,0,1));
 	
 	var dist = point_distance(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y);
 	var dir = point_direction(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y) + road.direction;
@@ -219,4 +219,8 @@ skybox_vertex_buffer = calc_vertex_normal(skybox_vertex_buffer, skybox_vertex_fo
 vertex_freeze(skybox_vertex_buffer);
 #endregion
 
+game_surface = surface_create(main_camera_size.width, main_camera_size.height);
+
 alarm[0] = round(6 * global.display_freq); // starting timer
+
+init_data();

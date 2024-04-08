@@ -45,20 +45,22 @@ if (ai_behavior.part_of_race) {
 		#region draw data around driver on screen
 		if (obj_controller.main_camera_target.id != id) {
 			var screen_coord = world_to_screen(x, y, z+30, global.view_matrix, global.projection_matrix);
-			var dist_alpha = 1 - (abs(dist_along_road - obj_controller.main_camera_target.dist_along_road) / 1024);
-			// var bar_border = 2;
-			// var bar_height = 8;
-			// var bar_width = 30;
+			if (screen_coord[0] != -1 && screen_coord[1] != -1) {
+				var dist_alpha = 1 - (abs(dist_along_road - obj_controller.main_camera_target.dist_along_road) / 1024);
+				// var bar_border = 2;
+				// var bar_height = 8;
+				// var bar_width = 30;
 		
-			// screen_coord[0] -= bar_width / 2;
+				// screen_coord[0] -= bar_width / 2;
 		
-			//draw_bar_color_border(screen_coord[0], screen_coord[1], hp, max_hp, bar_width, bar_height, bar_border, c_yellow, c_yellow, c_yellow, c_yellow, 0);
-			shader_set(shd_outline);
-			shader_set_uniform_f(global.outline_shader_pixel_w, 2*texture_get_texel_width(sprite_get_texture(spr_race_rank, race_rank-1)));
-			shader_set_uniform_f(global.outline_shader_pixel_h, 2*texture_get_texel_height(sprite_get_texture(spr_race_rank, race_rank-1)));
-			shader_set_uniform_f(global.outline_shader_alpha_override, dist_alpha);
-			draw_sprite_ext(spr_race_rank, race_rank-1, screen_coord[0], screen_coord[1], 0.5, 0.5, 0, c_white, dist_alpha);
-			shader_reset();
+				//draw_bar_color_border(screen_coord[0], screen_coord[1], hp, max_hp, bar_width, bar_height, bar_border, c_yellow, c_yellow, c_yellow, c_yellow, 0);
+				shader_set(shd_outline);
+				shader_set_uniform_f(global.outline_shader_pixel_w, 2*texture_get_texel_width(sprite_get_texture(spr_race_rank, race_rank-1)));
+				shader_set_uniform_f(global.outline_shader_pixel_h, 2*texture_get_texel_height(sprite_get_texture(spr_race_rank, race_rank-1)));
+				shader_set_uniform_f(global.outline_shader_alpha_override, dist_alpha);
+				draw_sprite_ext(spr_race_rank, race_rank-1, screen_coord[0], screen_coord[1], 0.5, 0.5, 0, c_white, dist_alpha);
+				shader_reset();
+			}
 		}
 		#endregion
 	}

@@ -51,7 +51,7 @@ switch(global.difficulty) {
 	case 1:		max_gear = 3; break;
 	case 1.25:	max_gear = 4; break;
 	case 1.5:	max_gear = 5; break;
-	case 1.75:	max_gear = 6; break;
+	case 1.75:	max_gear = 5; break;
 	case 2:		max_gear = 6; break;
 }
 
@@ -79,8 +79,8 @@ gear_shift_rpm = [
 	[0, 4000],
 	[2000, 4000],
 	[2250, 3750],
-	[2250, 3500],
-	[2250, 3250],
+	[2250, 3750],
+	[2250, 3550],
 	[1250, 3000],
 ];
 for (var g = 0; g < array_length(gear_shift_rpm); g++) {
@@ -88,7 +88,7 @@ for (var g = 0; g < array_length(gear_shift_rpm); g++) {
 	gear_shift_rpm[g][1] *= global.difficulty;
 }
 
-diff_ratio = 1.5 + global.difficulty;
+diff_ratio = 1.2 + global.difficulty;
 gear_shift_wait = 0;		//  time wait to change gear again
 
 accelerating = false;		// flag to check if car is accelerating

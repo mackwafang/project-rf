@@ -62,14 +62,15 @@ if (!global.DEBUG_FREE_CAMERA) {
 		camera_set_view_angle(main_camera, -main_camera_target.image_angle+90);
 	}
 	else {
-		//cam_zoom = (main_camera_target.velocity / main_camera_target.max_velocity) * 280;
+		//var speed_zoom = (main_camera_target.velocity / main_camera_target.max_velocity) * 280;
 		
-		//main_camera_pos.x += (main_camera_target.x+lengthdir_x(-60+cam_zoom, main_camera_target.image_angle) - main_camera_pos.x) * main_camera_pos_smooth;
-		//main_camera_pos.y += (main_camera_target.y+lengthdir_y(-60+cam_zoom, main_camera_target.image_angle) - main_camera_pos.y) * main_camera_pos_smooth;
-		//main_camera_pos.z = main_camera_target.z + z;
+		//main_camera_pos.x += (main_camera_target.x+lengthdir_x(-60+cam_zoom+speed_zoom, main_camera_target.image_angle) - main_camera_pos.x) * main_camera_pos_smooth;
+		//main_camera_pos.y += (main_camera_target.y+lengthdir_y(-60+cam_zoom+speed_zoom, main_camera_target.image_angle) - main_camera_pos.y) * main_camera_pos_smooth;
+		main_camera_pos.z += (main_camera_target.z - main_camera_pos.z + z) * main_camera_pos_smooth * 2;
+		
 		main_camera_pos.x = main_camera_target.x+lengthdir_x(-60+cam_zoom, main_camera_target.image_angle);
 		main_camera_pos.y = main_camera_target.y+lengthdir_y(-60+cam_zoom, main_camera_target.image_angle);
-		main_camera_pos.z = main_camera_target.z + z;
+		//main_camera_pos.z = main_camera_target.z + z;
 		
 		main_camera_pos_to.x = main_camera_target.x+lengthdir_x(500, main_camera_target.image_angle);
 		main_camera_pos_to.y = main_camera_target.y+lengthdir_y(500, main_camera_target.image_angle);

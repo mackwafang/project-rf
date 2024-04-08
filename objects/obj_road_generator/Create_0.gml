@@ -22,8 +22,10 @@ for (var i = 0; i < grid_height*grid_width; i++) {ds_list_add(grid, 0);}
 
 control_path = [];
 
+// generating level
 while (array_length(control_path) == 0) {
 	print("Creating grid");
+	// generating terrain
 	perlin_config = {
 		inc: global.difficulty * 0.45,
 		X: random(1000),
@@ -41,12 +43,14 @@ while (array_length(control_path) == 0) {
 	}
 	print($"{ds_list_size(grid)} {grid_height * grid_width}");
 	print("Creating road");
+	// generating road
 	var init_grid = irandom(grid_height-1);
 	var control_start = init_grid * grid_width;
 	var control_end = (min(grid_height, max(0, init_grid + irandom_range(-4 * global.difficulty, 4 * global.difficulty))) * grid_width) - 1;
 	control_path = a_star(grid, control_start, control_end, grid_width, a_star_heuristic); // holds grid values to generate control poitns
 }
 
+// stitch control path together to smooth
 primary_count = array_length(control_path);
 for (var s = 0; s < array_length(control_path); s++) {
 	var xx = ((control_path[s] % grid_width) * control_points_dist) + (irandom(control_points_dist / 5) * choose(-1,1));
@@ -55,8 +59,10 @@ for (var s = 0; s < array_length(control_path); s++) {
 	control_points[s] = new Point3D(xx, yy, zz);
 }
 
-print("Rendering Road")
+// actually create road via catmull-rom
 road_list = generate_roads(control_points, road_segments);
+
+print("Rendering Road")
 global.destination_road_index = array_length(road_list) - (road_segments * 10);
 global.race_length = 0;
 
@@ -558,7 +564,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		);
 		prop_obj.display_image_index = 1;
 		prop_obj.z = road.z;
-		prop_obj.image_xscale = 8;
+		prop_obj.image_xscale = 6;
 		prop_obj.image_yscale = 24;
 		prop_obj.direction = road.direction;
 		array_push(road.props, prop_obj);

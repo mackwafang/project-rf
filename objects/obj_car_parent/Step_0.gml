@@ -92,7 +92,7 @@ if (can_move) {
 			
 			// checking other cars
 			var look_ahead_threshold = 512;
-			var look_ahead_angle = 6;
+			var look_ahead_angle = 8;
 			var car_look_ahead = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction), y+lengthdir_y(look_ahead_threshold, direction), obj_car_parent, false, true));
 			var car_look_left = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle+look_ahead_angle), obj_car_parent, false, true));
 			var car_look_right = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle-look_ahead_angle), obj_car_parent, false, true));
@@ -182,7 +182,8 @@ if (is_completed) {
 
 // calculate engine stuff for acceleration
 var engine_to_wheel_ratio = gear_ratio[gear-1] * diff_ratio;
-var engine_torque_max = (torque_lookup(engine_rpm) * power(global.difficulty, 1.5));//((horsepower / engine_rpm * 5252) * 8 * global.difficulty);
+var engine_torque_max = (torque_lookup(engine_rpm) + (200 * global.difficulty));
+// var engine_torque_max = ((horsepower / engine_rpm * 5252) * 8 * global.difficulty);
 var engine_torque = engine_torque_max * (boost_active ? 2 : engine_power);
 var drive_torque = engine_torque * engine_to_wheel_ratio * transfer_eff;
 	
@@ -190,7 +191,7 @@ var f_drag = -c_drag * velocity;
 var f_rr = -c_rr * velocity;
 var f_surface = -mass * global.gravity_3d * ((on_road) ? 0.2 : 10) * (vertical_on_road ? 1 : 0);
 if (hp <= 0) {
-	f_surface = -mass * global.gravity_3d * (vertical_on_road ? 30 : 0);
+	f_surface = -mass * global.gravity_3d * (vertical_on_road ? 10 : 0);
 }
 var f_brake = ((braking) ? -braking_power * 1000 : 0);
 var f_turn = -abs(turn_rate) * mass * 3;
@@ -214,8 +215,10 @@ if (vertical_on_road) {
 }
 velocity = clamp(velocity, 0, max_velocity);
 
+if (engine_rpm <= 500) {engine_rpm = 500;}
+if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
+
 gear_shift(); // auto gear shift
-engine_rpm = clamp(engine_rpm, 1000, engine_rpm_max);
 engine_power = clamp(engine_power, 0, 1);
 gear_shift_wait = clamp(gear_shift_wait-1, 0, 60);
 

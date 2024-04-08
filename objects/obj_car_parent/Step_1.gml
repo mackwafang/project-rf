@@ -7,11 +7,12 @@ var vel = (velocity) * global.deltatime / global.WORLD_TO_REAL_SCALE;
 var vec_to_road = point_to_line(
 	new Point(on_road_index.x, on_road_index.y),
 	new Point(on_road_index.next_road.x, on_road_index.next_road.y),
-	new Point(x, y)
+	new Point(x+lengthdir_x(vel, direction), y+lengthdir_y(vel, direction))
 );
 if (_z_restrict) {
 	var lerp_value = point_distance(on_road_index.x, on_road_index.y, vec_to_road.x, vec_to_road.y) / on_road_index.length;
 	zlerp = lerp(on_road_index.z, on_road_index.next_road.z, lerp_value);
+	
 	vertical_on_road = (z+zspeed <= zlerp);
 	
 	if (on_road_index.zone == ZONE.RIVER) {

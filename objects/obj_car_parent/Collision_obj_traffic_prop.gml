@@ -10,19 +10,21 @@ var b = new Point(
 var _d = abs(dot_product(b.x, b.y, a.x, a.y));
 
 if (abs(z-other.z) < 8) {
-	switch(other.display_image_index) {
-		case 0:
-			hp *= _d;
-			turn_rate *= _d * 2;
-			break;
-		case 1:
-			if (zspeed <= global.gravity_3d) {
-				zspeed = velocity / mass / 10;
-			}
+	if (other.display_sprite_index == spr_prop) {
+		switch(other.display_image_index) {
+			case 0:
+				hp -= (max_hp * _d);
+				turn_rate *= _d * 2;
+				break;
+			case 1:
+				//if (zspeed <= global.gravity_3d) {
+				//	zspeed += velocity / mass / 10;
+				//}
 			
-			if (is_player) {
-				print($"yeet {zspeed}");
-			}
-			break;
+				//if (is_player) {
+				//	print($"yeet {other.id} {zspeed}");
+				//}
+				break;
+		}
 	}
 }

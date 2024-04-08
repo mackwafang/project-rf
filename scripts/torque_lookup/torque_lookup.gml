@@ -1,13 +1,13 @@
 function torque_lookup(rpm) {
 	var torque_table = [
-		0,			// 0k rpm
+		50,			// 0k rpm
 		400,		// 1k rpm
 		420,		// 2k rpm
 		500,		// 3k rpm
 		510,		// 4k rpm
 		520,		// 5k rpm
 		490,		// 6k rpm
-		460,		// 7k rpm
+		470,		// 7k rpm
 		430,		// 8k rpm
 		400,		// 9k rpm
 		300,		// 10k rpm
