@@ -1,10 +1,13 @@
-function find_nearest_cp(_x, _y) {
+function find_nearest_cp(_x, _y, _init_cp=0, reverse=false) {
 	/// @function		find_nearest_cp(_x, _y)
 	/// @param			_x
 	/// @param			_y
 	var closest_cp = -1;
 	var closest_cp_dist = infinity;
-	for (var ci = 0; ci < obj_road_generator.primary_count; ci++) {
+	var ci = _init_cp;
+	var _end = reverse ? 0 : obj_road_generator.primary_count - 1;
+	var _step = reverse ? -1 : 1;
+	while (true) {
 		var p = obj_road_generator.control_points[ci];
 		// var d = point_distance(_x, _y, p.x, p.y);
 		var d = abs(_x - p.x) + abs(_y - p.y);
@@ -12,11 +15,14 @@ function find_nearest_cp(_x, _y) {
 			closest_cp_dist = d;
 			closest_cp = ci;
 		}
+		
+		if (ci == _end) {break;}
+		ci += _step;
 	}
 	return closest_cp;
 }
 
-function find_nearest_road(_x, _y, starting, offset=0, control_point=undefined) {
+function find_nearest_road(_x, _y, starting, offset=0, control_point=undefined, reverse=false) {
 	/// @function		find_nearest_road(_x, _y, starting, offset)
 	/// @param			_x
 	/// @param			_y
@@ -27,7 +33,7 @@ function find_nearest_road(_x, _y, starting, offset=0, control_point=undefined) 
 		assert(typeof(control_point) == "number");
 	}
 	
-	var closest_cp = (is_undefined(control_point) ? find_nearest_cp(_x, _y) : control_point);
+	var closest_cp = (is_undefined(control_point) ? find_nearest_cp(_x, _y, starting div obj_road_generator.road_segments, reverse) : control_point);
 	
 	// find nearest road segment based on visible chunks
 	var closest_road = undefined;

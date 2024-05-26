@@ -2,6 +2,14 @@ depth = -10;
 z = 0;
 zlerp = 0;
 
+height = 24;
+radius = 8
+collider_3d = cm_collider(x, y, z, 0, 0, 1, radius, height);
+charMat = matrix_build(x, y, z, 0, 0, 0, 1, 1, height);
+prevX = x;
+prevY = y;
+prevZ = z;
+
 is_player = false;		// does car belong to player?
 can_move = true;		// can car be affected by movement or collision?
 
@@ -80,7 +88,7 @@ gear_shift_rpm = [
 	[2000, 4000],
 	[2250, 3750],
 	[2250, 3750],
-	[2250, 3550],
+	[2250, 3275],
 	[1250, 3000],
 ];
 for (var g = 0; g < array_length(gear_shift_rpm); g++) {
@@ -123,7 +131,7 @@ completed_race_rank = 0;
 // audio emitter for engine
 engine_sound_emitter = audio_emitter_create();
 audio_falloff_set_model(audio_falloff_exponent_distance);
-audio_emitter_falloff(engine_sound_emitter, 64, 128, 1);
+audio_emitter_falloff(engine_sound_emitter, 64, 256, 1);
 
 // misc
 last_road_index = 0;					// last road index was checked for off road
@@ -203,7 +211,7 @@ is_on_road = function(_x, _y, road_id) {
 }
 
 set_on_road = function() {
-	nearest_road = find_nearest_road(x, y, last_road_index);
+	nearest_road = find_nearest_road(x, y, last_road_index, 0, undefined, ai_behavior.reversed_direction);
 	
 	last_road_index = nearest_road._id;
 	var polygon_x = obj_road_generator.road_list[last_road_index].get_collision_x();

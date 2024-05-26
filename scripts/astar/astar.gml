@@ -9,7 +9,7 @@ function a_star_heuristic(node, _end, width) {
 
 function a_star(_grid, _start, _end, width, _h) {
 	/// @function		a_star(_start, _end, width, _h)
-	/// @param _grid	graph (expects a ds_grid)
+	/// @param _grid	graph (expects a ds_list)
 	/// @param _start	start grid
 	/// @param _end		end grid
 	/// @param width	width of grid
@@ -30,6 +30,14 @@ function a_star(_grid, _start, _end, width, _h) {
 	
 	while (ds_priority_find_min(frontier) != _end) {
 		var current = ds_priority_delete_min(frontier); // remove from queue
+		
+		// stop if on far edge
+		// in case where road reached the edge but no at the right row
+		if (current % width == width - 1) {
+			_end = current;
+			break;
+		}
+		
 		searched[|current] = true; //  add to search
 		
 		// finding neighbors
@@ -83,6 +91,7 @@ function a_star(_grid, _start, _end, width, _h) {
 				last_dir = dir;
 			}
 		}
+		// retry if take too long
 		if (current_time - t > 3000) {
 			ds_priority_destroy(frontier);
 			ds_list_destroy(searched);
@@ -93,6 +102,7 @@ function a_star(_grid, _start, _end, width, _h) {
 		// post process
 		ds_list_destroy(neighbors);
 	}
+	
 	print("Retracing road");
 	var path = [];
 	var cur = parent[|_end];

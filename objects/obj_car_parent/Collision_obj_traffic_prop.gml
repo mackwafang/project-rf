@@ -17,9 +17,9 @@ if (abs(z-other.z) < 8) {
 				turn_rate *= _d * 2;
 				break;
 			case 1:
-				//if (zspeed <= global.gravity_3d) {
-				//	zspeed += velocity / mass / 10;
-				//}
+				if (zspeed <= global.gravity_3d) {
+					zspeed += velocity / mass / 10;
+				}
 			
 				//if (is_player) {
 				//	print($"yeet {other.id} {zspeed}");

@@ -1,12 +1,12 @@
-function Point() constructor {
-	x = argument[0];
-	y = argument[1];
+function Point(_x, _y) constructor {
+	x = _x;
+	y = _y;
 }
 
-function Point3D() constructor {
-	x = argument[0];
-	y = argument[1];
-	z = argument[2];
+function Point3D(_x, _y, _z) constructor {
+	x = _x;
+	y = _y;
+	z = _z;
 }
 
 function Vec2() constructor

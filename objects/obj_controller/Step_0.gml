@@ -3,8 +3,8 @@
 //if (keyboard_check(ord("S"))) {y += cam_move_speed;}
 //if (keyboard_check(ord("A"))) {x -= cam_move_speed;}
 //if (keyboard_check(ord("D"))) {x += cam_move_speed;}
-//if (keyboard_check(vk_space)) {z -= 1;}
-//if (keyboard_check(vk_control)) {z += 1;}
+if (keyboard_check(vk_space)) {z -= 1;}
+if (keyboard_check(vk_control)) {z += 1;}
 if (keyboard_check(ord("Q"))) {
 	if (global.DEBUG_FREE_CAMERA) {
 		cam_angle -= 5;
@@ -95,10 +95,10 @@ if (!global.DEBUG_FREE_CAMERA) {
 		if (main_camera_target.is_completed) {
 			cam_zoom -= 0.25;
 			z += 0.125;
-			cam_zoom = clamp(cam_zoom, -500, 10);
-			z = clamp(z, 0, 250);
+			cam_zoom = clamp(cam_zoom, -300, 10);
+			z = clamp(z, 0, 300);
 			
-			if (cam_zoom == -500) {
+			if (cam_zoom == -300) {
 				clean_level();
 				room_goto(rm_title);
 			}
@@ -130,7 +130,7 @@ if (global.GAMEPLAY_CARS) {
 	if (alarm[0] == -1) {
 		if (irandom(100 / global.difficulty) < 1) {
 			var side = choose(-1, 1);
-			var road_function = (side == -1 ? road_at_view_edge.get_lanes_left: road_at_view_edge.get_lanes_right);
+			var road_function = (side == -1 ? road_at_view_edge.get_lanes_left : road_at_view_edge.get_lanes_right);
 			
 			var spawn_lane = (irandom_range(0, road_function()) + 0.5) * side;
 			var spawn_x = road_at_view_edge.x + lengthdir_x(road_at_view_edge.lane_width * spawn_lane, road_at_view_edge.direction - 90);
@@ -144,7 +144,7 @@ if (global.GAMEPLAY_CARS) {
 			car.on_road_index = road_at_view_edge;
 			car.horsepower = 30;
 			car.max_gear = 2;
-			car.z = road_at_view_edge.z + 10;
+			car.z = road_at_view_edge.z + 30;
 			if (side == -1) {
 				car.ai_behavior.reversed_direction = true;
 			}

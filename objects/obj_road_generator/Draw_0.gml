@@ -1,16 +1,13 @@
 // draw roads
 if (global.CAMERA_MODE_3D) {
-	//shader_set(shd_lighting);
-	//shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_LightPosition"), obj_controller.main_camera_pos_to.x, obj_controller.main_camera_pos_to.y, obj_controller.main_camera_pos_to.z+250);
-	//shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_LightRadius"), 500);
-	//shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_ViewPosition"), obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, obj_controller.main_camera_pos.z+250);
-	////shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_ambientColor"), 1.0, 1.0, 1.0);
-	////shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_lightColor"), 0.0, 0.0, 0.0);
+	shader_set(shd_lighting);
+	shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_LightPosition"), obj_controller.main_camera_pos_to.x, obj_controller.main_camera_pos_to.y, obj_controller.main_camera_pos_to.z+250);
+	shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_LightRadius"), 500);
+	shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_ViewPosition"), obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, obj_controller.main_camera_pos.z+250);
+	shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_ambientColor"), 1.0, 1.0, 1.0);
+	shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_lightColor"), 0.0, 0.0, 0.0);
 	//shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_ambientColor"), 0.1, 0.1, 0.1);
 	//shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_lightColor"), 1.0, 245 / 255, 182 / 255);
-	
-	//var tex = sprite_get_texture(spr_1x1, 0);
-	//vertex_submit(test_vertex_buffer, pr_trianglelist, tex);
 	
 	var tex = sprite_get_texture(spr_road, 0);
 	var prop_tex = sprite_get_texture(spr_tree, 0);
@@ -18,11 +15,7 @@ if (global.CAMERA_MODE_3D) {
 	vertex_submit(global.prop_vertex_buffer, pr_trianglelist, prop_tex);
 	vertex_submit(global.road_vertex_buffer, pr_trianglelist, tex);
 	
-	//tex = sprite_get_texture(spr_building_side, 0);
-	//vertex_submit(global.building_vertex_buffer, pr_trianglelist, tex);
-	//gpu_set_cullmode(cull_noculling);
-	
-	//shader_reset();
+	shader_reset();
 }
 
 if (global.DEBUG_ROAD_DRAW_CONTROL_POINTS) {

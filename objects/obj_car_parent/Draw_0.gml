@@ -19,7 +19,7 @@ if (global.CAMERA_MODE_3D) {
 		case VEHICLE_TYPE.BIKE:
 			var turn_adjust = 0;//clamp(turn_rate * 10, -20, 20) * (abs(turn_rate) > 0.1 ? 1 : 0);
 			if (vehicle_detail_index == spr_bike_3d_detail_2 && vehicle_detail_subimage == 1) {
-				turn_adjust = 0;
+				turn_adjust = turn_rate;
 			}
 			// draw_sprite_ext(spr_bike_3d, 0, 0, 0, 0.25, 0.25, (turn_adjust), c_white, image_alpha);
 			//draw_sprite_ext(spr_bike_3d_detail, 0, 0, 0, 0.25, 0.25, (turn_adjust), vehicle_color.tetriary, image_alpha);

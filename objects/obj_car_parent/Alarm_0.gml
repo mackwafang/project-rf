@@ -1,4 +1,5 @@
-/// @description post creation "script"
+/// @description post creation "script
+
 switch(vehicle_type) {
 	case VEHICLE_TYPE.CAR:
 		vehicle_detail_index = spr_car_detail;

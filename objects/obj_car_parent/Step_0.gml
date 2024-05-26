@@ -61,9 +61,7 @@ if (can_move) {
 				ai_behavior.change_lane(nav_road);
 			}
 			engine_power = nav_road.get_ideal_throttle();
-			if (nav_road.get_ideal_throttle() < 0.6) {
-				engine_power = 0;
-			}
+			
 			var side = -(angle_difference(image_angle, point_direction(x, y, vec_to_road.x, vec_to_road.y)));
 			if (ai_behavior.reversed_direction) {
 				side = -(angle_difference(point_direction(x, y, vec_to_road.x, vec_to_road.y), image_angle));
@@ -82,12 +80,12 @@ if (can_move) {
 				
 				// moving go desired lane
 				if (dist_to_road > 32) {
-					tr += (sign(side) / 10);
+					tr += (sign(side) / 5);
 				}
 				
-				turn_rate = tr;
+				turn_rate += tr / 10;
 				
-				braking = (abs(tr) > 1) | ((nav_road.get_ideal_throttle() < 0.25) && (abs(angle_diff) > 15));
+				// braking = (abs(tr) > 1) | ((nav_road.get_ideal_throttle() < 0.25) && (abs(angle_diff) > 15));
 			}
 			
 			// checking other cars
@@ -101,7 +99,7 @@ if (can_move) {
 			var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
 			var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
-			var evade_turn_rate = 0.5;
+			var evade_turn_rate = 0.05;
 			if (car_look_left ^ car_look_right) {
 				if (car_look_left) {turn_rate -= evade_turn_rate;}
 				if (car_look_right) {turn_rate += evade_turn_rate;}
@@ -114,13 +112,13 @@ if (can_move) {
 			else if (rail_look_right) {turn_rate += evade_turn_rate;}
 			
 			if (!is_off_road_left | !is_off_road_right) {
-				turn_rate += (-(is_off_road_left/10) + (is_off_road_right/10));
+				turn_rate += (-(is_off_road_left/100) + (is_off_road_right/100));
 			}
 			//if (ai_behavior.part_of_race) {
 			//	turn_rate *= max(1 - (velocity / max_velocity), (velocity / max_velocity)) * 1.2;
 			//}
 			
-			turning += (turn_rate < 0.1 ? 2 : (turn_rate > 0.1 ? 1 : 0));
+			turning = (turn_rate < 0.1 ? 2 : (turn_rate > 0.1 ? 1 : 0));
 			// enables boost
 			if (boost_juice >= 100) {
 				if (irandom(20) < global.difficulty) {
@@ -182,7 +180,7 @@ if (is_completed) {
 
 // calculate engine stuff for acceleration
 var engine_to_wheel_ratio = gear_ratio[gear-1] * diff_ratio;
-var engine_torque_max = (torque_lookup(engine_rpm) + (200 * global.difficulty));
+var engine_torque_max = (torque_lookup(engine_rpm) + (400 * (global.difficulty-1)));
 // var engine_torque_max = ((horsepower / engine_rpm * 5252) * 8 * global.difficulty);
 var engine_torque = engine_torque_max * (boost_active ? 2 : engine_power);
 var drive_torque = engine_torque * engine_to_wheel_ratio * transfer_eff;
@@ -215,19 +213,17 @@ if (vertical_on_road) {
 }
 velocity = clamp(velocity, 0, max_velocity);
 
-if (engine_rpm <= 500) {engine_rpm = 500;}
+if (engine_rpm <= 1000) {engine_rpm = 1000;}
 if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
 
 gear_shift(); // auto gear shift
 engine_power = clamp(engine_power, 0, 1);
 gear_shift_wait = clamp(gear_shift_wait-1, 0, 60);
 
-// play engine audio
+// play engine 
+if (obj_controller.main_camera_target.id == id) {audio_listener_position(x, y, z);}
 if (hp > 0) {
 	var engine_sound_pitch = ((engine_rpm / engine_rpm_max)+1.0);// - (gear / 12);
-	if (obj_controller.main_camera_target.id == id) {
-		audio_listener_position(x, y, z);
-	}
 	if (engine_sound_interval == 0) {
 		audio_play_sound_on(engine_sound_emitter, (boost_active ? snd_boost : snd_car), false, 1);
 	}

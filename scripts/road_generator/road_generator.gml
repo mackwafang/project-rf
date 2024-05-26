@@ -10,7 +10,7 @@ function RoadNode(_Point) constructor {
 	lanes = [1, 0, 1];			// lanes [left, median , right]
 	lane_width = 0;				// lane width in pixels
 	length_to_point = 0;		// distance from the begining to this point
-	collision_points = [[0, 0, 0, 0], [1,1,1,1]];	// list of collisions for this road node
+	collision_points = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];	// list of collisions for this road node
 	shoulder = [true, true];	// shoulder for rendering for [left, right]
 	shoulder_image_index = 0;	// sprite index for shoulder
 	_id = -1;
@@ -23,6 +23,7 @@ function RoadNode(_Point) constructor {
 	sea_level = 0;				// level for water
 	props = [];					// list of props in this segment
 	buildings = [];				// buildings in this segment
+	collision_3d = undefined;	// cm object collision data
 	
 	toString = function() {
 		return $"({x}, {y}, {z}), direction: {direction}, Lanes: {lanes}\n";

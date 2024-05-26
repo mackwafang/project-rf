@@ -25,6 +25,23 @@ function init_vertex_buffer() {
 	var width = abs(uv[2] - uv[0]) / tw;//sprite_get_width(spr_tree);
 	var height = abs(uv[3] - uv[1]) / th;//sprite_get_height(spr_tree);
 	
+	if (display_sprite_index == spr_tree) {
+		switch(display_image_index) {
+			case 0: case 1: case 2: case 5:
+				width *= 1;
+				height *= 1;
+				break
+			case 3: case 4:
+				width *= 0.5;
+				height *= 1;
+				break
+			case 6:
+				width *= 0.5;
+				height *= 0.5;
+				break
+		}
+	}
+	
 	var x0 = x + lengthdir_x(width, direction+90);
 	var y0 = y + lengthdir_y(width, direction+90);
 	var x1 = x + lengthdir_x(width, direction-90);
