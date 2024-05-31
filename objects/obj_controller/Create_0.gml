@@ -6,7 +6,7 @@ z = 50;
 depth = -10000;
 
 participating_vehicles = [];
-global.total_participating_vehicles = 12;
+global.total_participating_vehicles = 1;
 global.gravity_3d = 9.8;
 global.race_completed = false;
 global.game_state_paused = false;

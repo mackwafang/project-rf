@@ -126,7 +126,7 @@ else {
 if (global.game_state_paused) {exit;}
 // other car spawning
 if (global.GAMEPLAY_CARS) {
-	var road_at_view_edge = obj_road_generator.road_list[max(0, main_camera_target.nav_road._id + choose(-20,20))];
+	var road_at_view_edge = obj_road_generator.road_list[max(0, main_camera_target.nav_road._id + choose(-5, 15))];
 	if (alarm[0] == -1) {
 		if (irandom(100 / global.difficulty) < 1) {
 			var side = choose(-1, 1);
@@ -144,7 +144,7 @@ if (global.GAMEPLAY_CARS) {
 			car.on_road_index = road_at_view_edge;
 			car.horsepower = 30;
 			car.max_gear = 2;
-			car.z = road_at_view_edge.z + 30;
+			car.z = road_at_view_edge.z + 5;
 			if (side == -1) {
 				car.ai_behavior.reversed_direction = true;
 			}
