@@ -3,12 +3,6 @@ z = 0;
 zlerp = 0;
 
 height = 24;
-radius = 8
-collider_3d = cm_collider(x, y, z, 0, 0, 1, radius, height);
-charMat = matrix_build(x, y, z, 0, 0, 0, 1, 1, height);
-prevX = x;
-prevY = y;
-prevZ = z;
 
 is_player = false;		// does car belong to player?
 can_move = true;		// can car be affected by movement or collision?
@@ -135,7 +129,7 @@ audio_emitter_falloff(engine_sound_emitter, 64, 256, 1);
 
 // misc
 last_road_index = 0;					// last road index was checked for off road
-nav_road = find_nearest_road(x, y, 0);	// keep track of which road segment to travel to
+nav_road = undefined;//find_nearest_road(x, y, 0);	// keep track of which road segment to travel to
 image_speed = 0;
 vehicle_type = 0;
 vehicle_detail_index = 0;
@@ -212,18 +206,20 @@ is_on_road = function(_x, _y, road_id) {
 
 set_on_road = function() {
 	nearest_road = find_nearest_road(x, y, last_road_index, 0, undefined, ai_behavior.reversed_direction);
-	
+
 	last_road_index = nearest_road._id;
 	var polygon_x = obj_road_generator.road_list[last_road_index].get_collision_x();
 	var polygon_y = obj_road_generator.road_list[last_road_index].get_collision_y();
 	var on_segment = pnpoly(4, polygon_x, polygon_y, x, y);
-	on_road = is_on_road(x,y,last_road_index);
 	if (!on_segment) {
 		if (last_road_index-1 > 0) {
 			last_road_index -= 1;
 			on_road = is_on_road(x,y,last_road_index);
 			return obj_road_generator.road_list[last_road_index];
 		}
+	}
+	else {
+		on_road = is_on_road(x,y,last_road_index);
 	}
 	
 	//var p_i = last_road_index-1;
@@ -270,8 +266,10 @@ on_death = function() {
 			//solid = false;
 			mask_index = spr_empty;
 			direction = on_road_index.direction;
+			print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Crashed");
 		}
 		else {
+			print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. HP: {hp}");
 			instance_destroy();
 		}
 		//velocity = 0;

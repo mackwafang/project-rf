@@ -126,9 +126,9 @@ else {
 if (global.game_state_paused) {exit;}
 // other car spawning
 if (global.GAMEPLAY_CARS) {
-	var road_at_view_edge = obj_road_generator.road_list[max(0, main_camera_target.nav_road._id + choose(-5, 15))];
+	var road_at_view_edge = obj_road_generator.road_list[max(0, main_camera_target.on_road_index._id + choose(-10,10))];
 	if (alarm[0] == -1) {
-		if (irandom(100 / global.difficulty) < 1) {
+		if (irandom(100 / global.difficulty) < 1 and instance_number(obj_car) < 10) {
 			var side = choose(-1, 1);
 			var road_function = (side == -1 ? road_at_view_edge.get_lanes_left : road_at_view_edge.get_lanes_right);
 			
@@ -137,14 +137,18 @@ if (global.GAMEPLAY_CARS) {
 			var spawn_y = road_at_view_edge.y + lengthdir_y(road_at_view_edge.lane_width * spawn_lane, road_at_view_edge.direction - 90);
 			
 			var car = instance_create_layer(spawn_x, spawn_y, "Instances", obj_car);
-			car.rpm = 2000;
-			car.max_velocity = 400 + (global.difficulty * 200);
-			car.last_road_index = road_at_view_edge._id;
-			car.nearest_road = road_at_view_edge;
+			print($"spawned object {car.id} (part_of_race: {car.ai_behavior.part_of_race}, reverse: {car.ai_behavior.reversed_direction})");
+			car.rpm = 5000;
+			car.max_velocity = 400 + (global.difficulty * 400);
+			car.velocity = car.max_velocity;
+			
+			car.nav_road = road_at_view_edge;
 			car.on_road_index = road_at_view_edge;
+			car.last_road_index = road_at_view_edge.get_id();
+			
 			car.horsepower = 30;
 			car.max_gear = 2;
-			car.z = road_at_view_edge.z + 5;
+			car.z = road_at_view_edge.z + 10;
 			if (side == -1) {
 				car.ai_behavior.reversed_direction = true;
 			}

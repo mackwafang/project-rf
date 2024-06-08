@@ -24,6 +24,7 @@ function dist_on_line(A, B, pos) {
 		return ba;
 	}
 	catch (_e) {
+		print($"dist_on_line exception: {_e}");
 		return 0;
 	}
 }

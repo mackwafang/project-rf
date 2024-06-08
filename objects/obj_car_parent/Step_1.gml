@@ -30,7 +30,6 @@ if (_z_restrict) {
 	var lerp_right = lerp_3d([road_col_x[3], road_col_y[3], road_col_z[3]], [road_col_x[2], road_col_y[2], road_col_z[2]], lerp_value);
 	zlerp = lerp_3d(lerp_left, lerp_right, point_distance_3d(x, y, z, vec_to_road.x, vec_to_road.y, vec_to_road.z)  / road.length)[2];
 	
-	
 	vertical_on_road = (z+zspeed <= zlerp);
 	
 	if (on_road_index.zone == ZONE.RIVER) {
@@ -64,7 +63,14 @@ if (_z_restrict) {
 	}
 	// z = clamp(z, zlerp, zlerp+500);
 	// z -= sin(degtorad(nearest_road.next_road.elevation)) * velocity / 60;
-	if (z < on_road_index.next_road.z - 100) {hp = 0;}
+	if (z < on_road_index.z - 100) {
+		hp = 0;
+		print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of z-bound");
+	}
+	
+	//if (ai_behavior.reversed_direction) {
+	//	print($"{lerp_value} {lerp_left[2]} {lerp_right[2]} {zlerp} {z} {on_road_index.z} {instance_number(obj_car)}");
+	//}
 }
 
 // move car in direction

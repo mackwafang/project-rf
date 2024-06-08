@@ -9,6 +9,7 @@ if (nav_road._id != next_road._id) {
 	);
 }
 dist_along_road = on_road_index.length_to_point + point_distance(on_road_index.x, on_road_index.y, vec_to_road.x, vec_to_road.y);
+
 vec_to_road.x += lengthdir_x(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
 vec_to_road.y += lengthdir_y(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
 var dist_to_road = point_distance(x,y,vec_to_road.x,vec_to_road.y);
@@ -234,10 +235,11 @@ if (hp > 0) {
 
 
 // remove non-participating cars when too far away
-if (abs(obj_controller.main_camera_target.dist_along_road - dist_along_road) > 4000) {
+if (abs(obj_controller.main_camera_target.dist_along_road - dist_along_road) > 5000) {
 	if (!global.DEBUG_FREE_CAMERA) {
 		if (!ai_behavior.part_of_race) {
-			instance_destroy()
+			print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of view. {obj_controller.main_camera_target.dist_along_road} {dist_along_road} {abs(obj_controller.main_camera_target.dist_along_road-dist_along_road)} > 5000");
+			instance_destroy();
 		}
 	}
 	// randomly destroy car to simulate crashes

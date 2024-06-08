@@ -5,17 +5,16 @@ function find_nearest_cp(_x, _y, _init_cp=0, reverse=false) {
 	var closest_cp = -1;
 	var closest_cp_dist = infinity;
 	var ci = _init_cp;
-	var _end = reverse ? 0 : obj_road_generator.primary_count - 1;
-	var _step = reverse ? -1 : 1;
+	var _end = _init_cp + 20;//obj_road_generator.primary_count - 1;
+	var _step = 1;
 	while (true) {
-		var p = obj_road_generator.control_points[ci];
+		var p = obj_road_generator.control_points[min(obj_road_generator.primary_count, ci)];
 		// var d = point_distance(_x, _y, p.x, p.y);
 		var d = abs(_x - p.x) + abs(_y - p.y);
 		if (d < closest_cp_dist) {
 			closest_cp_dist = d;
 			closest_cp = ci;
 		}
-		
 		if (ci == _end) {break;}
 		ci += _step;
 	}

@@ -10,7 +10,7 @@ if (other != self) {
 			// push_vector.x += abs(other.velocity - velocity) * dcos(deg) * other.mass;
 			push_vector.y += abs(other.velocity - velocity) * dsin(deg) * other.mass;
 			turn_rate = push_vector.y / (mass * 100);
-			zspeed += velocity * abs(other.mass - mass) / 1000000;
+			// zspeed += velocity * abs(other.mass - mass) / 1000000;
 			move_contact_solid(point_direction(other.x,other.y,x,y),1);
 			hp_regen_delay = -3;
 		}
