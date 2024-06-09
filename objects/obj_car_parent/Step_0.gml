@@ -57,6 +57,30 @@ if (can_move) {
 		}
 		else {
 			#region Non-Player Car Movement
+			// checking other cars
+			var look_ahead_threshold = 512;
+			var look_ahead_angle = 8;
+			if (on_road_index.zone == ZONE.RIVER) {
+				look_ahead_threshold = 256;
+				look_ahead_angle = 2;
+			}
+			var car_look_ahead = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction), y+lengthdir_y(look_ahead_threshold, direction), obj_car_parent, false, true));
+			var car_look_left = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle+look_ahead_angle), obj_car_parent, false, true));
+			var car_look_right = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle-look_ahead_angle), obj_car_parent, false, true));
+			var rail_look_left = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle+look_ahead_angle), obj_railing, false, true));
+			var rail_look_right = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle-look_ahead_angle), obj_railing, false, true));
+			var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
+			var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
+			
+			var evade_turn_rate = 0.5;
+			if (car_look_left ^ car_look_right) {
+				if (car_look_left) {turn_rate = evade_turn_rate;}
+				if (car_look_right) {turn_rate = evade_turn_rate;}
+			}
+			else if (car_look_left & car_look_right) {
+				acceleration = false;
+			}
+			
 			if (ai_behavior.desired_lane > (ai_behavior.reversed_direction ? next_road.get_lanes_left() : next_road.get_lanes_right())-1 || ai_behavior.desired_lane < 0) {
 				// desired lane doesn't exists, pick a new one
 				ai_behavior.change_lane(nav_road);
@@ -87,26 +111,6 @@ if (can_move) {
 				turn_rate += tr / 10;
 				
 				// braking = (abs(tr) > 1) | ((nav_road.get_ideal_throttle() < 0.25) && (abs(angle_diff) > 15));
-			}
-			
-			// checking other cars
-			var look_ahead_threshold = 512;
-			var look_ahead_angle = 8;
-			var car_look_ahead = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction), y+lengthdir_y(look_ahead_threshold, direction), obj_car_parent, false, true));
-			var car_look_left = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle+look_ahead_angle), obj_car_parent, false, true));
-			var car_look_right = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle-look_ahead_angle), obj_car_parent, false, true));
-			var rail_look_left = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle+look_ahead_angle), obj_railing, false, true));
-			var rail_look_right = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle-look_ahead_angle), obj_railing, false, true));
-			var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
-			var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
-			
-			var evade_turn_rate = 0.05;
-			if (car_look_left ^ car_look_right) {
-				if (car_look_left) {turn_rate -= evade_turn_rate;}
-				if (car_look_right) {turn_rate += evade_turn_rate;}
-			}
-			else if (car_look_left & car_look_right) {
-				acceleration = false;
 			}
 			
 			if (rail_look_left) {turn_rate -= evade_turn_rate;}

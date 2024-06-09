@@ -18,7 +18,7 @@ if (abs(z-other.z) < 8) {
 				break;
 			case 1:
 				if (zspeed <= global.gravity_3d) {
-					zspeed += velocity / mass / 10;
+					zspeed += velocity / mass / 5;
 				}
 			
 				//if (is_player) {

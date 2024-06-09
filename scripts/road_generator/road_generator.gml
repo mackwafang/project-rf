@@ -24,6 +24,7 @@ function RoadNode(_Point) constructor {
 	props = [];					// list of props in this segment
 	buildings = [];				// buildings in this segment
 	collision_3d = undefined;	// cm object collision data
+	building_color = c_white;	// change this zone's building color 
 	
 	toString = function() {
 		return $"({x}, {y}, {z}), direction: {direction}, Lanes: {lanes}\n";

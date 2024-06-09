@@ -46,6 +46,9 @@ if (_z_restrict) {
 	
 	if (vertical_on_road) {
 		drive_force *= cos(on_road_index.elevation) + (on_road_index.elevation < 0 ? 2 : 0);
+		if (!on_road && on_road_index.zone != ZONE.RIVER) {
+			zspeed += (global.gravity_3d) * global.deltatime / 2;
+		}
 	}
 	else {
 		// FREE FALLING
@@ -121,7 +124,7 @@ if (!is_respawning) {
 		}
 	}
 	
-	if (vertical_on_road) {
+	if (z - zlerp < 1) {
 		direction += turn_rate;
 	}
 }

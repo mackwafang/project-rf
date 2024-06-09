@@ -1,14 +1,14 @@
 z = 0;
 image_speed = 0;
-image_index = irandom(image_number);
 image_alpha = 0;
 
 building_height = 256;
 building_width = 32;
 building_length = 512;
-building_color = make_color_rgb(irandom(255), irandom(255), irandom(255));
+building_color = c_white;//make_color_rgb(irandom(255), irandom(255), irandom(255));
 z_start = 0;
 z_end = 32;
+display_image_index = 0;
 
 function init_vertex_buffer() {
 	var x0 = x;
@@ -25,7 +25,7 @@ function init_vertex_buffer() {
 	image_angle = direction;
 
 	var uv = sprite_get_uvs(spr_building_side, 0);
-	var building_uv = sprite_get_uvs(spr_building_front, image_index);
+	var building_uv = sprite_get_uvs(spr_building_front, display_image_index);
 	//bottom
 	//vertex_position_3d_uv(global.road_vertex_buffer, xx, yy-128, z_start, uv[0], uv[1]);
 	//vertex_position_3d_uv(global.road_vertex_buffer, xx+building_width, yy-128, z_end, uv[2], uv[1]);

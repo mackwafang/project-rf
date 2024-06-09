@@ -65,6 +65,17 @@ if (ai_behavior.part_of_race) {
 		#endregion
 	}
 }
+//else {
+//	var screen_coord = world_to_screen(x, y, z+30, global.view_matrix, global.projection_matrix);
+//	if (screen_coord[0] != -1 && screen_coord[1] != -1) {
+//		var dist_alpha = 1 - (abs(dist_along_road - obj_controller.main_camera_target.dist_along_road) / 1024);
+//		draw_set_alpha(dist_alpha);
+//		draw_set_valign(fa_top);
+//		draw_set_halign(fa_center);
+//		draw_text(screen_coord[0], screen_coord[1], $"{hp}/{max_hp}");
+//		draw_set_alpha(1);
+//	}
+//}
 #endregion
 
 #region Draw UI elements
@@ -85,23 +96,13 @@ if (obj_controller.main_camera_target.id == id) {
 	//draw_text(16, 144, $"mass: {mass}");
 	//draw_text(16, 160, $"transfer eff.: {transfer_eff}");
 	//draw_text(16, 176, $"engine power: {engine_power}");
-	
-	// boost bar 
-	var bar_border = 2;
-	var bar_x = 64;
-	var bar_y = port_height - 64;
-	var bar_height = 8;
-	var bar_width = 128;
-	draw_bar_color_border(bar_x, bar_y, boost_juice, 100, bar_width, bar_height, bar_border, c_yellow, c_yellow, c_yellow, c_yellow, 0);
-	draw_set_valign(fa_middle);
-	draw_set_halign(fa_left);
-	
+		
 	// health bar
-	bar_border = 2;
-	bar_x = (port_width / 2) - 50;
-	bar_y = port_height - 64;
-	bar_height = 16;
-	bar_width = 100;
+	var bar_border = 2;
+	var bar_x = (port_width / 2) - 75;
+	var bar_y = port_height - 56;
+	var bar_height = 16;
+	var bar_width = 150;
 	var bar_color = c_green;
 	hp_display += ((hp / max_hp) - hp_display) * 0.05;
 	draw_bar_color_border(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
@@ -113,8 +114,18 @@ if (obj_controller.main_camera_target.id == id) {
 	}
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_center);
-	draw_text(bar_x + 50 + 2, bar_y, $"{hp}/{max_hp}");
+	draw_text(bar_x + (bar_width / 2) + 2, bar_y, $"{hp}/{max_hp}");
 	
+	// boost bar 
+	bar_border = 2;
+	bar_x = (port_width / 2) - 75;
+	bar_y = port_height - 72;
+	bar_height = 8;
+	bar_width = 150;
+	draw_bar_color_border(bar_x, bar_y, boost_juice, 100, bar_width, bar_height, bar_border, c_yellow, c_yellow, c_yellow, c_yellow, 0);
+	draw_set_valign(fa_middle);
+	draw_set_halign(fa_left);
+
 	// rpm odometer
 	var odometer_x = 64;
 	var odometer_y = port_height - 80;
