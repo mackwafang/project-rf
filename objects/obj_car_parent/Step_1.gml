@@ -78,7 +78,7 @@ if (_z_restrict) {
 
 // move car in direction
 if (!is_respawning) {
-	turn_rate += -turn_rate * (is_player ? 0.1 : (turning ? 0.05 : 0));
+	turn_rate += -turn_rate * (is_player ? 0.1 : (turning ? 0.1 : 0));
 	if (ai_behavior.part_of_race) {
 		turn_rate = clamp(turn_rate, -3, 3);
 	}

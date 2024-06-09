@@ -1,6 +1,6 @@
 color = c_white;
-extend_rate = 0.05;
-fade_rate = 0.1;
+extend_rate = 0.1;
+fade_rate = 0.05;
 z = 0;
 
 matrix = matrix_build(0,0,0,0,0,0,0,0,0);

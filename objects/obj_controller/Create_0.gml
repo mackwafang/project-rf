@@ -51,8 +51,8 @@ for (var i = 0; i < global.total_participating_vehicles; i++) {
 for (var i = 0; i < array_length(participating_vehicles); i++) {
 	var car = participating_vehicles[i];
 	car.race_rank = (array_length(participating_vehicles) - i);
-	var road = obj_road_generator.road_list[(i * global.difficulty) + 3];//obj_road_generator.road_list[(i div 3) + 1];
-	var lane_position_x = (((i % 3) / 3) * road.length) + (road.length * (i div 3));
+	var road = obj_road_generator.road_list[i + 3];//obj_road_generator.road_list[(i div 3) + 1];
+	var lane_position_x = 0;//(((i % 3) / 3) * road.length) + (road.length * (i div 3));
 	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (irandom(road.lane_width / 4) * choose(-1,0,1));
 	
 	var dist = point_distance(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y);
@@ -64,8 +64,8 @@ for (var i = 0; i < array_length(participating_vehicles); i++) {
 	car.direction = road.direction;
 	car.can_move = false;
 	car.mass = 200;
-	car.horsepower = 30 * (power(global.difficulty, 3) / 6) + 20;
-	car.ai_behavior.desired_lane = (i % 3);
+	car.horsepower = 30 * (power(global.difficulty, 4) / 6) + 20;
+	car.ai_behavior.desired_lane = (i % road.get_lanes_right());
 	car.on_road_index = road;
 }
 global.car_ranking = [];

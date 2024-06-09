@@ -47,6 +47,7 @@ if (ai_behavior.part_of_race) {
 			var screen_coord = world_to_screen(x, y, z+30, global.view_matrix, global.projection_matrix);
 			if (screen_coord[0] != -1 && screen_coord[1] != -1) {
 				var dist_alpha = 1 - (abs(dist_along_road - obj_controller.main_camera_target.dist_along_road) / 1024);
+				var rank_display = is_completed ? completed_race_rank : race_rank;
 				// var bar_border = 2;
 				// var bar_height = 8;
 				// var bar_width = 30;
@@ -58,7 +59,7 @@ if (ai_behavior.part_of_race) {
 				shader_set_uniform_f(global.outline_shader_pixel_w, 2*texture_get_texel_width(sprite_get_texture(spr_race_rank, race_rank-1)));
 				shader_set_uniform_f(global.outline_shader_pixel_h, 2*texture_get_texel_height(sprite_get_texture(spr_race_rank, race_rank-1)));
 				shader_set_uniform_f(global.outline_shader_alpha_override, dist_alpha);
-				draw_sprite_ext(spr_race_rank, race_rank-1, screen_coord[0], screen_coord[1], 0.5, 0.5, 0, c_white, dist_alpha);
+				draw_sprite_ext(spr_race_rank, rank_display-1, screen_coord[0], screen_coord[1], 0.5, 0.5, 0, c_white, dist_alpha);
 				shader_reset();
 			}
 		}
@@ -83,11 +84,11 @@ if (obj_controller.main_camera_target.id == id) {
 	//draw_text(16, 16, $"onroad: {on_road ? "true" : "false"}");
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
-	//draw_text(port_width - 196, 16, $"accel: {accelerating}");
-	//draw_text(port_width - 196, 32, $"boost: {boosting}");
-	//draw_text(port_width - 196, 48, $"brake: {braking}");
-	//draw_text(port_width - 196, 64, $"finish: {is_completed}");
-	// draw_text(port_width - 196, 80, $"turn: {turn_rate}");
+	//draw_text(port_width - 256, 16, $"accel: {accelerating}");
+	//draw_text(port_width - 256, 32, $"boost: {boosting}");
+	//draw_text(port_width - 256, 48, $"brake: {braking}");
+	//draw_text(port_width - 256, 64, $"finish: {is_completed}");
+	draw_text(port_width - 256, 80, $"turn: {turn_rate}");
 	//draw_text(16, 16, $"{x}, {y}, {z}");
 	//draw_text(16, 32, $"{direction}");
 	//for (var i = 0; i < max_gear; i++) {

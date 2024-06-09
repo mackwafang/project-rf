@@ -1,5 +1,5 @@
 // road fidning
-var next_road = obj_road_generator.road_list[max(0, nav_road.get_id() + (ai_behavior.reversed_direction ? -6 : 6))];
+var next_road = obj_road_generator.road_list[max(0, nav_road.get_id() + (ai_behavior.reversed_direction ? -3 : 3))];
 var vec_to_road = new Vec2(0, 0);
 if (nav_road._id != next_road._id) {
 	vec_to_road = point_to_line(
@@ -31,11 +31,11 @@ if (can_move) {
 			// checking turning
 			if (turning & 1 == 0) {
 				// checking left turn
-				turn_rate -= 10 * global.deltatime;
+				turn_rate -= max(10, abs(turn_rate / 2)) * global.deltatime;
 			}
 			else if (turning & 2 == 0) {
 				// checking right turn
-				turn_rate += 10 * global.deltatime;
+				turn_rate += max(10, abs(turn_rate / 2)) * global.deltatime;
 			}
 		}
 	}
@@ -58,10 +58,10 @@ if (can_move) {
 		else {
 			#region Non-Player Car Movement
 			// checking other cars
-			var look_ahead_threshold = 512;
+			var look_ahead_threshold = 256;
 			var look_ahead_angle = 8;
 			if (on_road_index.zone == ZONE.RIVER) {
-				look_ahead_threshold = 256;
+				look_ahead_threshold = 128;
 				look_ahead_angle = 2;
 			}
 			var car_look_ahead = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction), y+lengthdir_y(look_ahead_threshold, direction), obj_car_parent, false, true));
@@ -72,10 +72,10 @@ if (can_move) {
 			var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
 			var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
-			var evade_turn_rate = 0.5;
+			var evade_turn_rate = 0.125;
 			if (car_look_left ^ car_look_right) {
-				if (car_look_left) {turn_rate = evade_turn_rate;}
-				if (car_look_right) {turn_rate = evade_turn_rate;}
+				if (car_look_left) {turn_rate -= evade_turn_rate;}
+				if (car_look_right) {turn_rate += evade_turn_rate;}
 			}
 			else if (car_look_left & car_look_right) {
 				acceleration = false;
@@ -95,20 +95,21 @@ if (can_move) {
 		
 			if (!on_road) {
 				// off road, trying to get back on it
-				// find the nearest road
-				//var side = angle_difference(image_angle, point_direction(x,y,road.x,road.y));
-				turn_rate = side / 300;
+				if (on_road_index.zone != ZONE.RIVER) {
+					// but only for non-bridge zone, median barrier giving issue with turning
+					turn_rate += side / 300;
+				}
 			}
 			else {
 				// car turning on curved road and moving to its desired lane
-				var tr = (angle_diff / 15) * turn_adjustments; // moving along curved road
+				var tr = (angle_diff / 20) * turn_adjustments; // moving along curved road
 				
 				// moving go desired lane
 				if (dist_to_road > 32) {
 					tr += (sign(side) / 5);
 				}
-				
-				turn_rate += tr / 10;
+				//hp_display += ((hp / max_hp) - hp_display) * 0.05;
+				turn_rate += (tr / 6);
 				
 				// braking = (abs(tr) > 1) | ((nav_road.get_ideal_throttle() < 0.25) && (abs(angle_diff) > 15));
 			}
@@ -218,7 +219,7 @@ if (vertical_on_road) {
 }
 velocity = clamp(velocity, 0, max_velocity);
 
-if (engine_rpm <= 1000) {engine_rpm = 1000;}
+// if (engine_rpm <= 1000) {engine_rpm = 1000;}
 if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
 
 gear_shift(); // auto gear shift

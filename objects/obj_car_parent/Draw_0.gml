@@ -18,8 +18,8 @@ if (global.CAMERA_MODE_3D) {
 	switch (vehicle_type) {
 		case VEHICLE_TYPE.BIKE:
 			var turn_adjust = 0;//clamp(turn_rate * 10, -20, 20) * (abs(turn_rate) > 0.1 ? 1 : 0);
-			if (vehicle_detail_index == spr_bike_3d_detail_2 && vehicle_detail_subimage == 1) {
-				turn_adjust = turn_rate;
+			if (vehicle_detail_index == spr_bike_3d_detail_2_turn && vehicle_detail_subimage == 0) {
+				turn_adjust = -turn_rate * 30;
 			}
 			// draw_sprite_ext(spr_bike_3d, 0, 0, 0, 0.25, 0.25, (turn_adjust), c_white, image_alpha);
 			//draw_sprite_ext(spr_bike_3d_detail, 0, 0, 0, 0.25, 0.25, (turn_adjust), vehicle_color.tetriary, image_alpha);
@@ -30,7 +30,7 @@ if (global.CAMERA_MODE_3D) {
 			shader_set_uniform_f(global.color_replace_replace_color, true);
 			shader_set_uniform_f_array(global.color_replace_src_color, global.racer_color_replace_src);
 			shader_set_uniform_f_array(global.color_replace_dst_color, racer_color_replace_dst);
-			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 0, 0, 0.5 * image_xscale, -0.625, (turn_adjust), c_white, 1);
+			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 0, 0, 0.5 * image_xscale, -0.625, turn_adjust, c_white, 1);
 			break;
 		case VEHICLE_TYPE.CAR:
 			draw_sprite_ext(spr_car_3d, vehicle_detail_subimage, 0, 0, 1, -1, 0, vehicle_color.primary, image_alpha);

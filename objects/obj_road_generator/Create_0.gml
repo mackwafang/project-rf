@@ -14,8 +14,8 @@ current_cp = 0; // current control point that is visible
 var t = current_time;
 
 // initialize control points using path finding via a-star
-grid_width = round(24 * sqr(global.difficulty * 1.5));
-grid_height = round(24 * sqr(global.difficulty * 1.5));
+grid_width = 270;//round(24 * sqr(global.difficulty * 1.5));
+grid_height = 270;//round(24 * sqr(global.difficulty * 1.5));
 grid = ds_list_create();
 // intialize random weights for grids
 for (var i = 0; i < grid_height*grid_width; i++) {ds_list_add(grid, 0);}
@@ -27,7 +27,7 @@ while (array_length(control_path) == 0) {
 	print("Creating grid");
 	// generating terrain
 	perlin_config = {
-		inc: global.difficulty * 0.45,	// determines rough ness of noise. higher = more noise
+		inc: global.difficulty * 0.6,	// determines rough ness of noise. higher = more noise
 		X: random(1000),
 		Y: random(1000),
 	}
@@ -63,7 +63,7 @@ for (var s = 0; s < array_length(control_path); s++) {
 road_list = generate_roads(control_points, road_segments);
 
 print("Rendering Road")
-global.destination_road_index = array_length(road_list) - (road_segments * 10);
+global.destination_road_index = round(array_length(road_list) * (max(0.2, global.difficulty - 1))) - (road_segments * 10);
 global.race_length = 0;
 
 //set up vertex buffers
@@ -103,9 +103,49 @@ var building_color = make_color_rgb(irandom(255), irandom(255), irandom(255));
 for (var i = 0; i < array_length(road_list)-1; i++) {
 	var road = road_list[@i];
 	var next_road = road_list[@i+1];
+	
+	// road changes lane count
+	if (lane_change_duration == 0) {
+		prev_lane_lane_to = lane_change_to;
+		lane_side_affected = choose(ROAD_LANE_CHANGE_AFFECT.LEFT, ROAD_LANE_CHANGE_AFFECT.RIGHT, ROAD_LANE_CHANGE_AFFECT.BOTH);
+		lane_change_duration = 30+irandom(10);
+		lane_change_to = 1+irandom(2);
+		if (irandom(2) == 0) {
+			cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);	// change zone
+		}
+		switch(road.zone) {
+			case ZONE.RIVER:
+				lane_change_to = 2+irandom(1);
+				if (cur_zone == ZONE.RIVER) {
+					initial_river_seg = road_list[@ i+1];
+				}
+				break;
+			case ZONE.CITY:
+				road.building_color = building_color;
+				lane_change_to = 2+irandom(1);
+				building_color = make_color_rgb(irandom(255), irandom(255), irandom(255));
+				break;
+		}
+	}
+	
+	switch(lane_side_affected) {
+		case ROAD_LANE_CHANGE_AFFECT.LEFT:
+			road.set_lanes_left(cur_lane_change_to);
+			road.set_lanes_right(road_list[@i-1].get_lanes_right());
+			break;
+		case ROAD_LANE_CHANGE_AFFECT.RIGHT:
+			road.set_lanes_left(road_list[@i-1].get_lanes_left());
+			road.set_lanes_right(cur_lane_change_to);
+			break;
+		case ROAD_LANE_CHANGE_AFFECT.BOTH:
+			road.set_lanes_side(cur_lane_change_to);
+			break;
+	}
+	lane_change_duration--;
+	
+	// set up road data
 	road.next_road = next_road;
 	road.direction = point_direction(road.x, road.y, next_road.x, next_road.y);
-	// road.length = sqrt(sqr(road.x - next_road.x) + sqr(road.y - next_road.y) + sqr(road.z - next_road.z));
 	road.length = point_distance_3d(road.x, road.y, road.z, next_road.x, next_road.y, next_road.z);
 	
 	road.ideal_throttle = min(1.1, road.length / (control_points_dist / road_segments)) * (global.difficulty < 1.5 ? 0.9 : 1.01);
@@ -120,6 +160,7 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 	next_road.length_to_point = road.length_to_point + road.length;
 	track_length += road.length;
 	
+	// sea level height
 	if (i > 0) {
 		if (cur_zone == ZONE.RIVER) {
 			if (road_list[@ i-1].zone != cur_zone) {
@@ -148,44 +189,7 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 			}
 		}
 	}
-	
-	// road changes lane count
-	if (lane_change_duration == 0) {
-		prev_lane_lane_to = lane_change_to;
-		lane_side_affected = choose(ROAD_LANE_CHANGE_AFFECT.LEFT, ROAD_LANE_CHANGE_AFFECT.RIGHT, ROAD_LANE_CHANGE_AFFECT.BOTH);
-		lane_change_duration = 30+irandom(10);
-		lane_change_to = 1+irandom(2);
-		cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);	// change zone
-		switch(road.zone) {
-			case ZONE.RIVER:
-				lane_change_to = 2+irandom(1);
-				if (cur_zone == ZONE.RIVER) {
-					initial_river_seg = road_list[@ i+1];
-				}
-				break;
-			case ZONE.CITY:
-				road.building_color = building_color;
-				lane_change_to = 2+irandom(1);
-				building_color = make_color_rgb(irandom(255), irandom(255), irandom(255));
-				break;
-		}
-		
-	}
-	
-	switch(lane_side_affected) {
-		case ROAD_LANE_CHANGE_AFFECT.LEFT:
-			road.set_lanes_left(cur_lane_change_to);
-			road.set_lanes_right(road_list[@i-1].get_lanes_right());
-			break;
-		case ROAD_LANE_CHANGE_AFFECT.RIGHT:
-			road.set_lanes_left(road_list[@i-1].get_lanes_left());
-			road.set_lanes_right(cur_lane_change_to);
-			break;
-		case ROAD_LANE_CHANGE_AFFECT.BOTH:
-			road.set_lanes_side(cur_lane_change_to);
-			break;
-	}
-	lane_change_duration--;
+
 }
 
 // post road generation adjustments
@@ -203,7 +207,7 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 	//		var r = road_list[@j];
 	//		road_list[@j].x += lengthdir_x(lane_change_dist, road.direction);
 	//		road_list[@j].y += lengthdir_y(lane_change_dist, road.direction);
-	//		//road_list[@j].z += lengthdir_y(lane_change_dist, radtodeg(arcsin(road.elevation/road.length)));
+	//		road_list[@j].z += lengthdir_y(lane_change_dist, radtodeg(arcsin(road.elevation/road.length)));
 	//	}
 	//}
 	
@@ -383,14 +387,6 @@ function render_control_point(cp, range=0) {
 		}
 		#region Road Render Polygons
 		var road_seg_data = [
-			//left grass ext
-			[new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_z), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_z-200), new Point(grass_uv[0], grass_uv[3])],
-			
-			[new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_z-200), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z-200), new Point(grass_uv[2], grass_uv[3])],
 			
 			//left grass
 			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], off_shoulder_z-7), new Point(grass_uv[0], grass_uv[1])],
@@ -437,7 +433,7 @@ function render_control_point(cp, range=0) {
 			[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z), new Point(shoulder_uv[0], shoulder_uv[3])],
 			[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z), new Point(shoulder_uv[2], shoulder_uv[3])],
 		
-			//// right grass
+			// right grass
 			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_off_shoulder_z-7), new Point(grass_uv[0], grass_uv[1])],
 			[new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], off_shoulder_z-7), new Point(grass_uv[2], grass_uv[1])],
 			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
@@ -446,14 +442,6 @@ function render_control_point(cp, range=0) {
 			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
 			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_z), new Point(grass_uv[2], grass_uv[3])],
 			
-			// right grass ext
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_z), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z-200), new Point(grass_uv[0], grass_uv[3])],
-			
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z-200), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
-			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_z-200), new Point(grass_uv[2], grass_uv[3])],
 		];
 		if (i > 0) {
 			if (road.zone == ZONE.RIVER) {
@@ -720,7 +708,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	}
 	
 	//create light
-	if (i % 10 == 0) {
+	if (i % 5 == 0) {
 		var side = [
 			lane_width*(left_lanes+1),
 			-lane_width*(right_lanes),
@@ -728,6 +716,10 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		];
 		var j_start = 0;
 		var j_end = 1;
+		var light_section = i div 5;
+		j_start = light_section % 2;
+		j_end = light_section % 2;
+		
 		if (road.zone == ZONE.RIVER) {
 			j_start = 2;
 			j_end = 2;
