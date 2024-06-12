@@ -164,6 +164,7 @@ if (obj_controller.main_camera_target.id == id) {
 	var speed_unit = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? "KMH" : "MPH");
 	var speed_scale = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);
 	draw_text(odometer_x, odometer_y - 64, $"{round(velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
+	draw_text(odometer_x + 32, odometer_y, $"{round(max_velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
 	
 	draw_set_valign(fa_bottom);
 	draw_set_halign(fa_left);

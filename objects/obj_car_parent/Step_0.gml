@@ -12,8 +12,8 @@ dist_along_road = on_road_index.length_to_point + point_distance(on_road_index.x
 
 vec_to_road.x += lengthdir_x(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
 vec_to_road.y += lengthdir_y(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
-var dist_to_road = point_distance(x,y,vec_to_road.x,vec_to_road.y);
-//if (dist_to_road > 1024) {
+var dist_to_lane = point_distance(x,y,vec_to_road.x,vec_to_road.y);
+//if (dist_to_lane > 1024) {
 //	hp = 0;
 //}
 if (global.game_state_paused) {exit;}
@@ -60,10 +60,10 @@ if (can_move) {
 			// checking other cars
 			var look_ahead_threshold = 256;
 			var look_ahead_angle = 8;
-			if (on_road_index.zone == ZONE.RIVER) {
-				look_ahead_threshold = 128;
-				look_ahead_angle = 2;
-			}
+			//if (on_road_index.zone == ZONE.RIVER) {
+			//	look_ahead_threshold = 128;
+			//	look_ahead_angle = 2;
+			//}
 			var car_look_ahead = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction), y+lengthdir_y(look_ahead_threshold, direction), obj_car_parent, false, true));
 			var car_look_left = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle+look_ahead_angle), obj_car_parent, false, true));
 			var car_look_right = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, image_angle-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, image_angle-look_ahead_angle), obj_car_parent, false, true));
@@ -81,6 +81,13 @@ if (can_move) {
 				acceleration = false;
 			}
 			
+			if (rail_look_left) {turn_rate -= evade_turn_rate;}
+			else if (rail_look_right) {turn_rate += evade_turn_rate;}
+			
+			if (!is_off_road_left | !is_off_road_right) {
+				turn_rate += (-(is_off_road_left/100) + (is_off_road_right/100));
+			}
+			
 			if (ai_behavior.desired_lane > (ai_behavior.reversed_direction ? next_road.get_lanes_left() : next_road.get_lanes_right())-1 || ai_behavior.desired_lane < 0) {
 				// desired lane doesn't exists, pick a new one
 				ai_behavior.change_lane(nav_road);
@@ -95,30 +102,25 @@ if (can_move) {
 		
 			if (!on_road) {
 				// off road, trying to get back on it
-				if (on_road_index.zone != ZONE.RIVER) {
-					// but only for non-bridge zone, median barrier giving issue with turning
-					turn_rate += side / 300;
-				}
+				// but only for non-bridge zone, median barrier giving issue with turning
+				turn_rate += side / 300;
 			}
 			else {
 				// car turning on curved road and moving to its desired lane
 				var tr = (angle_diff / 20) * turn_adjustments; // moving along curved road
 				
 				// moving go desired lane
-				if (dist_to_road > 32) {
-					tr += (sign(side) / 5);
+				
+				if (on_road_index.zone != ZONE.RIVER) {
+					// only for non bridge sections due to behavior that causes rubbing of barrier
+					if (dist_to_lane > 32) {
+						tr += (sign(side) / 5);
+					}
 				}
 				//hp_display += ((hp / max_hp) - hp_display) * 0.05;
 				turn_rate += (tr / 6);
 				
 				// braking = (abs(tr) > 1) | ((nav_road.get_ideal_throttle() < 0.25) && (abs(angle_diff) > 15));
-			}
-			
-			if (rail_look_left) {turn_rate -= evade_turn_rate;}
-			else if (rail_look_right) {turn_rate += evade_turn_rate;}
-			
-			if (!is_off_road_left | !is_off_road_right) {
-				turn_rate += (-(is_off_road_left/100) + (is_off_road_right/100));
 			}
 			//if (ai_behavior.part_of_race) {
 			//	turn_rate *= max(1 - (velocity / max_velocity), (velocity / max_velocity)) * 1.2;
@@ -153,7 +155,7 @@ if (on_road_index.zone == ZONE.RIVER) {
 // create dust particle
 if (!on_road && vertical_on_road) {
 	if (velocity > 100) {
-		if (!on_road_index.zone == ZONE.CITY) {
+		if (!on_road_index.zone == ZONE.CITY or !on_road_index.zone == ZONE.RIVER) {
 			var dust_part = instance_create_layer(x, y, "Instances", obj_dust_particle);
 			dust_part.z = z;
 			switch(on_road_index.zone) {
@@ -219,7 +221,7 @@ if (vertical_on_road) {
 }
 velocity = clamp(velocity, 0, max_velocity);
 
-// if (engine_rpm <= 1000) {engine_rpm = 1000;}
+if (engine_rpm <= 1000) {engine_rpm = 1000 - engine_rpm;}
 if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
 
 gear_shift(); // auto gear shift

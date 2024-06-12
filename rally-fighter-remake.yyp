@@ -138,6 +138,7 @@
     {"id":{"name":"obj_explosion","path":"objects/obj_explosion/obj_explosion.yy",},},
     {"id":{"name":"spr_2x2","path":"sprites/spr_2x2/spr_2x2.yy",},},
     {"id":{"name":"obj_traffic_light","path":"objects/obj_traffic_light/obj_traffic_light.yy",},},
+    {"id":{"name":"spr_building_front_2_floors","path":"sprites/spr_building_front_2_floors/spr_building_front_2_floors.yy",},},
     {"id":{"name":"spr_right","path":"sprites/spr_right/spr_right.yy",},},
     {"id":{"name":"enums","path":"scripts/enums/enums.yy",},},
     {"id":{"name":"misc","path":"scripts/misc/misc.yy",},},

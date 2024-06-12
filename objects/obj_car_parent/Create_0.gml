@@ -211,6 +211,7 @@ set_on_road = function() {
 	var polygon_x = obj_road_generator.road_list[last_road_index].get_collision_x();
 	var polygon_y = obj_road_generator.road_list[last_road_index].get_collision_y();
 	var on_segment = pnpoly(4, polygon_x, polygon_y, x, y);
+	var last_on_road = on_road;
 	if (!on_segment) {
 		if (last_road_index-1 > 0) {
 			last_road_index -= 1;
@@ -220,6 +221,9 @@ set_on_road = function() {
 	}
 	else {
 		on_road = is_on_road(x,y,last_road_index);
+	}
+	if (on_road_index.zone == ZONE.RIVER and !last_on_road) {
+		on_road = false;
 	}
 	
 	//var p_i = last_road_index-1;
@@ -253,6 +257,7 @@ on_respawn = function() {
 		push_vector.y = 0;
 		is_respawning = false;
 		z = on_road_index.z;
+		on_road = true;
 	}
 }
 

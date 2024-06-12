@@ -1,5 +1,5 @@
-randomize();
-//random_set_seed(0);
+// randomize();
+random_set_seed(0);
 depth = 1000;
 
 // primary_count = 80 * global.difficulty;
@@ -150,7 +150,7 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 	
 	road.ideal_throttle = min(1.1, road.length / (control_points_dist / road_segments)) * (global.difficulty < 1.5 ? 0.9 : 1.01);
 	if (i < 50) {
-		road.ideal_throttle = 1.2;
+		road.ideal_throttle = 1;
 	}
 	road._id = i;
 	road.lane_width = lane_width;
@@ -625,11 +625,11 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 						building_obj.z = road.z;
 						building_obj.direction = road.direction + (j == -1 ? 180 : 0);
 						building_obj.building_width = road.length * 0.75;
-						building_obj.building_height = 128;
+						building_obj.floors = 1 + irandom(1);
 						building_obj.z_start = road.z;
 						building_obj.z_end = next_road.z;
 						building_obj.building_color = road.building_color;
-						building_obj.display_image_index = irandom(sprite_get_number(spr_building_front));
+						building_obj.display_image_index = irandom(2);
 						if (j == -1) {
 							building_obj.z_start = next_road.z;
 							building_obj.z_end = road.z;

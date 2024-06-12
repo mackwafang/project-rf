@@ -67,6 +67,7 @@ for (var i = 0; i < array_length(participating_vehicles); i++) {
 	car.horsepower = 30 * (power(global.difficulty, 4) / 6) + 20;
 	car.ai_behavior.desired_lane = (i % road.get_lanes_right());
 	car.on_road_index = road;
+	car.on_road = true;
 }
 global.car_ranking = [];
 array_copy(global.car_ranking, 0, participating_vehicles, 0, array_length(participating_vehicles));

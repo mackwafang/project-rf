@@ -52,7 +52,7 @@ if (_z_restrict) {
 	}
 	else {
 		// FREE FALLING
-		zspeed -= (global.gravity_3d) * global.deltatime;
+		zspeed -= (global.gravity_3d) * 2 * global.deltatime;
 		if (z+zspeed <= zlerp) {
 			if (zspeed > global.gravity_3d) {
 				zspeed *= -1/3;
@@ -66,7 +66,7 @@ if (_z_restrict) {
 	}
 	// z = clamp(z, zlerp, zlerp+500);
 	// z -= sin(degtorad(nearest_road.next_road.elevation)) * velocity / 60;
-	if (z < on_road_index.z - 100) {
+	if (z < on_road_index.z - 400) {
 		hp = 0;
 		print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of z-bound");
 	}
@@ -78,12 +78,11 @@ if (_z_restrict) {
 
 // move car in direction
 if (!is_respawning) {
-	turn_rate += -turn_rate * (is_player ? 0.1 : (turning ? 0.1 : 0));
-	if (ai_behavior.part_of_race) {
-		turn_rate = clamp(turn_rate, -3, 3);
-	}
-	else {
-		turn_rate = clamp(turn_rate, -6, 6);
+	turn_rate += -turn_rate * 0.05;
+	turn_rate = clamp(turn_rate, -15, 15);
+	if (abs(turn_rate) > 7.5) {
+		hp = 0;
+		print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Turn too hard");
 	}
 	
 	if (vehicle_type == VEHICLE_TYPE.BIKE) {
@@ -125,7 +124,7 @@ if (!is_respawning) {
 	}
 	
 	if (z - zlerp < 1) {
-		direction += turn_rate;
+		direction += turn_rate * 75 * global.deltatime;
 	}
 }
 else {

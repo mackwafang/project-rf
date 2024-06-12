@@ -108,6 +108,7 @@
     {"name":"obj_explosion","order":4,"path":"objects/obj_explosion/obj_explosion.yy",},
     {"name":"spr_2x2","order":34,"path":"sprites/spr_2x2/spr_2x2.yy",},
     {"name":"obj_traffic_light","order":8,"path":"objects/obj_traffic_light/obj_traffic_light.yy",},
+    {"name":"spr_building_front_2_floors","order":14,"path":"sprites/spr_building_front_2_floors/spr_building_front_2_floors.yy",},
     {"name":"spr_right","order":45,"path":"sprites/spr_right/spr_right.yy",},
     {"name":"enums","order":7,"path":"scripts/enums/enums.yy",},
     {"name":"misc","order":13,"path":"scripts/misc/misc.yy",},

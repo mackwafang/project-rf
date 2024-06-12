@@ -9,6 +9,7 @@ building_color = c_white;//make_color_rgb(irandom(255), irandom(255), irandom(25
 z_start = 0;
 z_end = 32;
 display_image_index = 0;
+floors = 1;
 
 function init_vertex_buffer() {
 	var x0 = x;
@@ -23,9 +24,16 @@ function init_vertex_buffer() {
 	image_xscale = building_width;
 	image_yscale = building_length;
 	image_angle = direction;
+	building_height = 128 * floors;
+	var building_sprite = spr_building_front;
+	switch(floors) {
+		case 2: 
+			building_sprite = spr_building_front_2_floors;
+			break;
+	}
 
 	var uv = sprite_get_uvs(spr_building_side, 0);
-	var building_uv = sprite_get_uvs(spr_building_front, display_image_index);
+	var building_uv = sprite_get_uvs(building_sprite, display_image_index);
 	//bottom
 	//vertex_position_3d_uv(global.road_vertex_buffer, xx, yy-128, z_start, uv[0], uv[1]);
 	//vertex_position_3d_uv(global.road_vertex_buffer, xx+building_width, yy-128, z_end, uv[2], uv[1]);
