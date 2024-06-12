@@ -59,7 +59,7 @@ switch(global.difficulty) {
 
 //gear's ratio
 // gear_ratio = [3, 2.5, 2, 5/3, 10/7, 11/9];
-gear_ratio = [3, 2.25, 1.9, 5/3, 10/7, 11/9];
+gear_ratio = [3, 2.25, 1.9, 5/3, 10/7, 12/9];
 //gear_shift_rpm = [
 //	[0, 4500],
 //	[2000, 4250],

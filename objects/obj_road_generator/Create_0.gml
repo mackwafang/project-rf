@@ -1,5 +1,5 @@
-// randomize();
-random_set_seed(0);
+randomize();
+// random_set_seed(0);
 depth = 1000;
 
 // primary_count = 80 * global.difficulty;
@@ -62,8 +62,8 @@ for (var s = 0; s < array_length(control_path); s++) {
 // actually create road via catmull-rom
 road_list = generate_roads(control_points, road_segments);
 
-print("Rendering Road")
-global.destination_road_index = round(array_length(road_list) * (max(0.2, global.difficulty - 1))) - (road_segments * 10);
+print("Rendering Road");
+global.destination_road_index = round(array_length(road_list) * ((global.difficulty * 0.8) - 0.6)) - (road_segments * 10);
 global.race_length = 0;
 
 //set up vertex buffers
@@ -113,10 +113,10 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 		if (irandom(2) == 0) {
 			cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);	// change zone
 		}
-		switch(road.zone) {
+		switch(cur_zone) {
 			case ZONE.RIVER:
 				lane_change_to = 2+irandom(1);
-				if (cur_zone == ZONE.RIVER) {
+				if (road.zone == ZONE.RIVER) {
 					initial_river_seg = road_list[@ i+1];
 				}
 				break;
@@ -888,4 +888,4 @@ show_debug_message($"building_vertex_buffer has {vertex_get_buffer_size(global.b
 
 vehicle_current_pos_ping = 0;
 
-alarm[0] = 15;
+alarm[0] = 30;
