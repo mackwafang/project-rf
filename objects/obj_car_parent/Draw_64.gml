@@ -100,8 +100,8 @@ if (obj_controller.main_camera_target.id == id) {
 	
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
-	draw_text(64, 80, $"to_stand: {crash_timer.to_stand}");
-	draw_text(64, 96, $"walking: {crash_timer.is_walking}");
+	draw_text(64, 80, $"to_stand: {string_replace(crash_timer, ":", "\n")}");
+	// draw_text(64, 96, $"walking: {crash_timer}");
 		
 	// health bar
 	var bar_border = 2;

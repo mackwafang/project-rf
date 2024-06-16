@@ -113,7 +113,7 @@ odometer_speed = 0;
 // timer
 crash_timer = {
 	TIME_TO_STAND: 2,
-	TIME_TO_GET_ON: 4,
+	TIME_TO_GET_ON: 2,
 	to_stand: -1,
 	to_get_on: -1,
 	is_walking: false,

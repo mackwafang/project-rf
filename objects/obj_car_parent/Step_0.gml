@@ -163,7 +163,7 @@ else {
 				direction = on_road_index.direction;
 				velocity = 0;
 				vehicle_detail_index = spr_bike_3d_detail_2_get_on;
-				vehicle_detail_subimage = min(max(0, round(crash_timer.to_stand / crash_timer.TIME_TO_GET_ON * 7)), 7);
+				vehicle_detail_subimage = min(max(0, round(crash_timer.to_get_on / crash_timer.TIME_TO_GET_ON * 6)), 6);
 			}
 		}
 	}
@@ -311,7 +311,7 @@ else {
 if (hp <= 0) {
 	on_death();
 	if (velocity <= 0) {
-		if (crash_timer.to_stand <= 0 and !crash_timer.is_walking) {
+		if (crash_timer.to_stand <= 0 and crash_timer.to_get_on <= 0) {
 			crash_timer.to_stand = crash_timer.TIME_TO_STAND;
 		}
 	}
