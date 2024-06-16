@@ -54,7 +54,7 @@
     "timeUnits": 1,
     "tracks": [
       {"resourceType":"GMSpriteFramesTrack","resourceVersion":"1.0","name":"frames","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"1.0","Keyframes":[
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"64f34e92-c5ca-42d3-bc97-1bcf10cf465c","path":"sprites/spr_bike_3d_detail_2_crashed/spr_bike_3d_detail_2_crashed.yy",},},},"Disabled":false,"id":"62bb7e46-b61e-4424-88c1-df88a02f6d39","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"64f34e92-c5ca-42d3-bc97-1bcf10cf465c","path":"sprites/spr_bike_3d_detail_2_crashed/spr_bike_3d_detail_2_crashed.yy",},},},"Disabled":false,"id":"19188a06-25d0-460a-a3ba-6ca458870d47","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
           ],},"modifiers":[],"spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange": null,

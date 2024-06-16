@@ -79,11 +79,11 @@ gear_ratio = [3, 2.25, 1.9, 5/3, 10/7, 12/9];
 //gear_ratio = [2.66, 1.78, 1.3, 1, 0.74, 0.5];
 gear_shift_rpm = [
 	[0, 4000],
-	[2000, 4000],
-	[2250, 3750],
-	[2250, 3750],
-	[2250, 3275],
-	[1250, 3000],
+	[1000, 4000],
+	[1550, 3750],
+	[1750, 3750],
+	[2050, 3275],
+	[2500, 3100],
 ];
 for (var g = 0; g < array_length(gear_shift_rpm); g++) {
 	gear_shift_rpm[g][0] *= global.difficulty;
@@ -109,6 +109,15 @@ nearest_road = undefined;
 // visual
 odometer_rpm = 0;
 odometer_speed = 0;
+
+// timer
+crash_timer = {
+	TIME_TO_STAND: 2,
+	TIME_TO_GET_ON: 4,
+	to_stand: -1,
+	to_get_on: -1,
+	is_walking: false,
+}
 
 // ai behavior
 ai_behavior = {
@@ -144,6 +153,7 @@ dist_along_road = 0;					// how far along the road it is
 
 counter = 0;							// counter for various things
 current_cp = 0;							// current nearest control point
+bike_obj = noone;						// used to identify where bike is when crashed
 
 // functions
 gear_shift_up = function() {
@@ -243,9 +253,8 @@ set_on_road = function() {
 
 on_respawn = function() {
 	if (is_respawning) {
-		func = choose(-on_road_index.get_lanes_left(), on_road_index.get_lanes_right());
-		x = on_road_index.x + lengthdir_x(func * on_road_index.lane_width, on_road_index.direction - 90);
-		y = on_road_index.y + lengthdir_y(func * on_road_index.lane_width, on_road_index.direction - 90);
+		x = on_road_index.x + lengthdir_x(on_road_index.get_lanes_right() * on_road_index.lane_width, on_road_index.direction - 90);
+		y = on_road_index.y + lengthdir_y(on_road_index.get_lanes_right() * on_road_index.lane_width, on_road_index.direction - 90);
 		image_alpha = 1;
 		//solid = true;
 		mask_index = sprite_index;
@@ -258,7 +267,25 @@ on_respawn = function() {
 		is_respawning = false;
 		z = on_road_index.z;
 		on_road = true;
+		vertical_on_road = true;
+		instance_destroy(bike_obj);
 	}
+}
+
+on_stand_up = function() {
+	// performs when standing up is done
+	var road = obj_road_generator.road_list[on_road_index._id - 1];
+	hp += 1;
+	bike_obj = instance_create_layer(
+		road.x + lengthdir_x(road.get_lanes_right() * road.lane_width, road.direction - 90),
+		road.y + lengthdir_y(road.get_lanes_right() * road.lane_width, road.direction - 90),
+		"Instances",
+		obj_crashed_bike
+	);
+	bike_obj.vehicle_color = vehicle_color;
+	bike_obj.racer_color_replace_dst = racer_color_replace_dst;
+	bike_obj.z = road.z;
+	bike_obj.image_angle = road.direction;
 }
 
 on_death = function() {

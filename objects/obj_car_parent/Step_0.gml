@@ -1,5 +1,5 @@
 // road fidning
-var next_road = obj_road_generator.road_list[max(0, nav_road.get_id() + (ai_behavior.reversed_direction ? -3 : 3))];
+var next_road = obj_road_generator.road_list[max(0, nav_road.get_id() + (ai_behavior.reversed_direction ? -6 : 6))];
 var vec_to_road = new Vec2(0, 0);
 if (nav_road._id != next_road._id) {
 	vec_to_road = point_to_line(
@@ -19,7 +19,7 @@ var dist_to_lane = point_distance(x,y,vec_to_road.x,vec_to_road.y);
 if (global.game_state_paused) {exit;}
 
 if (can_move) {
-	// player moving
+	// moving, not crashed
 	if (is_player) {
 		if (!is_completed) {
 			accelerating = keyboard_check(global.player_input.accelerate);
@@ -125,8 +125,6 @@ if (can_move) {
 			//if (ai_behavior.part_of_race) {
 			//	turn_rate *= max(1 - (velocity / max_velocity), (velocity / max_velocity)) * 1.2;
 			//}
-			
-			turning = (turn_rate < 0.1 ? 2 : (turn_rate > 0.1 ? 1 : 0));
 			// enables boost
 			if (boost_juice >= 100) {
 				if (irandom(20) < global.difficulty) {
@@ -143,6 +141,35 @@ if (can_move) {
 	if (keyboard_check_pressed(vk_up)) {gear_shift_up();}
 	if (keyboard_check_pressed(vk_down)) {gear_shift_down();}
 }
+else {
+	// crashed, walking to bike
+	if (is_respawning) {
+		if (instance_exists(bike_obj)) {
+			if (point_distance(x, y, bike_obj.x, bike_obj.y) > 16) {
+				if (crash_timer.is_walking) {
+					direction += angle_difference(point_direction(x, y, bike_obj.x, bike_obj.y), direction) * 0.05;
+
+					velocity = 100;
+					vehicle_detail_index = spr_bike_3d_detail_2_walk_up;
+					vehicle_detail_subimage = (counter div 20) % 6
+				}
+			}
+			else {
+				if (crash_timer.to_get_on <= 0 and crash_timer.is_walking) {
+					crash_timer.to_get_on = crash_timer.TIME_TO_GET_ON;
+					crash_timer.is_walking = false;
+					bike_obj.display_sprite_index = spr_1x1;
+				}
+				direction = on_road_index.direction;
+				velocity = 0;
+				vehicle_detail_index = spr_bike_3d_detail_2_get_on;
+				vehicle_detail_subimage = min(max(0, round(crash_timer.to_stand / crash_timer.TIME_TO_GET_ON * 7)), 7);
+			}
+		}
+	}
+}
+
+turning = (turn_rate < 0.1 ? 2 : (turn_rate > 0.1 ? 1 : 0));
 
 // "crash" on river
 if (on_road_index.zone == ZONE.RIVER) {
@@ -284,8 +311,8 @@ else {
 if (hp <= 0) {
 	on_death();
 	if (velocity <= 0) {
-		if (alarm[2] <= 0) {
-			alarm[2] = round(4 / global.deltatime);
+		if (crash_timer.to_stand <= 0 and !crash_timer.is_walking) {
+			crash_timer.to_stand = crash_timer.TIME_TO_STAND;
 		}
 	}
 }

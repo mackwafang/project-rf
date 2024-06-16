@@ -133,7 +133,13 @@ else {
 		vehicle_detail_subimage = (counter div 20) % 6;
 	}
 	else {
-		vehicle_detail_index = spr_bike_3d_detail_2_crashed;
+		if (crash_timer.to_stand > 0) {
+			vehicle_detail_index = spr_bike_3d_detail_2_stand;
+			vehicle_detail_subimage = min(max(0, round(crash_timer.to_stand / crash_timer.TIME_TO_STAND * 4)), 4);
+		}
+		else {
+			vehicle_detail_index = spr_bike_3d_detail_2_crashed;
+		}
 	}
 }
 x += dcos(direction) * vel;

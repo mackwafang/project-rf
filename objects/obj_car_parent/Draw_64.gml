@@ -88,7 +88,7 @@ if (obj_controller.main_camera_target.id == id) {
 	//draw_text(port_width - 256, 32, $"boost: {boosting}");
 	//draw_text(port_width - 256, 48, $"brake: {braking}");
 	//draw_text(port_width - 256, 64, $"finish: {is_completed}");
-	draw_text(port_width - 256, 80, $"turn: {turn_rate}");
+	//draw_text(port_width - 256, 80, $"turn: {turn_rate}");
 	//draw_text(16, 16, $"{x}, {y}, {z}");
 	//draw_text(16, 32, $"{direction}");
 	//for (var i = 0; i < max_gear; i++) {
@@ -97,6 +97,11 @@ if (obj_controller.main_camera_target.id == id) {
 	//draw_text(16, 144, $"mass: {mass}");
 	//draw_text(16, 160, $"transfer eff.: {transfer_eff}");
 	//draw_text(16, 176, $"engine power: {engine_power}");
+	
+	draw_set_valign(fa_top);
+	draw_set_halign(fa_left);
+	draw_text(64, 80, $"to_stand: {crash_timer.to_stand}");
+	draw_text(64, 96, $"walking: {crash_timer.is_walking}");
 		
 	// health bar
 	var bar_border = 2;

@@ -99,7 +99,7 @@ var prev_lane_lane_to = lane_change_to; // previous lane change
 var lane_side_affected = ROAD_LANE_CHANGE_AFFECT.BOTH; // which side of the road changes 
 var cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
 var initial_river_seg = road_list[@ 0];//(cur_zone == ZONE.RIVER ? road_list[@ 0] : undefined);
-var building_color = make_color_rgb(irandom(255), irandom(255), irandom(255));
+var building_color = make_color_hsv(irandom(255), choose(0, 192 + irandom(64)), 192 + irandom(64));
 for (var i = 0; i < array_length(road_list)-1; i++) {
 	var road = road_list[@i];
 	var next_road = road_list[@i+1];
@@ -118,12 +118,13 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 				lane_change_to = 2+irandom(1);
 				if (road.zone == ZONE.RIVER) {
 					initial_river_seg = road_list[@ i+1];
+					lane_change_duration = 15;
 				}
 				break;
 			case ZONE.CITY:
 				road.building_color = building_color;
 				lane_change_to = 2+irandom(1);
-				building_color = make_color_rgb(irandom(255), irandom(255), irandom(255));
+				building_color = make_color_hsv(irandom(255), choose(0, 192 + irandom(64)), 192 + irandom(64));
 				break;
 		}
 	}
@@ -148,7 +149,7 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 	road.direction = point_direction(road.x, road.y, next_road.x, next_road.y);
 	road.length = point_distance_3d(road.x, road.y, road.z, next_road.x, next_road.y, next_road.z);
 	
-	road.ideal_throttle = min(1.1, road.length / (control_points_dist / road_segments)) * (global.difficulty < 1.5 ? 0.9 : 1.01);
+	road.ideal_throttle = min(1.1, road.length / (control_points_dist / road_segments)) * (global.difficulty < 1.5 ? 0.9 : 1.1);
 	if (i < 50) {
 		road.ideal_throttle = 1;
 	}
@@ -602,60 +603,58 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		// create building
 		case ZONE.CITY:	
 			if (!road.transition_lane) {
-				if (road.length * 0.75 > 32) {
-					// create buildings
-					for (var j = -1; j <= 1; j += 2) {
-						var func = undefined;
-						var pos = [road.x, road.y];
-						switch(j) {
-							case -1:
-								func = road.get_lanes_left;
-								pos = [next_road.x, next_road.y];
-								break;
-							case 1:
-								func = road.get_lanes_right;
-								break;
-						}
-						var building_obj = instance_create_layer(
-							pos[0] + lengthdir_x((func() + 1) * lane_width * j, road.direction-90),
-							pos[1] + lengthdir_y((func() + 1) * lane_width * j, road.direction-90),
-							"Instances",
-							obj_building
-						);
-						building_obj.z = road.z;
-						building_obj.direction = road.direction + (j == -1 ? 180 : 0);
-						building_obj.building_width = road.length * 0.75;
-						building_obj.floors = 1 + irandom(1);
-						building_obj.z_start = road.z;
-						building_obj.z_end = next_road.z;
-						building_obj.building_color = road.building_color;
-						building_obj.display_image_index = irandom(2);
-						if (j == -1) {
-							building_obj.z_start = next_road.z;
-							building_obj.z_end = road.z;
-						}
-						building_obj.assigned_cp = i div road_segments;
-						array_push(road.buildings, building_obj);
+				// create buildings
+				for (var j = -1; j <= 1; j += 2) {
+					var func = undefined;
+					var pos = [road.x, road.y];
+					switch(j) {
+						case -1:
+							func = road.get_lanes_left;
+							pos = [next_road.x, next_road.y];
+							break;
+						case 1:
+							func = road.get_lanes_right;
+							break;
 					}
-				}
-				// create city trees
-				if ((i%4) == 0) {
-					var begin_length = choose(
-						lane_width*(left_lanes+0.5),
-						-lane_width*(right_lanes+0.5),
-					);
-					var tree_obj = instance_create_layer(
-						road.x + lengthdir_x(begin_length, road.direction + 90),
-						road.y + lengthdir_y(begin_length, road.direction + 90),
+					var building_obj = instance_create_layer(
+						pos[0] + lengthdir_x((func() + 1) * lane_width * j, road.direction-90),
+						pos[1] + lengthdir_y((func() + 1) * lane_width * j, road.direction-90),
 						"Instances",
-						obj_tree
+						obj_building
 					);
-					tree_obj.display_image_index = choose(2, 3, 4);
-					tree_obj.z = road.z;
-					tree_obj.assigned_cp = i div road_segments;
-					tree_obj.direction = road.direction;
-					array_push(road.props, tree_obj);
+					building_obj.z = road.z;
+					building_obj.direction = road.direction + (j == -1 ? 180 : 0);
+					building_obj.building_width = road.length * 0.8;
+					building_obj.floors = 1 + irandom(1);
+					building_obj.z_start = road.z;
+					building_obj.z_end = next_road.z;
+					building_obj.building_color = road.building_color;
+					building_obj.display_image_index = irandom(2);
+					if (j == -1) {
+						building_obj.z_start = next_road.z;
+						building_obj.z_end = road.z;
+					}
+					building_obj.assigned_cp = i div road_segments;
+					array_push(road.buildings, building_obj);
 				}
+			}
+			// create city trees
+			if ((i%4) == 0) {
+				var begin_length = choose(
+					lane_width*(left_lanes+0.5),
+					-lane_width*(right_lanes+0.5),
+				);
+				var tree_obj = instance_create_layer(
+					road.x + lengthdir_x(begin_length, road.direction + 90),
+					road.y + lengthdir_y(begin_length, road.direction + 90),
+					"Instances",
+					obj_tree
+				);
+				tree_obj.display_image_index = choose(2, 3, 4);
+				tree_obj.z = road.z;
+				tree_obj.assigned_cp = i div road_segments;
+				tree_obj.direction = road.direction;
+				array_push(road.props, tree_obj);
 			}
 			break;
 		case ZONE.DESERT:

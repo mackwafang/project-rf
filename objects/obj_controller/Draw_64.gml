@@ -24,14 +24,20 @@ for (var rank = 0; rank < array_length(global.car_ranking); rank++) {
 	//	dist = vehicle.dist_along_road - car_ranking[0].dist_along_road;
 	//}
 	var distance_display = dist / global.WORLD_TO_REAL_SCALE * dist_scale / 10000;
+	var text_color = c_white;
+	if (vehicle.is_completed) {
+		text_color = c_green;
+	}
+	draw_set_color(text_color);
 	draw_text(main_camera_size.width - 32, 16 + (rank * ranking_verticle_cap), vehicle.race_rank);
 	draw_text(main_camera_size.width - 48, 16 + (rank * ranking_verticle_cap), $"{distance_display} {dist_unit}");
+	draw_set_color(c_white);
 	draw_sprite_ext(vehicle.sprite_index, vehicle.image_index, main_camera_size.width - 16, 24 + (rank * ranking_verticle_cap), 1, 1, 90, vehicle.image_blend, 1);
 	if (vehicle.is_respawning) {
 		draw_sprite_ext(spr_cross, 0, main_camera_size.width - 16, 24 + (rank * ranking_verticle_cap), 1, 1, 90, c_white, 1);
 	}
 	vehicle.ai_behavior.race_rank = rank + 1;
-	draw_sprite_ext(spr_bike, vehicle.image_index, main_camera_size.width - 16, 24 + (rank * ranking_verticle_cap), 1, 1, 90, c_white, 1);
+	// draw_sprite_ext(spr_bike, vehicle.image_index, main_camera_size.width - 16, 24 + (rank * ranking_verticle_cap), 1, 1, 90, c_white, 1);
 }
 
 
