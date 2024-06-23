@@ -11,10 +11,11 @@ if (global.CAMERA_MODE_3D) {
 	
 	var tex = sprite_get_texture(spr_road, 0);
 	var prop_tex = sprite_get_texture(spr_tree, 0);
-	
 	vertex_submit(global.prop_vertex_buffer, pr_trianglelist, prop_tex);
-	vertex_submit(global.road_vertex_buffer, pr_trianglelist, tex);
 	
+	gpu_set_cullmode(cull_clockwise);
+	vertex_submit(global.road_vertex_buffer, pr_trianglelist, tex);
+	gpu_set_cullmode(cull_noculling);
 	shader_reset();
 }
 

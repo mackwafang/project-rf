@@ -23,7 +23,7 @@ if (global.CAMERA_MODE_3D) {
 	gpu_set_ztestenable(true);
 	gpu_set_alphatestenable(true);
 	gpu_set_alphatestref(64);
-	display_reset(0, true);
+	display_reset(0, false);
 	init_bike_shadow_buffer();
 	
 	audio_listener_orientation(0,-1,0,0,0,-1);

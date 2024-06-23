@@ -6,7 +6,7 @@ if (nearest_cp != current_cp) {
 	global.road_vertex_buffer = -1;
 	global.prop_vertex_buffer = -1;
 	
-	render_control_point(nearest_cp-1, 3);
+	render_control_point(nearest_cp-1, 2);
 	
 	current_cp = nearest_cp;
 }

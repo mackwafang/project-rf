@@ -81,7 +81,7 @@ gear_shift_rpm = [
 	[0, 4000],
 	[1000, 4000],
 	[1550, 3750],
-	[1750, 3750],
+	[1750, 3550],
 	[2050, 3275],
 	[2500, 3100],
 ];
@@ -215,7 +215,7 @@ is_on_road = function(_x, _y, road_id) {
 }
 
 set_on_road = function() {
-	nearest_road = find_nearest_road(x, y, last_road_index, 0, undefined, ai_behavior.reversed_direction);
+	nearest_road = find_nearest_road(x, y, last_road_index, 0, ai_behavior.reversed_direction);
 
 	last_road_index = nearest_road._id;
 	var polygon_x = obj_road_generator.road_list[last_road_index].get_collision_x();
@@ -225,29 +225,12 @@ set_on_road = function() {
 	if (!on_segment) {
 		if (last_road_index-1 > 0) {
 			last_road_index -= 1;
-			on_road = is_on_road(x,y,last_road_index);
 			return obj_road_generator.road_list[last_road_index];
 		}
-	}
-	else {
-		on_road = is_on_road(x,y,last_road_index);
 	}
 	if (on_road_index.zone == ZONE.RIVER and !last_on_road) {
 		on_road = false;
 	}
-	
-	//var p_i = last_road_index-1;
-	//while(p_i++ < last_road_index + 100) {//global.road_list_length-1) {
-	//	var road = obj_road_generator.road_list[p_i];
-	//	var polygon = road.get_collision_points();
-	//	if (point_distance(x,y,road.x,road.y) > road.get_lanes() * road.lane_width) {continue;}
-	//	// on road collision
-	//	on_road = is_on_road(x, y, p_i);
-	//	if (on_road) {
-	//		last_road_index = p_i;
-	//		break;
-	//	}
-	//}
 	return obj_road_generator.road_list[last_road_index];
 }
 
@@ -274,18 +257,20 @@ on_respawn = function() {
 
 on_stand_up = function() {
 	// performs when standing up is done
-	var road = obj_road_generator.road_list[on_road_index._id - 1];
+	var road = obj_road_generator.road_list[on_road_index._id + irandom_range(-2,2)];
 	hp += 1;
-	bike_obj = instance_create_layer(
-		road.x + lengthdir_x(road.get_lanes_right() * road.lane_width, road.direction - 90),
-		road.y + lengthdir_y(road.get_lanes_right() * road.lane_width, road.direction - 90),
-		"Instances",
-		obj_crashed_bike
-	);
-	bike_obj.vehicle_color = vehicle_color;
-	bike_obj.racer_color_replace_dst = racer_color_replace_dst;
-	bike_obj.z = road.z;
-	bike_obj.image_angle = road.direction;
+	if (!instance_exists(bike_obj)) {
+		bike_obj = instance_create_layer(
+			road.x + lengthdir_x(road.get_lanes_right() * road.lane_width, road.direction - 90),
+			road.y + lengthdir_y(road.get_lanes_right() * road.lane_width, road.direction - 90),
+			"Instances",
+			obj_crashed_bike
+		);
+		bike_obj.vehicle_color = vehicle_color;
+		bike_obj.racer_color_replace_dst = racer_color_replace_dst;
+		bike_obj.z = road.z;
+		bike_obj.image_angle = road.direction;
+	}
 }
 
 on_death = function() {

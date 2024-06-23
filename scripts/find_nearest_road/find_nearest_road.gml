@@ -5,7 +5,7 @@ function find_nearest_cp(_x, _y, _init_cp=0, reverse=false) {
 	var closest_cp = -1;
 	var closest_cp_dist = infinity;
 	var ci = _init_cp;
-	var _end = _init_cp + 10;//obj_road_generator.primary_count - 1;
+	var _end = _init_cp + 3;//obj_road_generator.primary_count - 1;
 	var _step = 1;
 	while (true) {
 		var p = obj_road_generator.control_points[min(obj_road_generator.primary_count, ci)];
@@ -21,18 +21,15 @@ function find_nearest_cp(_x, _y, _init_cp=0, reverse=false) {
 	return closest_cp;
 }
 
-function find_nearest_road(_x, _y, starting, offset=0, control_point=undefined, reverse=false) {
-	/// @function		find_nearest_road(_x, _y, starting, offset)
+function find_nearest_road(_x, _y, starting, offset=0, reverse=false) {
+	/// @function		find_nearest_road(_x, _y, starting, offset=0, reverse=false)
 	/// @param			_x
 	/// @param			_y
 	
 	// first, find nearest control point
 	// we're effectively finding nearest chunk
-	if (!is_undefined(control_point)) {
-		assert(typeof(control_point) == "number");
-	}
+	var closest_cp = find_nearest_cp(_x, _y, starting div obj_road_generator.road_segments, reverse);
 	
-	var closest_cp = (is_undefined(control_point) ? find_nearest_cp(_x, _y, starting div obj_road_generator.road_segments, reverse) : control_point);
 	
 	// find nearest road segment based on visible chunks
 	var closest_road = undefined;
