@@ -80,6 +80,7 @@ if (_z_restrict) {
 if (!is_respawning) {
 	turn_rate += -turn_rate * 0.05;
 	turn_rate = clamp(turn_rate, -15, 15);
+	
 	if (abs(turn_rate) > 7.5) {
 		hp = 0;
 		print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Turn too hard");

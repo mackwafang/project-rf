@@ -97,7 +97,7 @@ var lane_change_to = 3;//1+irandom(2); // change this side of road to this numbe
 var cur_lane_change_to = lane_change_to; // current lane change for transition
 var prev_lane_lane_to = lane_change_to; // previous lane change
 var lane_side_affected = ROAD_LANE_CHANGE_AFFECT.BOTH; // which side of the road changes 
-var cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
+var cur_zone = ZONE.CITY;//choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
 var initial_river_seg = road_list[@ 0];//(cur_zone == ZONE.RIVER ? road_list[@ 0] : undefined);
 var building_color = make_color_hsv(irandom(255), choose(0, 192 + irandom(64)), 192 + irandom(64));
 for (var i = 0; i < array_length(road_list)-1; i++) {
@@ -603,7 +603,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		// create building
 		case ZONE.CITY:	
 			if (!road.transition_lane) {
-				// create buildings
+				// create buildings on each side of the road
 				for (var j = -1; j <= 1; j += 2) {
 					var func = undefined;
 					var pos = [road.x, road.y];
@@ -637,7 +637,44 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					building_obj.assigned_cp = i div road_segments;
 					array_push(road.buildings, building_obj);
 				}
+				if (i > 0) {
+					if (road_list[@i-1].transition_lane) {
+						// create buildings of intersection
+						for (var j = -1; j <= 1; j += 2) {
+							for (var k = 0; k < 5; k++) {
+								var func = undefined;
+								var pos = [road.x, road.y];
+								switch(j) {
+									case -1:
+										func = road.get_lanes_left;
+										break;
+									case 1:
+										func = road.get_lanes_right;
+										break;
+								}
+								var building_obj = instance_create_layer(
+									pos[0] + lengthdir_x((func() + 6 + (4 * k)) * lane_width * j, road.direction-90),
+									pos[1] + lengthdir_y((func() + 6 + (4 * k)) * lane_width * j, road.direction-90),
+									"Instances",
+									obj_building
+								);
+								building_obj.z = road.z;
+								building_obj.direction = road.direction + 90;
+								building_obj.building_width = road.length * 0.8;
+								building_obj.floors = 2;
+								building_obj.z_start = road.z;
+								building_obj.z_end = road.z;
+								building_obj.building_color = road.building_color;
+								building_obj.display_image_index = irandom(2);
+
+								building_obj.assigned_cp = i div road_segments;
+								array_push(road.buildings, building_obj);
+							}
+						}
+					}
+				}
 			}
+			
 			// create city trees
 			if ((i%4) == 0) {
 				var begin_length = choose(

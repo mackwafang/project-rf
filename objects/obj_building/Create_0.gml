@@ -4,7 +4,7 @@ image_alpha = 0;
 
 building_height = 256;
 building_width = 32;
-building_length = 512;
+building_length = 256;
 building_color = c_white;//make_color_rgb(irandom(255), irandom(255), irandom(255));
 z_start = 0;
 z_end = 32;
