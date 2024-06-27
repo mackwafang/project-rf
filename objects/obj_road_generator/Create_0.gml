@@ -390,13 +390,13 @@ function render_control_point(cp, range=0) {
 		var road_seg_data = [
 			
 			//left grass
-			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], off_shoulder_z-7), new Point(grass_uv[0], grass_uv[1])],
+			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], off_shoulder_z-7), new Point(grass_uv[2], grass_uv[3])],
 			[new Point3D(grass_coord.left[1][0], grass_coord.left[1][1], next_off_shoulder_z-7), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
+			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z), new Point(grass_uv[0], grass_uv[1])],
 		
-			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], off_shoulder_z-7), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
-			[new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_z), new Point(grass_uv[2], grass_uv[3])],
+			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], off_shoulder_z-7), new Point(grass_uv[2], grass_uv[3])],
+			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z), new Point(grass_uv[0], grass_uv[1])],
+			[new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
 			
 			//left shoulder 
 			[new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z), new Point(shoulder_uv[2], shoulder_uv[1])],
@@ -436,12 +436,12 @@ function render_control_point(cp, range=0) {
 		
 			// right grass
 			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_off_shoulder_z-7), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], off_shoulder_z-7), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
+			[new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], off_shoulder_z-7), new Point(grass_uv[0], grass_uv[3])],
+			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[2], grass_uv[3])],
 		
-			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_off_shoulder_z-7), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
-			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_z), new Point(grass_uv[2], grass_uv[3])],
+			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_off_shoulder_z-7), new Point(grass_uv[0], grass_uv[1])],
+			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[2], grass_uv[3])],
+			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_z), new Point(grass_uv[2], grass_uv[1])],
 			
 		];
 		if (i > 0) {

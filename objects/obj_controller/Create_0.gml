@@ -71,6 +71,7 @@ for (var i = 0; i < array_length(participating_vehicles); i++) {
 }
 global.car_ranking = [];
 array_copy(global.car_ranking, 0, participating_vehicles, 0, array_length(participating_vehicles));
+debug_cam_obj = instance_create_layer(participating_vehicles[0].x, participating_vehicles[0].y, "Instances", obj_debug_cam);
 
 if (!global.DEBUG_FREE_CAMERA) {
 	if (global.CAMERA_MODE_3D) {

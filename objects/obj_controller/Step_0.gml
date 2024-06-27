@@ -13,6 +13,7 @@ if (keyboard_check(ord("Q"))) {
 if (keyboard_check_pressed(ord("Q"))) {
 	if (!global.DEBUG_FREE_CAMERA) {
 		participating_camera_index = (participating_camera_index + 1) % array_length(participating_vehicles);
+		main_camera_target = participating_vehicles[participating_camera_index];
 	}
 }
 if (keyboard_check(ord("E"))) {
@@ -22,10 +23,21 @@ if (keyboard_check(ord("E"))) {
 }if (keyboard_check_pressed(ord("E"))) {
 	if (!global.DEBUG_FREE_CAMERA) {
 		participating_camera_index = (participating_camera_index - 1 < 0) ? array_length(participating_vehicles)-1 : participating_camera_index - 1;
+		main_camera_target = participating_vehicles[participating_camera_index];
 	}
 }
 //if (mouse_wheel_up()) {cam_zoom += 2;}
 //if (mouse_wheel_down()) {cam_zoom -= 2;}
+if (keyboard_check_pressed(vk_f6)) {
+	switch (main_camera_target.object_index) {
+		case obj_racers:
+			main_camera_target = debug_cam_obj;
+			break;
+		case debug_cam_obj:
+			main_camera_target = participating_vehicles[participating_camera_index];
+			break;
+	}
+}
 
 // play music
 if (alarm[0] == global.display_freq * 3) {
@@ -48,8 +60,6 @@ if (global.race_started) {
 if (keyboard_check_pressed(vk_escape)) {
 	global.game_state_paused = !global.game_state_paused;
 }
-
-main_camera_target = participating_vehicles[participating_camera_index];
 
 if (!global.DEBUG_FREE_CAMERA) {
 	// normal game camera

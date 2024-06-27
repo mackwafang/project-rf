@@ -15,5 +15,5 @@ if (abs(z-other.z) < other.height) {
 	//move_outside_solid(angle, 6);
 	var vel = (velocity) * global.deltatime / global.WORLD_TO_REAL_SCALE;
 	move_outside_all(angle, vel);
-	move_and_collide(dsin(other.direction) * vel, cos(other.direction) * vel, other, 10, 0, 0, max_velocity, max_velocity);
+	move_and_collide(dsin(other.direction), dcos(other.direction), other, 10, 0, 0, max_velocity, max_velocity);
 }
