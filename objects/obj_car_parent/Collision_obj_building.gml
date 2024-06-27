@@ -1,4 +1,4 @@
-move_and_collide(dsin(other.direction), dcos(other.direction), other, 10, 0, 0, max_velocity, max_velocity);
+move_and_collide(dsin(direction), dcos(direction), other, 10, 0, 0, max_velocity, max_velocity);
 
 var dist_to_building = max(1, point_distance(x, y, other.x, other.y));
 var a = new Point(

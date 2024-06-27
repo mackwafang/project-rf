@@ -2,9 +2,9 @@
   "resourceType": "GMSprite",
   "resourceVersion": "1.0",
   "name": "spr_road_side",
-  "bbox_bottom": 511,
+  "bbox_bottom": 31,
   "bbox_left": 0,
-  "bbox_right": 31,
+  "bbox_right": 511,
   "bbox_top": 0,
   "bboxMode": 0,
   "collisionKind": 1,
@@ -15,12 +15,12 @@
   "frames": [
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"70702446-f961-41a6-bf6c-b2a1adfd1366",},
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"bda4ffb1-096a-4962-ad8f-2b5c9252d73a",},
-    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"cc6f353b-25d2-44e8-ae89-8b72589ef7e5",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"025b6f2d-1bf3-4b5b-be01-466b840eb904",},
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"ff252289-8fb2-4202-8738-f1feb238dd8e",},
   ],
   "gridX": 0,
   "gridY": 0,
-  "height": 512,
+  "height": 32,
   "HTile": true,
   "layers": [
     {"resourceType":"GMImageLayer","resourceVersion":"1.0","name":"5d5739ba-0781-4665-94e0-af8f75979179","blendMode":0,"displayName":"default","isLocked":false,"opacity":100.0,"visible":true,},
@@ -82,7 +82,7 @@
       {"resourceType":"GMSpriteFramesTrack","resourceVersion":"1.0","name":"frames","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"1.0","Keyframes":[
             {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"70702446-f961-41a6-bf6c-b2a1adfd1366","path":"sprites/spr_road_side/spr_road_side.yy",},},},"Disabled":false,"id":"49bff5a9-8f62-45ee-ac63-5f35a395a2ea","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
             {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"bda4ffb1-096a-4962-ad8f-2b5c9252d73a","path":"sprites/spr_road_side/spr_road_side.yy",},},},"Disabled":false,"id":"0a7372a3-3808-4a01-9ed2-8c4b7f1922d9","IsCreationKey":false,"Key":1.0,"Length":1.0,"Stretch":false,},
-            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"cc6f353b-25d2-44e8-ae89-8b72589ef7e5","path":"sprites/spr_road_side/spr_road_side.yy",},},},"Disabled":false,"id":"ecfeaadd-da1c-48c9-a8b7-b1f4bd6b0ed1","IsCreationKey":false,"Key":2.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"025b6f2d-1bf3-4b5b-be01-466b840eb904","path":"sprites/spr_road_side/spr_road_side.yy",},},},"Disabled":false,"id":"291d39cd-d1de-4347-a32e-264161de4bc1","IsCreationKey":false,"Key":2.0,"Length":1.0,"Stretch":false,},
             {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"ff252289-8fb2-4202-8738-f1feb238dd8e","path":"sprites/spr_road_side/spr_road_side.yy",},},},"Disabled":false,"id":"77c12233-c175-4f89-a24a-6e7eb9162a4e","IsCreationKey":false,"Key":3.0,"Length":1.0,"Stretch":false,},
           ],},"modifiers":[],"spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
@@ -99,5 +99,5 @@
   },
   "type": 0,
   "VTile": true,
-  "width": 32,
+  "width": 512,
 }

@@ -93,6 +93,7 @@ if (!is_respawning) {
 			vehicle_detail_subimage = 0;
 		}
 		else {
+			// turning sprite
 			vehicle_detail_index = spr_bike_3d_detail_2_turn;
 			vehicle_detail_subimage = round(min(sprite_get_number(vehicle_detail_index), (abs(turn_rate) / 5 / global.deltatime) / 100 * sprite_get_number(vehicle_detail_index)));
 		}

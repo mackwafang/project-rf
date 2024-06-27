@@ -173,10 +173,31 @@ else {
 				// walking to bike
 				if (crash_timer.is_walking) {
 					direction += angle_difference(point_direction(x, y, bike_obj.x, bike_obj.y), direction) * 0.05;
-
 					velocity = 100;
-					vehicle_detail_index = spr_bike_3d_detail_2_walk_up;
+					
+					// changing sprite basd on walking direction
+					var length_to_cam = point_distance(obj_controller.main_camera_target.x, obj_controller.main_camera_target.y, x, y);
+					var a = new Point(
+						lengthdir_x(1, direction + 90),
+						lengthdir_y(1, direction + 90)
+					);
+					var b = new Point(
+						(obj_controller.main_camera_target.x - x) / length_to_cam,
+						(obj_controller.main_camera_target.y - y) / length_to_cam
+					);
+					var _d = dot_product(a.x, a.y, b.x, b.y);
+		
+					if (abs(_d) > 0.75) {
+						vehicle_detail_index = spr_bike_3d_detail_2_walk_down;
+					}
+					else if (abs(_d) > 0.25) {
+						vehicle_detail_index = spr_bike_3d_detail_2_walk_side;
+					}
+					else {
+						vehicle_detail_index = spr_bike_3d_detail_2_walk_up;
+					}
 					vehicle_detail_subimage = (counter div 10) % 6
+					image_xscale = -(_d == 0 ? 1 : sign(_d));
 				}
 			}
 			else {

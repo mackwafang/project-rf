@@ -19,7 +19,7 @@ function RoadNode(_Point) constructor {
 	zone = ZONE.SUBURBAN		// road's current zone to render surrounding enviornment
 	transition_lane	= false;	// is road is transitioning to new lane count
 	intersection = false;		// is segment an intersection?
-	beyond_range = [0, 0]		// off road area range
+	beyond_range = [new Point3D(0,0,0), new Point3D(0,0,0)]		// off road area
 	sea_level = 0;				// level for water
 	props = [];					// list of props in this segment
 	buildings = [];				// buildings in this segment
