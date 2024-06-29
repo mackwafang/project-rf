@@ -39,7 +39,7 @@ if (global.CAMERA_MODE_3D) {
 			draw_sprite_ext(spr_car_3d, vehicle_detail_subimage, 0, 0, 1, -1, 0, vehicle_color.primary, image_alpha);
 			break;
 	}
-	matrix_set(matrix_world, matrix_build_identity());
+	matrix_set(matrix_world, global.IDENTITY_MATRIX);
 	shader_reset();
 
 	matrix_set(matrix_world, matrix_build(x, y, z - 0.5, 0, 0, image_angle+90, 1, 1, 1));
@@ -53,7 +53,7 @@ if (global.CAMERA_MODE_3D) {
 			break;
 	}
 	draw_set_alpha(1);
-	matrix_set(matrix_world, matrix_build_identity());
+	matrix_set(matrix_world, global.IDENTITY_MATRIX);
 }
 else {
 	draw_self();

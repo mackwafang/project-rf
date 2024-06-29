@@ -10,7 +10,7 @@ function find_nearest_cp(_x, _y, _init_cp=0, reverse=false) {
 	while (true) {
 		var p = obj_road_generator.control_points[min(obj_road_generator.primary_count, ci)];
 		// var d = point_distance(_x, _y, p.x, p.y);
-		var d = abs(_x - p.x) + abs(_y - p.y);
+		var d = sqrt(sqr(_x - p.x) + sqr(_y - p.y));
 		if (d < closest_cp_dist) {
 			closest_cp_dist = d;
 			closest_cp = ci;
@@ -38,7 +38,7 @@ function find_nearest_road(_x, _y, starting, offset=0, reverse=false) {
 	var ri_end = min(global.road_list_length, max(1, closest_cp) * obj_road_generator.road_segments);
 	for (var ri = ri_start; ri < ri_end; ri++ ) {
 		var road = obj_road_generator.road_list[ri];
-		var d = abs(_x - road.x) + abs(_y - road.y);
+		var d = sqrt(sqr(_x - road.x) + sqr(_y - road.y));
 		if (d < closest_road_dist) {
 			closest_road_dist = d;
 			closest_road = road;

@@ -107,6 +107,7 @@
     {"id":{"name":"spr_road_shoulder","path":"sprites/spr_road_shoulder/spr_road_shoulder.yy",},},
     {"id":{"name":"spr_explosion","path":"sprites/spr_explosion/spr_explosion.yy",},},
     {"id":{"name":"obj_railing","path":"objects/obj_railing/obj_railing.yy",},},
+    {"id":{"name":"spr_bike_3d_detail_2_crashed_roll2","path":"sprites/spr_bike_3d_detail_2_crashed_roll2/spr_bike_3d_detail_2_crashed_roll2.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_crashed_roll","path":"sprites/spr_bike_3d_detail_2_crashed_roll/spr_bike_3d_detail_2_crashed_roll.yy",},},
     {"id":{"name":"fnt_game","path":"fonts/fnt_game/fnt_game.yy",},},
     {"id":{"name":"shd_sprite_billboard","path":"shaders/shd_sprite_billboard/shd_sprite_billboard.yy",},},

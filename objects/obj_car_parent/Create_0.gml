@@ -236,8 +236,10 @@ set_on_road = function() {
 
 on_respawn = function() {
 	if (is_respawning) {
-		x = on_road_index.x + lengthdir_x(on_road_index.get_lanes_right() * on_road_index.lane_width, on_road_index.direction - 90);
-		y = on_road_index.y + lengthdir_y(on_road_index.get_lanes_right() * on_road_index.lane_width, on_road_index.direction - 90);
+		//x = on_road_index.x + lengthdir_x(on_road_index.get_lanes_right() * on_road_index.lane_width, on_road_index.direction - 90);
+		//y = on_road_index.y + lengthdir_y(on_road_index.get_lanes_right() * on_road_index.lane_width, on_road_index.direction - 90);
+		x = bike_obj.x;
+		y = bike_obj.y;
 		image_alpha = 1;
 		//solid = true;
 		mask_index = sprite_index;
@@ -270,6 +272,12 @@ on_stand_up = function() {
 		bike_obj.racer_color_replace_dst = racer_color_replace_dst;
 		bike_obj.z = road.z;
 		bike_obj.image_angle = road.direction;
+		
+		if (on_road_index.zone == ZONE.RIVER && !on_road) {
+			road = obj_road_generator.road_list[on_road_index._id - 3];
+			x = road.x + lengthdir_x(road.get_lanes_right() * road.lane_width, road.direction - 90);
+			y = road.y + lengthdir_y(road.get_lanes_right() * road.lane_width, road.direction - 90);
+		}
 	}
 }
 
@@ -279,6 +287,7 @@ on_death = function() {
 		if (ai_behavior.part_of_race) {
 			image_alpha = 0;
 			is_respawning = true;
+			boosting = false;
 			can_move = false;
 			//solid = false;
 			mask_index = spr_empty;

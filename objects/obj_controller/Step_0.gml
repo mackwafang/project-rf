@@ -165,7 +165,7 @@ if (global.GAMEPLAY_CARS) {
 				car.ai_behavior.reversed_direction = true;
 			}
 			car.ai_behavior.desired_lane = irandom(road_function() - 1) * side;
-			car.direction = road_at_view_edge.direction + (side == -1 ? -180 : 0);
+			car.direction = road_at_view_edge.direction + (side == -1 ? 180 : 0);
 		}
 	}
 }

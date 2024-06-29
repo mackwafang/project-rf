@@ -4,23 +4,20 @@ function dist_on_line(A, B, pos) {
 	/// @param {Point}		a point a
 	/// @param {Point}		b point b
 	/// @param {Point}		pos	position to check
-	var a = new Point(
-		B.x - A.x,
-		B.y - A.y
-	);
-	var b = new Point(
-		pos.x - A.x,
-		pos.y - A.y
-	);
+	var a_x = B.x - A.x;
+	var a_y = B.y - A.y;
+	var b_x = pos.x - A.x;
+	var b_y = pos.y - A.y;
+	
 	try {
 		var line_dir = point_direction(A.x, A.y, B.x, B.y);
-		var length_a = sqrt((a.x*a.x) + (a.y*a.y));
-		var length_b = sqrt((b.x*b.x) + (b.y*b.y));
-		var a_hat = new Point(
-			a.x / length_a,
-			a.y / length_a
-		);
-		var ba = dot_product(b.x, b.y, a_hat.x, a_hat.y);
+		var length_a = sqrt((a_x*a_x) + (a_y*a_y));
+		var length_b = sqrt((b_x*b_x) + (b_y*b_y));
+		var a_hat = [
+			a_x / length_a,
+			a_y / length_a
+		];
+		var ba = dot_product(b_x, b_y, a_hat[0], a_hat[1]);
 		return ba;
 	}
 	catch (_e) {

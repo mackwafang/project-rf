@@ -14,6 +14,8 @@
   "For3D": false,
   "frames": [
     {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"92f8a16f-6f4e-41f2-891c-d7322ee1e804",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"23e4f518-34fb-41bc-886d-61863a66ef09",},
+    {"resourceType":"GMSpriteFrame","resourceVersion":"1.1","name":"eed3c809-56a2-49f7-85f8-bbc9529a36a3",},
   ],
   "gridX": 0,
   "gridY": 0,
@@ -43,7 +45,7 @@
     "events": {"resourceType":"KeyframeStore<MessageEventKeyframe>","resourceVersion":"1.0","Keyframes":[],},
     "eventStubScript": null,
     "eventToFunction": {},
-    "length": 1.0,
+    "length": 3.0,
     "lockOrigin": false,
     "moments": {"resourceType":"KeyframeStore<MomentsEventKeyframe>","resourceVersion":"1.0","Keyframes":[],},
     "playback": 1,
@@ -55,6 +57,8 @@
     "tracks": [
       {"resourceType":"GMSpriteFramesTrack","resourceVersion":"1.0","name":"frames","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"1.0","Keyframes":[
             {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"92f8a16f-6f4e-41f2-891c-d7322ee1e804","path":"sprites/spr_odometer_bkg/spr_odometer_bkg.yy",},},},"Disabled":false,"id":"dc6190d7-0f1d-4600-b7ae-a3ad6504f31b","IsCreationKey":false,"Key":0.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"23e4f518-34fb-41bc-886d-61863a66ef09","path":"sprites/spr_odometer_bkg/spr_odometer_bkg.yy",},},},"Disabled":false,"id":"3d3d2408-de25-41dd-b3d7-faecde644538","IsCreationKey":false,"Key":1.0,"Length":1.0,"Stretch":false,},
+            {"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"1.0","Channels":{"0":{"resourceType":"SpriteFrameKeyframe","resourceVersion":"1.0","Id":{"name":"eed3c809-56a2-49f7-85f8-bbc9529a36a3","path":"sprites/spr_odometer_bkg/spr_odometer_bkg.yy",},},},"Disabled":false,"id":"8965d121-04c5-485c-8c79-40f8ff0939d1","IsCreationKey":false,"Key":2.0,"Length":1.0,"Stretch":false,},
           ],},"modifiers":[],"spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange": null,

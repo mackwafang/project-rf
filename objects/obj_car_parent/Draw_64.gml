@@ -73,7 +73,7 @@ if (ai_behavior.part_of_race) {
 //		draw_set_alpha(dist_alpha);
 //		draw_set_valign(fa_top);
 //		draw_set_halign(fa_center);
-//		draw_text(screen_coord[0], screen_coord[1], $"{hp}/{max_hp}");
+//		draw_text(screen_coord[0], screen_coord[1], turn_rate);
 //		draw_set_alpha(1);
 //	}
 //}
@@ -154,7 +154,16 @@ if (obj_controller.main_camera_target.id == id) {
 	odometer_x = 192;
 	odometer_y = port_height - 80;
 	odometer_speed += ((velocity / 3000) - odometer_speed) * 0.1;
-	draw_sprite(spr_odometer_bkg, 0, odometer_x, odometer_y);
+	var speed_odometer_spr_index = 0;
+	switch (global.GAMEPLAY_MEASURE_METRICS) {
+		case MEASURE.METRIC:
+			speed_odometer_spr_index = 1;
+			break;
+		case MEASURE.IMPERIAL:
+			speed_odometer_spr_index = 2;
+			break;
+	}
+	draw_sprite(spr_odometer_bkg, speed_odometer_spr_index, odometer_x, odometer_y);
 	draw_line_width_color(
 		odometer_x,
 		odometer_y,
@@ -169,7 +178,10 @@ if (obj_controller.main_camera_target.id == id) {
 	var speed_unit = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? "KMH" : "MPH");
 	var speed_scale = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);
 	draw_text(odometer_x, odometer_y - 64, $"{round(velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
-	draw_text(odometer_x + 32, odometer_y, $"{round(max_velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
+	
+	draw_set_valign(fa_top);
+	draw_set_halign(fa_right);
+	draw_text(odometer_x + 32, odometer_y, $"Max: {round(max_velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
 	
 	draw_set_valign(fa_bottom);
 	draw_set_halign(fa_left);

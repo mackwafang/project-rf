@@ -10,7 +10,7 @@ global.DEBUG_FREE_CAMERA = false;
 global.GAMEPLAY_TURN_GUIDE = true;
 global.GAMEPLAY_CARS = true;
 global.GAMEPLAY_TREES = true;
-global.GAMEPLAY_MEASURE_METRICS = MEASURE.METRIC;
+global.GAMEPLAY_MEASURE_METRICS = MEASURE.IMPERIAL;
 
 global.CAMERA_MODE_3D = true;
 
@@ -18,6 +18,7 @@ global.WORLD_TO_REAL_SCALE = 1.5;
 global.REAL_TO_WORLD_SCALE = 1/global.WORLD_TO_REAL_SCALE;
 
 global.LEVEL_TO_DIFFICULTY = [1, 1.25, 1.5, 1.75, 2];
+global.IDENTITY_MATRIX = matrix_build_identity();
 
 // player_input
 global.player_input = {

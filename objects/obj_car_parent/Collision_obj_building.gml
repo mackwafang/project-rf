@@ -1,5 +1,3 @@
-move_and_collide(dsin(direction), dcos(direction), other, 10, 0, 0, max_velocity, max_velocity);
-
 var dist_to_building = max(1, point_distance(x, y, other.x, other.y));
 var a = new Point(
 	lengthdir_x(1, direction),
@@ -13,3 +11,6 @@ var _d = clamp(abs(dot_product(b.x, b.y, a.x, a.y)), 0, 1);
 hp -= max_hp * _d * 4;
 turn_rate *= _d * 2;
 velocity *= _d;
+
+move_and_collide(dcos(direction), dsin(direction), obj_building);
+move_outside_all(point_direction(x, y, other.x, other.y)+180, velocity);

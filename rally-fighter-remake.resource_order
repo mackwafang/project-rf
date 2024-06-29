@@ -83,6 +83,7 @@
     {"name":"spr_road_shoulder","order":5,"path":"sprites/spr_road_shoulder/spr_road_shoulder.yy",},
     {"name":"spr_explosion","order":13,"path":"sprites/spr_explosion/spr_explosion.yy",},
     {"name":"obj_railing","order":10,"path":"objects/obj_railing/obj_railing.yy",},
+    {"name":"spr_bike_3d_detail_2_crashed_roll2","order":18,"path":"sprites/spr_bike_3d_detail_2_crashed_roll2/spr_bike_3d_detail_2_crashed_roll2.yy",},
     {"name":"spr_bike_3d_detail_2_crashed_roll","order":5,"path":"sprites/spr_bike_3d_detail_2_crashed_roll/spr_bike_3d_detail_2_crashed_roll.yy",},
     {"name":"spr_car_detail","order":11,"path":"sprites/spr_car_detail/spr_car_detail.yy",},
     {"name":"obj_tree","order":6,"path":"objects/obj_tree/obj_tree.yy",},

@@ -52,7 +52,7 @@ if (_z_restrict) {
 	}
 	else {
 		// FREE FALLING
-		zspeed -= (global.gravity_3d) * 2 * global.deltatime;
+		zspeed -= (global.gravity_3d) * 1 * global.deltatime;
 		if (z+zspeed <= zlerp) {
 			if (zspeed > global.gravity_3d) {
 				zspeed *= -1/3;
@@ -146,7 +146,13 @@ else {
 }
 x += dcos(direction) * vel;
 y -= dsin(direction) * vel;
-image_angle = direction;
+
+if (!crash_timer.is_walking) {
+	image_angle = direction;
+}
+else {
+	image_angle = bike_obj.image_angle;
+}
 
 velocity += acceleration * global.deltatime;// * gear_ratio[gear-1];
 hp = clamp(hp, 0, max_hp);
