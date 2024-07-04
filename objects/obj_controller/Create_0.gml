@@ -119,6 +119,8 @@ global.bkg_soundtrack = choose(
 	snd_race_4,
 	snd_race_5
 )
+// background
+global.bkg_sprite_index = spr_cloud3;
 
 // outline shader setting
 global.outline_shader_pixel_w = shader_get_uniform(shd_outline, "pixel_w");

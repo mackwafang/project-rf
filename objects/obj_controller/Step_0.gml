@@ -152,7 +152,6 @@ if (global.GAMEPLAY_CARS) {
 			car.max_velocity = 400;// + (global.difficulty * 400);
 			car.velocity = car.max_velocity;
 			
-			car.nav_road = road_at_view_edge;
 			car.on_road_index = road_at_view_edge;
 			car.last_road_index = road_at_view_edge.get_id();
 			
@@ -166,6 +165,7 @@ if (global.GAMEPLAY_CARS) {
 			}
 			car.ai_behavior.desired_lane = irandom(road_function() - 1) * side;
 			car.direction = road_at_view_edge.direction + (side == -1 ? 180 : 0);
+			car.image_angle = direction;
 		}
 	}
 }

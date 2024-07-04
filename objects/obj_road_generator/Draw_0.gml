@@ -9,7 +9,7 @@ if (global.CAMERA_MODE_3D) {
 	//shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_ambientColor"), 0.1, 0.1, 0.1);
 	//shader_set_uniform_f(shader_get_uniform(shd_lighting, "u_lightColor"), 1.0, 245 / 255, 182 / 255);
 	
-	var tex = sprite_get_texture(spr_road, 0);
+	var tex = sprite_get_texture(spr_road_1_lane, 0);
 	var prop_tex = sprite_get_texture(spr_tree, 0);
 	vertex_submit(global.prop_vertex_buffer, pr_trianglelist, prop_tex);
 	

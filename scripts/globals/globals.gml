@@ -10,12 +10,19 @@ global.DEBUG_FREE_CAMERA = false;
 global.GAMEPLAY_TURN_GUIDE = true;
 global.GAMEPLAY_CARS = true;
 global.GAMEPLAY_TREES = true;
-global.GAMEPLAY_MEASURE_METRICS = MEASURE.IMPERIAL;
+global.GAMEPLAY_MEASURE_METRICS = MEASURE.METRIC;
 
 global.CAMERA_MODE_3D = true;
 
 global.WORLD_TO_REAL_SCALE = 1.5;
 global.REAL_TO_WORLD_SCALE = 1/global.WORLD_TO_REAL_SCALE;
+
+global.ROAD_SPRITE_INDEX = [
+	undefined,
+	spr_road_1_lane,
+	spr_road_2_lane,
+	spr_road_3_lane,
+]
 
 global.LEVEL_TO_DIFFICULTY = [1, 1.25, 1.5, 1.75, 2];
 global.IDENTITY_MATRIX = matrix_build_identity();

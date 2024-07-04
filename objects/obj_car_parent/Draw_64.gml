@@ -82,8 +82,8 @@ if (ai_behavior.part_of_race) {
 #region Draw UI elements
 if (obj_controller.main_camera_target.id == id) {
 	//draw_text(16, 16, $"onroad: {on_road ? "true" : "false"}");
-	draw_set_valign(fa_top);
-	draw_set_halign(fa_left);
+	//draw_set_valign(fa_top);
+	//draw_set_halign(fa_left);
 	//draw_text(port_width - 256, 16, $"accel: {accelerating}");
 	//draw_text(port_width - 256, 32, $"boost: {boosting}");
 	//draw_text(port_width - 256, 48, $"brake: {braking}");
@@ -98,9 +98,9 @@ if (obj_controller.main_camera_target.id == id) {
 	//draw_text(16, 160, $"transfer eff.: {transfer_eff}");
 	//draw_text(16, 176, $"engine power: {engine_power}");
 	
-	draw_set_valign(fa_top);
-	draw_set_halign(fa_left);
-	draw_text(64, 80, $"to_stand: {string_replace(crash_timer, ":", "\n")}");
+	//draw_set_valign(fa_top);
+	//draw_set_halign(fa_left);
+	//draw_text(64, 80, $"to_stand: {string_replace(crash_timer, ":", "\n")}");
 	// draw_text(64, 96, $"walking: {crash_timer}");
 		
 	// health bar
@@ -113,11 +113,6 @@ if (obj_controller.main_camera_target.id == id) {
 	hp_display += ((hp / max_hp) - hp_display) * 0.05;
 	draw_bar_color_border(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
 	draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
-	if (is_respawning) {
-		draw_set_valign(fa_middle);
-		draw_set_halign(fa_center);
-		draw_text(bar_x + (bar_width / 2), bar_y - (bar_height), $"{alarm[2] / global.display_freq}");
-	}
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_center);
 	draw_text(bar_x + (bar_width / 2) + 2, bar_y, $"{hp}/{max_hp}");
@@ -197,7 +192,7 @@ if (obj_controller.main_camera_target.id == id) {
 	draw_set_halign(fa_center);
 	draw_text(port_width / 2, port_height - 80, $"{race_rank}");
 	
-	// odometer
+	// distance
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_center);
 	var dist_scale = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);	
@@ -207,6 +202,7 @@ if (obj_controller.main_camera_target.id == id) {
 		dist_unit = "mi";
 	}
 	draw_text(port_width / 2, port_height - 32, $"{distance_display} {dist_unit}");
+	draw_bar_color_border(port_width / 2 - 64, port_height, dist_along_road, global.race_length, 128, 8, 2, c_white, c_white, c_white, c_white, 0);
 	
 	// draw info to nearest vehicle
 	var dist_to_closest = infinity;

@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "lib_vectors",
-  "isCompatibility": false,
-  "isDnD": false,
-  "parent": {
-    "name": "lib",
-    "path": "folders/Scripts/lib.yy",
+  "$GMScript":"v1",
+  "%Name":"lib_vectors",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"lib_vectors",
+  "parent":{
+    "name":"lib",
+    "path":"folders/Scripts/lib.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }

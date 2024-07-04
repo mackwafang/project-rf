@@ -2,7 +2,7 @@ z = 0;
 image_speed = 0;
 
 // tree_vertex_buffer = create_tree_vertex(sprite_index, image_index);
-use_billboard = true;
+use_billboard = true; // refer to sprite billboarding
 render_scale = {
 	x: 1,
 	y: 1,

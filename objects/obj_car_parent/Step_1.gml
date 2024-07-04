@@ -1,5 +1,4 @@
-nav_road = nearest_road;//find_nearest_road(x + lengthdir_x(128, image_angle), y + lengthdir_y(128, image_angle), last_road_index);
-nav_road ??= obj_road_generator.road_list[last_road_index];
+
 on_road_index = set_on_road();
 
 if (global.game_state_paused) {exit;}
@@ -22,6 +21,7 @@ if (_z_restrict) {
 	if (is_undefined(on_road_index)) {
 		exit;
 	}
+	
 	var road_col_x = road.collision_points[0];
 	var road_col_y = road.collision_points[1];
 	var road_col_z = road.collision_points[2];
@@ -81,11 +81,6 @@ if (!is_respawning) {
 	turn_rate += -turn_rate * 0.05;
 	turn_rate = clamp(turn_rate, -15, 15);
 	
-	if (abs(turn_rate) > 7.5) {
-		hp = 0;
-		print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Turn too hard");
-	}
-	
 	if (vehicle_type == VEHICLE_TYPE.BIKE) {
 		if (velocity <= 0 || !global.race_started) {
 			// stopped sprite
@@ -99,17 +94,18 @@ if (!is_respawning) {
 		}
 		image_xscale = -(turn_rate == 0 ? 1 : sign(turn_rate));
 		if (!is_completed) {
-			var length_to_cam = point_distance(obj_controller.main_camera_target.x, obj_controller.main_camera_target.y, x, y);
+			var length_to_cam = point_distance(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
 			var a = new Point(
 				lengthdir_x(1, direction + 90),
 				lengthdir_y(1, direction + 90)
 			);
+			
 			var b = new Point(
-				(obj_controller.main_camera_target.x - x) / length_to_cam,
-				(obj_controller.main_camera_target.y - y) / length_to_cam
+				(obj_controller.main_camera_pos.x - x) / length_to_cam,
+				(obj_controller.main_camera_pos.y - y) / length_to_cam
 			);
 			var _d = dot_product(a.x, a.y, b.x, b.y);
-		
+			
 			if (velocity > 0 && abs(_d) > 0.25) {
 				// angled sprite
 				vehicle_detail_index = spr_bike_3d_detail_2;

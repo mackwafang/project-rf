@@ -70,7 +70,7 @@ function init_vertex_buffer() {
 	image_angle = direction;
 
 	// generating pillars
-	for (var i = 0; i < height div 32; i++) {
+	for (var i = 0; i <= height div 32; i++) {
 		var uv = pillar_uv[0];
 		if (i > 0) {uv = pillar_uv[1];}
 		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+((i+1)* 32)	, uv[0], uv[1]);

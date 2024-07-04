@@ -122,12 +122,16 @@ var lane_change_to = 3;//1+irandom(2); // change this side of road to this numbe
 var cur_lane_change_to = lane_change_to; // current lane change for transition
 var prev_lane_lane_to = lane_change_to; // previous lane change
 var lane_side_affected = ROAD_LANE_CHANGE_AFFECT.BOTH; // which side of the road changes 
-var cur_zone = ZONE.CITY;//choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
+var cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
 var initial_river_seg = road_list[@ 0];//(cur_zone == ZONE.RIVER ? road_list[@ 0] : undefined);
 var building_color = make_color_hsv(irandom(255), choose(0, 192 + irandom(64)), 192 + irandom(64));
 for (var i = 0; i < array_length(road_list)-1; i++) {
 	var road = road_list[@i];
 	var next_road = road_list[@i+1];
+	var prev_road = undefined;
+	if (i > 0) {
+		prev_road = road_list[@i-1];
+	}
 	
 	// road changes lane count
 	if (lane_change_duration == 0) {
@@ -136,20 +140,26 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 		lane_change_duration = 30+irandom(10);
 		lane_change_to = 1+irandom(2);
 		if (irandom(2) == 0) {
-			cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);	// change zone
+			// change zone
+			if (prev_road.zone != ZONE.RIVER) {
+				cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
+			}
+			else {
+				// pick a different zone thats not a river, 
+				cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT);
+			}
 		}
+		
 		switch(cur_zone) {
 			case ZONE.RIVER:
 				lane_change_to = 2+irandom(1);
-				if (road.zone == ZONE.RIVER) {
-					initial_river_seg = road_list[@ i+1];
-					lane_change_duration = 15;
-				}
+				initial_river_seg = road_list[@ i+1];
+				lane_change_duration = 15;
 				break;
 			case ZONE.CITY:
 				road.building_color = building_color;
 				// lane_change_to = 2+irandom(1);
-				building_color = make_color_hsv(irandom(255), choose(0, 192 + irandom(64)), 192 + irandom(64));
+				building_color = make_color_hsv(irandom(255), choose(0, 128 + irandom_range(-64, 64)), 196 + irandom_range(-32, 32));
 				break;
 		}
 	}
@@ -286,10 +296,10 @@ function render_control_point(cp, range=0) {
 		var right_lanes = road.get_lanes_right();
 		var next_left_lanes = next_road.get_lanes_left();
 		var next_right_lanes = next_road.get_lanes_right();
-		var left_subimage = max(left_lanes, next_left_lanes)+1;
-		var right_subimage = max(right_lanes, next_right_lanes)+1;
-		var left_lane_sprite = (left_lanes != next_left_lanes) ? spr_road : spr_road;
-		var right_lane_sprite = (right_lanes != next_right_lanes) ? spr_road : spr_road;
+		var left_subimage = 2;
+		var right_subimage = 2;
+		var left_lane_sprite = global.ROAD_SPRITE_INDEX[left_lanes];
+		var right_lane_sprite = global.ROAD_SPRITE_INDEX[right_lanes];
 		var shoulder_uv = sprite_get_uvs(spr_road_shoulder, 0);
 		var grass_uv = sprite_get_uvs(spr_grass, 0);
 		var off_shoulder_z = road.z;
@@ -314,12 +324,12 @@ function render_control_point(cp, range=0) {
 		}
 		
 		// switch road texture during transition
-		if (left_lanes != next_left_lanes) {left_subimage = next_left_lanes+5;}
-		if (right_lanes != next_right_lanes) {right_subimage = next_right_lanes+5;}
+		//if (left_lanes != next_left_lanes) {left_subimage = 0;}
+		//if (right_lanes != next_right_lanes) {right_subimage = 0;}
 		
 		
 		// setup water "grass" texture
-		if (road.zone == ZONE.RIVER && next_road.zone != ZONE.RIVER) {
+		if (road.zone == ZONE.RIVER and next_road.zone != ZONE.RIVER) {
 			off_shoulder_z = road.sea_level;
 			next_off_shoulder_z = road.sea_level;
 		}
@@ -332,17 +342,17 @@ function render_control_point(cp, range=0) {
 				grass_uv = sprite_get_uvs(spr_road_side, 0);
 				left_subimage = 0;
 				right_subimage = 0;
-				if (!next_road.transition_lane) {
-					// far end
-					grass_uv = sprite_get_uvs(spr_road_side, 2);
-					left_subimage = 1;
-					right_subimage = 1;
-				}
 			}
 			else {
-				if (next_road.transition_lane and road.zone != ZONE.RIVER) {
-					left_subimage = 1;
-					right_subimage = 1;
+				if (next_road.transition_lane) {
+					left_subimage = 4;
+					right_subimage = 4;
+				}
+				if (i > 0) {
+					if (road_list[@ i-1].transition_lane) {
+						left_subimage = 3;
+						right_subimage = 3;
+					}
 				}
 			}
 		}
@@ -354,8 +364,8 @@ function render_control_point(cp, range=0) {
 			right_subimage = 0;
 		}
 	
-		var left_uv = texture_get_uvs(sprite_get_texture(left_lane_sprite, left_subimage));//sprite_get_uvs(left_lane_sprite, left_subimage);
-		var right_uv = texture_get_uvs(sprite_get_texture(right_lane_sprite, right_subimage));//sprite_get_uvs(right_lane_sprite, right_subimage);
+		var left_uv = sprite_get_uvs(left_lane_sprite, left_subimage);
+		var right_uv = sprite_get_uvs(right_lane_sprite, right_subimage);
 		var road_render_points = [
 			 [
 				road.x+lengthdir_x(lane_width*(left_lanes), road.direction+90),
@@ -531,7 +541,7 @@ function render_control_point(cp, range=0) {
 	vertex_freeze(global.prop_vertex_buffer);
 }
 
-// create props, building
+/************* create props *************/
 var prop_chain = 0;
 //vertex_begin(global.prop_vertex_buffer, prop_vertex_format);
 for (var i = 0; i < array_length(road_list) - 1; i++) {
@@ -584,6 +594,20 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		str_sign.z = next_road.z;
 		str_sign.direction = road.direction;
 		array_push(road.props, str_sign);
+	}
+	
+	// create billboards
+	if (irandom(100) == 0) {
+		var len = choose(-left_lanes, right_lanes) * road.lane_width;
+		var prop_obj = instance_create_layer(
+			road.x + lengthdir_x(len * 3, road.direction-90),
+			road.y + lengthdir_y(len * 3, road.direction-90),
+			"Instances",
+			obj_billboard
+		);
+		prop_obj.z = road.z;
+		prop_obj.direction = road.direction;
+		array_push(road.props, prop_obj);
 	}
 	
 	// prop chain 
@@ -657,7 +681,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					if (road_list[@i-1].transition_lane) {
 						// create buildings of intersection
 						for (var j = -1; j <= 1; j += 2) {
-							for (var k = 0; k < 5; k++) {
+							for (var k = 0; k < 10; k++) {
 								var func = undefined;
 								var pos = [road.x, road.y];
 								switch(j) {
@@ -669,14 +693,14 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 										break;
 								}
 								var building_obj = instance_create_layer(
-									pos[0] + lengthdir_x((func() + 6 + (4 * k)) * lane_width * j, road.direction-90),
-									pos[1] + lengthdir_y((func() + 6 + (4 * k)) * lane_width * j, road.direction-90),
+									pos[0] + lengthdir_x((func() + 6 + (2 * k)) * lane_width * j, road.direction-90),
+									pos[1] + lengthdir_y((func() + 6 + (2 * k)) * lane_width * j, road.direction-90),
 									"Instances",
 									obj_building
 								);
 								building_obj.z = road.z;
 								building_obj.direction = road.direction + 90;
-								building_obj.building_width = road.length * 0.8;
+								building_obj.building_width = road.length * 0.9;
 								building_obj.floors = 2;
 								building_obj.z_start = road.z;
 								building_obj.z_end = road.z;
@@ -706,7 +730,6 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 				tree_obj.display_image_index = choose(2, 3, 4);
 				tree_obj.z = road.z;
 				tree_obj.assigned_cp = i div road_segments;
-				tree_obj.direction = road.direction;
 				array_push(road.props, tree_obj);
 			}
 			break;
@@ -727,7 +750,6 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					tree_obj.display_image_index = choose(2, 9, 10);
 					tree_obj.z = road.z - irandom(32);
 					tree_obj.assigned_cp = i div road_segments;
-					tree_obj.direction = irandom(360);
 					array_push(road.props, tree_obj);
 				}
 			}
@@ -750,8 +772,6 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 						tree_obj.display_image_index = irandom(8);
 						tree_obj.z = road.z - irandom(32);
 						tree_obj.assigned_cp = i div road_segments;
-						
-						tree_obj.direction = irandom(360);
 						array_push(road.props, tree_obj);
 					}
 				}
@@ -762,8 +782,8 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	//create light
 	if (i % 5 == 0) {
 		var side = [
-			lane_width*(left_lanes+1),
-			-lane_width*(right_lanes),
+			lane_width*(left_lanes)+1,
+			-lane_width*(right_lanes)+1,
 			0,
 		];
 		var j_start = 0;

@@ -1,13 +1,10 @@
 // road fidning
-var next_road = obj_road_generator.road_list[max(0, nav_road.get_id() + (ai_behavior.reversed_direction ? -6 : 6))];
-var vec_to_road = new Vec2(0, 0);
-if (nav_road._id != next_road._id) {
-	vec_to_road = point_to_line(
-		new Point(nav_road.x, nav_road.y),
-		new Point(next_road.x, next_road.y),
-		new Point(x, y)
-	);
-}
+var next_road = obj_road_generator.road_list[max(0, on_road_index.get_id() + (ai_behavior.reversed_direction ? -1 : 1))];
+var vec_to_road = point_to_line(
+	new Point(on_road_index.x, on_road_index.y),
+	new Point(next_road.x, next_road.y),
+	new Point(x, y)
+);
 
 dist_along_road = on_road_index.length_to_point + point_distance(on_road_index.x, on_road_index.y, vec_to_road.x, vec_to_road.y);
 on_road = is_on_road(x,y,last_road_index);
@@ -45,9 +42,9 @@ if (can_move) {
 		accelerating = !is_completed;
 	}
 
-	var angle_diff = angle_difference(nav_road.direction, direction);
+	var angle_diff = angle_difference(next_road.direction, direction);
 	if (ai_behavior.reversed_direction) {
-		angle_diff += 180;
+		angle_diff = angle_difference(next_road.direction + 180, direction);
 	}
 
 	if (accelerating) {
@@ -77,16 +74,16 @@ if (can_move) {
 			collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction-look_ahead_angle), obj_car_parent, true, true),
 		];
 		// set special condition to when vehicle evasion can be ignored
-		//for (var i = 0; i < 3; i++) {
-		//	if (instance_exists(instance_ahead[i])) {
-		//		if (ai_behavior.part_of_race and instance_ahead[i].ai_behavior.part_of_race) {
-		//			if (instance_ahead[i].velocity > velocity) {
-		//				instance_ahead[i] = noone;
-		//				continue;
-		//			}
-		//		}
-		//	}
-		//}
+		for (var i = 0; i < 3; i++) {
+			if (instance_exists(instance_ahead[i])) {
+				if (ai_behavior.part_of_race and instance_ahead[i].ai_behavior.part_of_race) {
+					if (instance_ahead[i].velocity > velocity) {
+						instance_ahead[i] = noone;
+						continue;
+					}
+				}
+			}
+		}
 		
 		var car_look_ahead = instance_exists(instance_ahead[0]);
 		var car_look_left = instance_exists(instance_ahead[1]);
@@ -96,64 +93,72 @@ if (can_move) {
 		//var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
-		engine_power = nav_road.get_ideal_throttle();
+		engine_power = next_road.get_ideal_throttle();
 			
-		var evade_turn_rate = 0.125;
+		var evade_turn_rate = 0.0625;
 		if (car_look_left ^ car_look_right) {
 			if (car_look_right) {turn_rate += evade_turn_rate;}
 			else if (car_look_left) {turn_rate -= evade_turn_rate;}
 		}
-		else if (car_look_left & car_look_right) {
-			turn_rate += evade_turn_rate*2;
-		}
-			
-		if (rail_look_left) {turn_rate -= evade_turn_rate;}
-		else if (rail_look_right) {turn_rate += evade_turn_rate;}
-			
-		//if (!is_off_road_left | !is_off_road_right) {
-		//	turn_rate += (-(is_off_road_left/100) + (is_off_road_right/100));
-		//}
-			
-		if (ai_behavior.desired_lane > (ai_behavior.reversed_direction ? next_road.get_lanes_left() : next_road.get_lanes_right())-1 || ai_behavior.desired_lane < 0) {
-			// desired lane doesn't exists, pick a new one
-			ai_behavior.change_lane(nav_road);
-		}
-			
-		var side = -(angle_difference(image_angle, point_direction(x, y, vec_to_road.x, vec_to_road.y)));
-		if (ai_behavior.reversed_direction) {
-			side = -(angle_difference(point_direction(x, y, vec_to_road.x, vec_to_road.y), image_angle));
-		}
-		var turn_adjustments = 1;
-		
-		if (!on_road) {
-			// off road, trying to get back on it
-			// but only for non-bridge zone, median barrier giving issue with turning
-			turn_rate += side / 400;
-		}
 		else {
-			// car turning on curved road and moving to its desired lane
-			var tr = (angle_diff / 20) * turn_adjustments; // moving along curved road
-				
-			// moving go desired lane
-				
-			if (on_road_index.zone != ZONE.RIVER) {
-				// only for non bridge sections due to behavior that causes rubbing of barrier
-				if (dist_to_lane > 32) {
-					tr += (sign(side) / 15);
-				}
+			if (car_look_ahead) {
+				turn_rate += evade_turn_rate;
 			}
-			//hp_display += ((hp / max_hp) - hp_display) * 0.05;
-			turn_rate += (tr / 7);
-				
-			// braking = (abs(tr) > 1) | ((nav_road.get_ideal_throttle() < 0.25) && (abs(angle_diff) > 15));
 		}
-		//if (ai_behavior.part_of_race) {
-		//	turn_rate *= max(1 - (velocity / max_velocity), (velocity / max_velocity)) * 1.2;
-		//}
-		// enables boost
-		if (boost_juice >= 100) {
-			if (irandom(20) < global.difficulty) {
-				boosting = true;
+		
+		if (!(car_look_left & car_look_right)) {
+			
+			if (rail_look_left) {turn_rate -= evade_turn_rate;}
+			else if (rail_look_right) {turn_rate += evade_turn_rate;}
+			
+			//if (!is_off_road_left | !is_off_road_right) {
+			//	turn_rate += (-(is_off_road_left/100) + (is_off_road_right/100));
+			//}
+			
+			if (ai_behavior.desired_lane > (ai_behavior.reversed_direction ? next_road.get_lanes_left() : next_road.get_lanes_right())-1 || ai_behavior.desired_lane < 0) {
+				// desired lane doesn't exists, pick a new one
+				ai_behavior.change_lane(next_road);
+			}
+			
+			var side = -(angle_difference(direction, point_direction(x, y, vec_to_road.x, vec_to_road.y)));
+			var turn_adjustments = 1;
+		
+			if (!on_road) {
+				// off road, trying to get back on it
+				// but only for non-bridge zone, median barrier giving issue with turning
+				turn_rate += side / 400;
+			}
+			else {
+				// car turning on curved road and moving to its desired lane
+				var tr = (angle_diff / 20) * turn_adjustments; // moving along curved road
+				
+				// moving go desired lane
+				if (dist_to_lane > obj_road_generator.lane_width / 4) {
+					tr += (sign(side) / 10);
+				}
+				//hp_display += ((hp / max_hp) - hp_display) * 0.05;
+				turn_rate += (tr / 7);
+				
+				// braking = (abs(tr) > 1) | ((nav_road.get_ideal_throttle() < 0.25) && (abs(angle_diff) > 15));
+			}
+			//if (ai_behavior.part_of_race) {
+			//	turn_rate *= max(1 - (velocity / max_velocity), (velocity / max_velocity)) * 1.2;
+			//}
+		
+			turn_rate += abs(turn_rate / 2) * global.deltatime;
+			
+			if (abs(turn_rate) > 7.5) {
+				hp = 0;
+				print($"dir: {direction}, angle_diff: {angle_diff}, turn_rate: {turn_rate}");
+				print($"on_road_index dir: {on_road_index.direction}");
+				print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Turn too hard");
+			}
+		
+			// enables boost
+			if (boost_juice >= 100) {
+				if (irandom(40) < global.difficulty) {
+					boosting = true;
+				}
 			}
 		}
 	}
@@ -173,28 +178,31 @@ else {
 					velocity = 100;
 					
 					// changing sprite basd on walking direction
-					var length_to_cam = point_distance(obj_controller.main_camera_target.x, obj_controller.main_camera_target.y, x, y);
-					var a = new Point(
-						lengthdir_x(1, image_angle + 90),
-						lengthdir_y(1, image_angle + 90)
+					var length_to_cam = point_distance(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
+					var a_hor = new Point(
+						lengthdir_x(1, direction + 90),
+						lengthdir_y(1, direction + 90)
+					);
+					var a_vert = new Point(
+						lengthdir_x(1, direction),
+						lengthdir_y(1, direction)
 					);
 					var b = new Point(
-						(obj_controller.main_camera_target.x - x) / length_to_cam,
-						(obj_controller.main_camera_target.y - y) / length_to_cam
+						(obj_controller.main_camera_pos.x - x) / length_to_cam,
+						(obj_controller.main_camera_pos.y - y) / length_to_cam
 					);
-					var _d = dot_product(a.x, a.y, b.x, b.y);
+					var _d_hor = dot_product(a_hor.x, a_hor.y, b.x, b.y);
+					var _d_vert = dot_product(a_vert.x, a_vert.y, b.x, b.y);
 					
-					if (abs(_d) > 0.75) {
-						vehicle_detail_index = spr_bike_3d_detail_2_walk_down;
+					if (_d_hor < 0.125) {
+						if (_d_vert < 0) {vehicle_detail_index = spr_bike_3d_detail_2_walk_up;}
+						else {vehicle_detail_index = spr_bike_3d_detail_2_walk_down;}
 					}
-					else if (abs(_d) > 0.25) {
+					if (abs(_d_hor) >= 0.125 and abs(_d_vert) < 0.25) {
 						vehicle_detail_index = spr_bike_3d_detail_2_walk_side;
 					}
-					else {
-						vehicle_detail_index = spr_bike_3d_detail_2_walk_up;
-					}
 					vehicle_detail_subimage = (counter div 10) % 6
-					image_xscale = -(_d == 0 ? 1 : sign(_d));
+					image_xscale = -(_d_hor == 0 ? 1 : sign(_d_vert));
 				}
 			}
 			else {
@@ -345,7 +353,7 @@ else {
 	}
 	else {
 		boost_active = false;
-		boost_juice_penalty = clamp(boost_juice_penalty + 10, 0, 90);
+		boost_juice_penalty = clamp(boost_juice_penalty + 10, 0, 80);
 		if (!is_player) {
 			boosting = false;
 		}
