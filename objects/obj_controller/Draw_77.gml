@@ -9,7 +9,6 @@ shader_set(shd_game_world);
 surface_copy(temp_surf, 0, 0, application_surface);
 shader_reset();
 
-
 // put background on blank surface
 surface_set_target(game_surface);
 draw_clear_alpha(c_white, 0);

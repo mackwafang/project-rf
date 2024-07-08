@@ -1,1 +1,4 @@
 audio_emitter_free(engine_sound_emitter);
+surface_free(render_surface);
+vertex_delete_buffer(vehicle_vertex_buffer);
+vertex_format_delete(vehicle_vertex_format);

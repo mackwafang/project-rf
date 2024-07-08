@@ -1,13 +1,14 @@
+if (global.game_state_paused) {exit;}
+
 // road fidning
-var next_road = obj_road_generator.road_list[max(0, on_road_index.get_id() + (ai_behavior.reversed_direction ? -1 : 1))];
-var vec_to_road = point_to_line(
-	new Point(on_road_index.x, on_road_index.y),
-	new Point(next_road.x, next_road.y),
-	new Point(x, y)
-);
+var nav_road = on_road_index.next_road;//obj_road_generator.road_list[max(0, on_road_index.get_id() + (ai_behavior.reversed_direction ? -1 : 1))];
+//vec_to_road = point_to_line(
+//	on_road_index.x, on_road_index.y,
+//	nav_road.x, nav_road.y,
+//	x, y
+//);
 
 dist_along_road = on_road_index.length_to_point + point_distance(on_road_index.x, on_road_index.y, vec_to_road.x, vec_to_road.y);
-on_road = is_on_road(x,y,last_road_index);
 
 vec_to_road.x += lengthdir_x(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
 vec_to_road.y += lengthdir_y(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
@@ -15,7 +16,6 @@ var dist_to_lane = point_distance(x,y,vec_to_road.x,vec_to_road.y);
 //if (dist_to_lane > 1024) {
 //	hp = 0;
 //}
-if (global.game_state_paused) {exit;}
 
 if (can_move) {
 	// moving, not crashed
@@ -42,9 +42,9 @@ if (can_move) {
 		accelerating = !is_completed;
 	}
 
-	var angle_diff = angle_difference(next_road.direction, direction);
+	var angle_diff = angle_difference(nav_road.direction, direction);
 	if (ai_behavior.reversed_direction) {
-		angle_diff = angle_difference(next_road.direction + 180, direction);
+		angle_diff = angle_difference(nav_road.direction + 180, direction);
 	}
 
 	if (accelerating) {
@@ -93,7 +93,7 @@ if (can_move) {
 		//var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
-		engine_power = next_road.get_ideal_throttle();
+		engine_power = nav_road.get_ideal_throttle();
 			
 		var evade_turn_rate = 0.0625;
 		if (car_look_left ^ car_look_right) {
@@ -115,9 +115,9 @@ if (can_move) {
 			//	turn_rate += (-(is_off_road_left/100) + (is_off_road_right/100));
 			//}
 			
-			if (ai_behavior.desired_lane > (ai_behavior.reversed_direction ? next_road.get_lanes_left() : next_road.get_lanes_right())-1 || ai_behavior.desired_lane < 0) {
+			if (ai_behavior.desired_lane > (ai_behavior.reversed_direction ? nav_road.get_lanes_left() : nav_road.get_lanes_right())-1 || ai_behavior.desired_lane < 0) {
 				// desired lane doesn't exists, pick a new one
-				ai_behavior.change_lane(next_road);
+				ai_behavior.change_lane(nav_road);
 			}
 			
 			var side = -(angle_difference(direction, point_direction(x, y, vec_to_road.x, vec_to_road.y)));
@@ -133,11 +133,12 @@ if (can_move) {
 				var tr = (angle_diff / 20) * turn_adjustments; // moving along curved road
 				
 				// moving go desired lane
-				if (dist_to_lane > obj_road_generator.lane_width / 4) {
-					tr += (sign(side) / 10);
+				if (on_road_index.zone != ZONE.RIVER) {
+					if (dist_to_lane > on_road_index.lane_width / 8) {
+						tr += sign(side) / 4;
+					}
 				}
-				//hp_display += ((hp / max_hp) - hp_display) * 0.05;
-				turn_rate += (tr / 7);
+				turn_rate += (tr / 10);
 				
 				// braking = (abs(tr) > 1) | ((nav_road.get_ideal_throttle() < 0.25) && (abs(angle_diff) > 15));
 			}
@@ -254,6 +255,7 @@ if (!on_road && vertical_on_road) {
 if (!is_completed) {
 	is_completed = (dist_along_road >= global.race_length) && (ai_behavior.part_of_race);
 	if (is_completed) {
+		print($"{dist_along_road} {global.race_length}");
 		completed_race_rank = race_rank;
 	}
 }
@@ -309,14 +311,14 @@ engine_power = clamp(engine_power, 0, 1);
 gear_shift_wait = clamp(gear_shift_wait-1, 0, 60);
 
 // play engine 
-if (obj_controller.main_camera_target.id == id) {audio_listener_position(x, y, z);}
 if (hp > 0) {
 	var engine_sound_pitch = ((engine_rpm / engine_rpm_max)+1.0);// - (gear / 12);
 	if (engine_sound_interval == 0) {
-		audio_play_sound_on(engine_sound_emitter, (boost_active ? snd_boost : snd_car), false, 1);
+		audio_play_sound_on(engine_sound_emitter, (boost_active ? snd_boost : snd_car), false, 2);
 	}
 	audio_emitter_pitch(engine_sound_emitter, engine_sound_pitch);
 	audio_emitter_position(engine_sound_emitter, x, y, z);
+	//audio_emitter_velocity(engine_sound_emitter, cos(direction), sin(direction), 0);
 	engine_sound_interval = (engine_sound_interval + 1) % (engine_rpm < 2000 ? 16 : 8);
 }
 
@@ -325,7 +327,7 @@ if (hp > 0) {
 if (abs(obj_controller.main_camera_target.dist_along_road - dist_along_road) > 5000) {
 	if (!global.DEBUG_FREE_CAMERA) {
 		if (!ai_behavior.part_of_race) {
-			print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of view. {obj_controller.main_camera_target.dist_along_road} {dist_along_road} {abs(obj_controller.main_camera_target.dist_along_road-dist_along_road)} > 5000");
+			//print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of view. {obj_controller.main_camera_target.dist_along_road} {dist_along_road} {abs(obj_controller.main_camera_target.dist_along_road-dist_along_road)} > 5000");
 			instance_destroy();
 		}
 	}
@@ -390,5 +392,6 @@ if (obj_controller.alarm[0] < 0) {
 		hp = 0;
 	}
 }
-	
+
+
 counter = (counter + 1) % 1000;

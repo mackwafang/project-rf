@@ -11,6 +11,7 @@ global.GAMEPLAY_TURN_GUIDE = true;
 global.GAMEPLAY_CARS = true;
 global.GAMEPLAY_TREES = true;
 global.GAMEPLAY_MEASURE_METRICS = MEASURE.METRIC;
+global.GAMEPLAY_LIGHTING = false;
 
 global.CAMERA_MODE_3D = true;
 

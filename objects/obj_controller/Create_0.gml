@@ -14,7 +14,6 @@ global.race_started = false;
 global.race_timer = 0;
 global.deltatime = delta_time / 1000000;
 global.display_freq = display_get_frequency();
-
 player_obj = noone;
 
 // cam stuff
@@ -23,10 +22,11 @@ if (global.CAMERA_MODE_3D) {
 	gpu_set_ztestenable(true);
 	gpu_set_alphatestenable(true);
 	gpu_set_alphatestref(64);
-	display_reset(0, false);
+	display_reset(0, true);
+	
 	init_bike_shadow_buffer();
 	
-	audio_listener_orientation(0,-1,0,0,0,-1);
+	audio_listener_orientation(0,1,0,0,0,-1);
 }
 game_set_speed(global.display_freq, gamespeed_fps);
 
@@ -120,7 +120,7 @@ global.bkg_soundtrack = choose(
 	snd_race_5
 )
 // background
-global.bkg_sprite_index = spr_cloud3;
+global.bkg_sprite_index = spr_night;
 
 // outline shader setting
 global.outline_shader_pixel_w = shader_get_uniform(shd_outline, "pixel_w");
@@ -128,9 +128,9 @@ global.outline_shader_pixel_h = shader_get_uniform(shd_outline, "pixel_h");
 global.outline_shader_alpha_override = shader_get_uniform(shd_outline, "alpha_override");
 
 // color replace shader setting
-global.color_replace_replace_color = shader_get_uniform(shd_sprite_billboard, "replace_color");
-global.color_replace_src_color = shader_get_uniform(shd_sprite_billboard, "src_color");
-global.color_replace_dst_color = shader_get_uniform(shd_sprite_billboard, "dst_color");
+global.color_replace_replace_color = shader_get_uniform(shd_color_replace, "replace_color");
+global.color_replace_src_color = shader_get_uniform(shd_color_replace, "src_color");
+global.color_replace_dst_color = shader_get_uniform(shd_color_replace, "dst_color");
 global.racer_color_replace_src = [
 	1,			0,			33/255,
 	148/255,	0,			0,
@@ -166,65 +166,9 @@ if (global.DEBUG_DRAW_MINIMAP) {
 	surface_reset_target();
 }
 
-#region Skybox
-// set up sky box
-vertex_format_begin();
-vertex_format_add_position_3d();
-vertex_format_add_color();
-vertex_format_add_texcoord();
-vertex_format_add_normal();
-skybox_vertex_format = vertex_format_end();
-skybox_vertex_buffer = vertex_create_buffer();
-vertex_begin(skybox_vertex_buffer, skybox_vertex_format);
-//bottom
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, -1000, 0.5, 0.75);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, -1000, -1000, 0.5, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, -1000, 0.25, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, -1000, 0.25, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, 1000, -1000, 0.25, 0.75);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, -1000, 0.5, 0.75);
-//top
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, 1000, 0.5, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, 1000, 1000, 0.25, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, 1000, 0.25, 0);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, 1000, 0.25, 0);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, -1000, 1000, 0.5, 0);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, 1000, 0.5, 0.25);
-// +y
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, -1000, 0.5, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, 1000, -1000, 0.25, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, 1000, 1000, 0.25, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, 1000, 1000, 0.25, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, 1000, 0.5, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, -1000, 0.5, 0.5);
-// -y
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, -1000, 1, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, -1000, -1000, 0.75, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, -1000, 1000, 0.75, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, -1000, 1000, 0.75, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, 1000, 1, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, -1000, 1, 0.5);
-// -x
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, 1000, -1000, 0.25, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, -1000, 0, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, 1000, 0, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, -1000, 1000, 0, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, 1000, 1000, 0.25, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, -1000, 1000, -1000, 0.25, 0.5);
-// +x
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, -1000, -1000, 0.75, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, -1000, 0.5, 0.5);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, 1000, 0.5, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, 1000, 1000, 0.5, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, -1000, 1000, 0.75, 0.25);
-vertex_position_3d_uv(skybox_vertex_buffer, 1000, -1000, -1000, 0.75, 0.5);
-vertex_end(skybox_vertex_buffer);
-skybox_vertex_buffer = calc_vertex_normal(skybox_vertex_buffer, skybox_vertex_format);
-vertex_freeze(skybox_vertex_buffer);
-#endregion
-
 game_surface = surface_create(main_camera_size.width, main_camera_size.height);
 
-alarm[0] = round(6 * global.display_freq); // starting timer
+cluck_init();
 
+alarm[0] = round(6 * global.display_freq); // starting timer
 init_data();

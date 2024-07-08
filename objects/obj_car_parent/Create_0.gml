@@ -105,6 +105,7 @@ on_road = false				// check if on road horizontally
 vertical_on_road = true;	// check if on road vertically
 on_road_index = 0;
 nearest_road = undefined;
+vec_to_road = new Point3D(0, 0, 0);
 
 // visual
 odometer_rpm = 0;
@@ -133,12 +134,11 @@ race_rank = 0;
 completed_race_rank = 0;
 // audio emitter for engine
 engine_sound_emitter = audio_emitter_create();
-audio_falloff_set_model(audio_falloff_exponent_distance);
-audio_emitter_falloff(engine_sound_emitter, 64, 256, 1);
+audio_falloff_set_model(audio_falloff_inverse_distance);
+audio_emitter_falloff(engine_sound_emitter, 64, 512, 1);
 
 // misc
 last_road_index = 0;					// last road index was checked for off road
-nav_road = undefined;//find_nearest_road(x, y, 0);	// keep track of which road segment to travel to
 image_speed = 0;
 vehicle_type = 0;
 vehicle_detail_index = 0;
@@ -154,6 +154,7 @@ dist_along_road = 0;					// how far along the road it is
 counter = 0;							// counter for various things
 current_cp = 0;							// current nearest control point
 bike_obj = noone;						// used to identify where bike is when crashed
+render_surface = surface_create(128, 64);
 
 // functions
 gear_shift_up = function() {
@@ -194,28 +195,34 @@ gear_shift = function() {
 
 is_on_road = function(_x, _y, road_id) {
 	/// @function			is_on_road(x, y, index)
-	var proj = point_to_line(
-		new Point(on_road_index.x, on_road_index.y),
-		new Point(on_road_index.next_road.x, on_road_index.next_road.y),
-		new Point(x, y)
+	var proj = point_to_line_3d(
+		on_road_index.x, on_road_index.y, on_road_index.z,
+		on_road_index.next_road.x, on_road_index.next_road.y, on_road_index.next_road.z,
+		x, y, z
+	);
+	vec_to_road = proj;
+	
+	proj = point_to_line(
+		on_road_index.x, on_road_index.y,
+		on_road_index.next_road.x, on_road_index.next_road.y,
+		x, y
 	);
 	var side = sign(dcos(point_direction(x, y, proj.x, proj.y) - on_road_index.direction + 90)); // sign to make sure that value is -1 or 1
 	var dist = point_distance(x, y, proj.x, proj.y);
-	var side_check = false;
+
 	if (side == -1) {
 		// right
-		side_check = (dist < (on_road_index.get_lanes_right()+1) * on_road_index.lane_width)
+		return (dist < (on_road_index.get_lanes_right()+1) * on_road_index.lane_width)
 	}
 	if (side == 1) {
 		// left
-		side_check = (dist < (on_road_index.get_lanes_left()+1) * on_road_index.lane_width)
+		return (dist < (on_road_index.get_lanes_left()+1) * on_road_index.lane_width)
 	}
-	
-	return side_check;
+	return false;
 }
 
 set_on_road = function() {
-	nearest_road = find_nearest_road(x, y, last_road_index, 0, ai_behavior.reversed_direction);
+	nearest_road = find_nearest_road(x, y, on_road_index._id, 0, ai_behavior.reversed_direction);
 
 	last_road_index = nearest_road._id;
 	var polygon_x = obj_road_generator.road_list[last_road_index].get_collision_x();
@@ -306,6 +313,15 @@ on_death = function() {
 		engine_power = 0;
 	}
 }
+
+//set up vertex buffers
+vertex_format_begin();
+vertex_format_add_position_3d();
+vertex_format_add_color();
+vertex_format_add_texcoord();
+vertex_format_add_normal();
+vehicle_vertex_format = vertex_format_end();
+vehicle_vertex_buffer = vertex_create_buffer();
 
 alarm[0] = 1;
 alarm[1] = 1200;

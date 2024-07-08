@@ -21,5 +21,5 @@
   "sampleRate":11025,
   "soundFile":"snd_boost.mp3",
   "type":2,
-  "volume":0.15,
+  "volume":0.2,
 }

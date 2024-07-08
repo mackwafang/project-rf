@@ -3,7 +3,7 @@ randomize();
 depth = 1000;
 
 // primary_count = 80 * global.difficulty;
-road_segments = 12;
+road_segments = 10;
 control_points = [];
 control_points_offset = {
 	left: [],
@@ -692,9 +692,10 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 										func = road.get_lanes_right;
 										break;
 								}
+								var l = 512 + (func() * lane_width) + (road.length * k);
 								var building_obj = instance_create_layer(
-									pos[0] + lengthdir_x((func() + 6 + (2 * k)) * lane_width * j, road.direction-90),
-									pos[1] + lengthdir_y((func() + 6 + (2 * k)) * lane_width * j, road.direction-90),
+									pos[0] + lengthdir_x(l, road.direction+(90 * j)),
+									pos[1] + lengthdir_y(l, road.direction+(90 * j)),
 									"Instances",
 									obj_building
 								);
@@ -802,7 +803,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 				road.x + lengthdir_x(side[j], road.direction + 90),
 				road.y + lengthdir_y(side[j], road.direction + 90),
 				"Instances",
-				obj_traffic_prop
+				obj_street_light
 			);
 			obj.display_sprite_index = spr_street_light;
 			obj.display_image_index = j;

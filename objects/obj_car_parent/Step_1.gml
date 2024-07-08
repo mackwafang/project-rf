@@ -1,19 +1,22 @@
 
-on_road_index = set_on_road();
-
 if (global.game_state_paused) {exit;}
+
+on_road_index = set_on_road();
+on_road = is_on_road(x,y,last_road_index);
+
 var vel = (velocity) * global.deltatime / global.WORLD_TO_REAL_SCALE;
 //var vec_to_road = point_to_line(
 //	new Point(on_road_index.x, on_road_index.y),
 //	new Point(on_road_index.next_road.x, on_road_index.next_road.y),
 //	new Point(x, y)
 //);
-var vec_to_road = point_to_line_3d(
-	new Point3D(on_road_index.x, on_road_index.y, on_road_index.z),
-	new Point3D(on_road_index.next_road.x, on_road_index.next_road.y, on_road_index.next_road.z),
-	new Point3D(x, y, z)
-);
+//var vec_to_road = point_to_line_3d(
+//	on_road_index.x, on_road_index.y, on_road_index.z,
+//	on_road_index.next_road.x, on_eroad_index.next_road.y, on_road_index.next_road.z,
+//	x, y, z
+//);
 
+/************ vertical height ************/
 if (_z_restrict) {
 	var road = on_road_index;
 	//var lerp_value = point_distance(road.x, road.y, vec_to_road.x, vec_to_road.y) / road.length;
@@ -64,16 +67,10 @@ if (_z_restrict) {
 	if (z <= zlerp) {
 		z = zlerp;
 	}
-	// z = clamp(z, zlerp, zlerp+500);
-	// z -= sin(degtorad(nearest_road.next_road.elevation)) * velocity / 60;
 	if (z < on_road_index.z - 400) {
 		hp = 0;
-		print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of z-bound");
+		//print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of z-bound");
 	}
-	
-	//if (ai_behavior.reversed_direction) {
-	//	print($"{lerp_value} {lerp_left[2]} {lerp_right[2]} {zlerp} {z} {on_road_index.z} {instance_number(obj_car)}");
-	//}
 }
 
 // move car in direction

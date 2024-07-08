@@ -1,8 +1,5 @@
-// debuging camera
-//if (keyboard_check(ord("W"))) {y -= cam_move_speed;}
-//if (keyboard_check(ord("S"))) {y += cam_move_speed;}
-//if (keyboard_check(ord("A"))) {x -= cam_move_speed;}
-//if (keyboard_check(ord("D"))) {x += cam_move_speed;}
+
+ 
 if (keyboard_check(vk_space)) {z -= 1;}
 if (keyboard_check(vk_control)) {z += 1;}
 if (keyboard_check(ord("Q"))) {
@@ -72,10 +69,10 @@ if (!global.DEBUG_FREE_CAMERA) {
 		camera_set_view_angle(main_camera, -main_camera_target.image_angle+90);
 	}
 	else {
-		//var speed_zoom = (main_camera_target.velocity / main_camera_target.max_velocity) * 280;
+		var speed_zoom = (main_camera_target.velocity / main_camera_target.max_velocity);
 		
-		//main_camera_pos.x += (main_camera_target.x+lengthdir_x(-60+cam_zoom+speed_zoom, main_camera_target.image_angle) - main_camera_pos.x) * main_camera_pos_smooth;
-		//main_camera_pos.y += (main_camera_target.y+lengthdir_y(-60+cam_zoom+speed_zoom, main_camera_target.image_angle) - main_camera_pos.y) * main_camera_pos_smooth;
+		//main_camera_pos.x += (main_camera_target.x - main_camera_pos.x) * main_camera_pos_smooth;
+		//main_camera_pos.y += (main_camera_target.y - main_camera_pos.y) * main_camera_pos_smooth;
 		main_camera_pos.z += (main_camera_target.z - main_camera_pos.z + z) * main_camera_pos_smooth * 2;
 		
 		main_camera_pos.x = main_camera_target.x+lengthdir_x(-60+cam_zoom, main_camera_target.image_angle);
@@ -85,6 +82,8 @@ if (!global.DEBUG_FREE_CAMERA) {
 		main_camera_pos_to.x = main_camera_target.x+lengthdir_x(500, main_camera_target.image_angle);
 		main_camera_pos_to.y = main_camera_target.y+lengthdir_y(500, main_camera_target.image_angle);
 		main_camera_pos_to.z = main_camera_target.z+z-120;
+		audio_listener_position(main_camera_pos.x, main_camera_pos.y, main_camera_pos.z);
+		//audio_listener_orientation(main_camera_pos_to.x, main_camera_pos_to.y, main_camera_pos_to.z, 0, 0, 1);
 		gpu_set_zwriteenable(false);
 		global.view_matrix = matrix_build_lookat(
 			main_camera_pos.x,
@@ -114,9 +113,9 @@ if (!global.DEBUG_FREE_CAMERA) {
 			}
 		}
 		if (keyboard_check_pressed(ord("R"))) {
-			main_camera_target.x = obj_road_generator.road_list[0].x;
-			main_camera_target.y = obj_road_generator.road_list[0].y;
-			main_camera_target.z = obj_road_generator.road_list[0].z;
+			main_camera_target.x = 0;//obj_road_generator.road_list[0].x;
+			main_camera_target.y = 0;//obj_road_generator.road_list[0].y;
+			main_camera_target.z = 0;//obj_road_generator.road_list[0].z;
 			//main_camera_target._z_restrict = false;
 		}
 	}
@@ -147,7 +146,7 @@ if (global.GAMEPLAY_CARS) {
 			var spawn_y = road_at_view_edge.y + lengthdir_y(road_at_view_edge.lane_width * spawn_lane, road_at_view_edge.direction - 90);
 			
 			var car = instance_create_layer(spawn_x, spawn_y, "Instances", obj_car);
-			print($"spawned object {car.id} (part_of_race: {car.ai_behavior.part_of_race}, reverse: {car.ai_behavior.reversed_direction})");
+			//print($"spawned object {car.id} (part_of_race: {car.ai_behavior.part_of_race}, reverse: {car.ai_behavior.reversed_direction})");
 			car.rpm = 3000;
 			car.max_velocity = 400;// + (global.difficulty * 400);
 			car.velocity = car.max_velocity;

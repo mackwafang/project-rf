@@ -3,45 +3,67 @@
 //	draw_sprite_ext(spr_vehicle_shadow, 0, x, y, image_xscale, image_yscale, image_angle, c_white, 0.5);
 //}
 if (global.CAMERA_MODE_3D) {
-	//matrix_set(matrix_world, matrix_build(x, y, z-10, 0, 0, 0, 1, 1, 1));
-	//draw_sprite_ext(sprite_index, 0, 0, 0, image_xscale, image_yscale, image_angle, c_white, image_alpha);
-	//matrix_set(matrix_world, matrix_build_identity());
-	//var look_ahead_threshold = 256;
-	//var look_ahead_angle = 10;
-	//matrix_set(matrix_world, matrix_build(0, 0, z-20, 0, 0, 0, 1, 1, 1));
-	//draw_sprite_ext(sprite_index, 0, x, y, image_xscale, image_yscale, image_angle, c_white, 1);
-	//matrix_set(matrix_world, matrix_build_identity());
 	
-	shader_set(shd_sprite_billboard);
+	// color replace
+	if (!surface_exists(render_surface)) {
+		render_surface = surface_create(128, 64);
+	}
+	surface_set_target(render_surface);
+	draw_clear_alpha(c_white, 0);
+	shader_set(shd_color_replace);
 	shader_set_uniform_f(global.color_replace_replace_color, false);
-	matrix_set(matrix_world, matrix_build(x+lengthdir_x(-4, image_angle), y+lengthdir_y(-4, image_angle), z, 0, 0, 0, 0.5, 0.5, 0.5));
+	var surface_scale = [1, 1];
 	switch (vehicle_type) {
 		case VEHICLE_TYPE.BIKE:
 			var turn_adjust = 0;//clamp(turn_rate * 10, -20, 20) * (abs(turn_rate) > 0.1 ? 1 : 0);
-			//if (vehicle_detail_index == spr_bike_3d_detail_2_turn && vehicle_detail_subimage == 0) {
-			//	if (abs(turn_rate) > 0.075) {
-			//		turn_adjust = -turn_rate * 30;
-			//	}
-			//}
+
 			turn_adjust = -turn_rate * 30 / (max(1, vehicle_detail_subimage)*3);
-			// draw_sprite_ext(spr_bike_3d, 0, 0, 0, 0.25, 0.25, (turn_adjust), c_white, image_alpha);
-			//draw_sprite_ext(spr_bike_3d_detail, 0, 0, 0, 0.25, 0.25, (turn_adjust), vehicle_color.tetriary, image_alpha);
-			//draw_sprite_ext(spr_bike_3d_detail, 1, 0, 0, 0.25, 0.25, (turn_adjust), vehicle_color.primary, image_alpha);
-			//draw_sprite_ext(spr_bike_3d_detail, 2, 0, 0, 0.25, 0.25, (turn_adjust), vehicle_color.secondary, image_alpha);
-			//draw_sprite_ext(spr_bike_3d_detail, 3, 0, 0, 0.25, 0.25, (turn_adjust), vehicle_color.tetriary, image_alpha);
-			//draw_sprite_ext(spr_bike_3d_detail, 4, 0, 0, 0.25, 0.25, (turn_adjust), c_white, image_alpha);
 			shader_set_uniform_f(global.color_replace_replace_color, true);
 			shader_set_uniform_f_array(global.color_replace_src_color, global.racer_color_replace_src);
 			shader_set_uniform_f_array(global.color_replace_dst_color, racer_color_replace_dst);
-			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 0, 0, 0.5 * image_xscale, -0.625, turn_adjust, c_white, 1);
+			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 64, 64, image_xscale, 1, turn_adjust, c_white, 1);
+			surface_scale = [0.5, 0.625];
 			break;
 		case VEHICLE_TYPE.CAR:
-			draw_sprite_ext(spr_car_3d, vehicle_detail_subimage, 0, 0, 1, -1, 0, vehicle_color.primary, image_alpha);
+			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 32, 48, 1, 1, 0, vehicle_color.primary, 1);
 			break;
 	}
-	matrix_set(matrix_world, global.IDENTITY_MATRIX);
+	surface_reset_target();
 	shader_reset();
+	
+	// vertex buffer for rendering
+	var w = sprite_get_width(vehicle_detail_index) * 0.5;
+	var h = sprite_get_height(vehicle_detail_index) * 0.625;
+	var tex = surface_get_texture(render_surface);
+	var uv = texture_get_uvs(tex);
+	var x0 = x + lengthdir_x(w, direction+90);
+	var y0 = y + lengthdir_y(w, direction+90);
+	var x1 = x + lengthdir_x(w, direction-90);
+	var y1 = y + lengthdir_y(w, direction-90);
+	
+	vertex_delete_buffer(vehicle_vertex_buffer);
+	vehicle_vertex_buffer = vertex_create_buffer();
 
+	vertex_begin(vehicle_vertex_buffer, vehicle_vertex_format);
+	vertex_position_3d_uv(vehicle_vertex_buffer, x0, y0, z+h	, uv[0], uv[1]);
+	vertex_position_3d_uv(vehicle_vertex_buffer, x0, y0, z		, uv[0], uv[3]);
+	vertex_position_3d_uv(vehicle_vertex_buffer, x1, y1, z+h	, uv[2], uv[1]);
+	
+	vertex_position_3d_uv(vehicle_vertex_buffer, x1, y1, z+h, uv[2], uv[1]);
+	vertex_position_3d_uv(vehicle_vertex_buffer, x0, y0, z, uv[0], uv[3]);
+	vertex_position_3d_uv(vehicle_vertex_buffer, x1, y1, z, uv[2], uv[3]);
+	vertex_end(vehicle_vertex_buffer);
+	vertex_freeze(vehicle_vertex_buffer);
+	
+	// sprite billboard
+	//shader_set(shd_sprite_billboard);
+	//matrix_set(matrix_world, matrix_build(x, y, z, 0, 0, 0, 0.5, 0.5, 0.5));
+	// draw_surface_ext(render_surface, -32, 40, surface_scale[0], -surface_scale[1], 0, c_white, 1);
+	// vertex_submit(vehicle_vertex_buffer, pr_trianglelist, tex);
+	//matrix_set(matrix_world, global.IDENTITY_MATRIX);
+	//shader_reset();
+	
+	
 	matrix_set(matrix_world, matrix_build(x, y, z - 0.5, 0, 0, image_angle+90, 1, 1, 1));
 	draw_set_alpha(0.5);
 	switch (vehicle_type) {
