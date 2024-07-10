@@ -97,7 +97,8 @@ void CommonLightAndFog(inout vec3 baseColor) {
             float f = clamp((lightAngleDifference - cutoff) / max(innerCutoff - cutoff, 0.000001), 0.0, 1.0);
             float att = f * max((range - dist) / range, 0.0);
             
-            diffuseColor += clamp(att * lightColor.rgb * NdotL * 5.0, 0.0, 1.0);
+			float lightIntensity = 10.0;
+            diffuseColor += clamp(att * lightColor.rgb * NdotL * lightIntensity, 0.0, 1.0);
             
             vec3 reflectDir = reflect(lightIncoming, v_LightWorldNormal);
             vec3 halfDir = normalize(-lightIncoming + viewDir);

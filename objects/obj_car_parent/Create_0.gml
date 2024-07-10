@@ -316,12 +316,75 @@ on_death = function() {
 
 //set up vertex buffers
 vertex_format_begin();
-vertex_format_add_position_3d();
-vertex_format_add_color();
-vertex_format_add_texcoord();
-vertex_format_add_normal();
+vertex_format_add_position_3d();	// 12 bytes
+vertex_format_add_color();			// 4 bytes
+vertex_format_add_texcoord();		// 8 btyes
+vertex_format_add_normal();			// 12 bytes
 vehicle_vertex_format = vertex_format_end();
 vehicle_vertex_buffer = vertex_create_buffer();
+
+// vertex buffer for rendering
+vertex_begin(vehicle_vertex_buffer, vehicle_vertex_format);
+vertex_position_3d_uv(vehicle_vertex_buffer, 0, 0, 0, 0, 0);
+vertex_position_3d_uv(vehicle_vertex_buffer, 0, 0, 0, 0, 0);
+vertex_position_3d_uv(vehicle_vertex_buffer, 0, 0, 0, 0, 0);
+vertex_position_3d_uv(vehicle_vertex_buffer, 0, 0, 0, 0, 0);
+vertex_position_3d_uv(vehicle_vertex_buffer, 0, 0, 0, 0, 0);
+vertex_position_3d_uv(vehicle_vertex_buffer, 0, 0, 0, 0, 0);
+vertex_end(vehicle_vertex_buffer);
+
+update_vertex_buffer = function() {
+	var w = surface_get_width(render_surface) * 0.25;
+	var h = surface_get_height(render_surface) * 0.625;
+	var tex = surface_get_texture(render_surface);
+	var uv = texture_get_uvs(tex);
+	var x0 = lengthdir_x(w, direction+90);
+	var y0 = lengthdir_y(w, direction+90);
+	var x1 = lengthdir_x(w, direction-90);
+	var y1 = lengthdir_y(w, direction-90);
+	var coord_order = [
+		[x0, y0, h, uv[0], uv[1]],
+		[x0, y0, 0,	uv[0], uv[3]],
+		[x1, y1, h, uv[2], uv[1]],
+		[x1, y1, h, uv[2], uv[1]],
+		[x0, y0, 0, uv[0], uv[3]],
+		[x1, y1, 0, uv[2], uv[3]],
+	];
+	vertex_delete_buffer(vehicle_vertex_buffer);
+	vehicle_vertex_buffer = vertex_create_buffer();
+	
+	vertex_begin(vehicle_vertex_buffer, vehicle_vertex_format);
+	for (var i = 0; i < array_length(coord_order); i ++) {
+		vertex_position_3d_uv(
+			vehicle_vertex_buffer,
+			coord_order[i][0],
+			coord_order[i][1],
+			coord_order[i][2],
+			coord_order[i][3],
+			coord_order[i][4]
+		);
+	}
+	vertex_end(vehicle_vertex_buffer);
+
+	//for (var i = 0; i < buffer_get_size(buff); i += 36) {
+	//	var offset = i div 36;
+	//	var coord_x = coord_order[offset][0];
+	//	var coord_y = coord_order[offset][1];
+	//	var coord_z = coord_order[offset][2];
+	//	var u = coord_order[offset][3];
+	//	var v = coord_order[offset][4];
+	//	// update vertex 3d position
+	//	buffer_poke(buff, i + 00, buffer_f32, coord_x);
+	//	buffer_poke(buff, i + 04, buffer_f32, coord_y);
+	//	buffer_poke(buff, i + 08, buffer_f32, coord_z);
+	//	// update texture uv
+	//	buffer_poke(buff, i + 16 + 00, buffer_f32, u);
+	//	buffer_poke(buff, i + 16 + 04, buffer_f32, v);
+	//}
+	
+	//vehicle_vertex_buffer = vertex_create_buffer_from_buffer(buff, vehicle_vertex_format);
+	//buffer_delete(buff);
+}
 
 alarm[0] = 1;
 alarm[1] = 1200;

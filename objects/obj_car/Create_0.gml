@@ -5,7 +5,8 @@ if (!ai_behavior.part_of_race) {
 }
 
 if (vehicle_type == VEHICLE_TYPE.CAR) {
-	vehicle_detail_subimage = irandom(sprite_get_number(spr_car_3d));
+	vehicle_detail_index = spr_car_3d;
+	vehicle_detail_subimage = irandom(sprite_get_number(vehicle_detail_index));
 	if (!ai_behavior.part_of_race) {
 		mass += 6000;
 		horsepower += 100;

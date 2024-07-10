@@ -23,11 +23,11 @@ if (global.CAMERA_MODE_3D) {
 	gpu_set_alphatestenable(true);
 	gpu_set_alphatestref(64);
 	display_reset(0, true);
-	
 	init_bike_shadow_buffer();
 	
 	audio_listener_orientation(0,1,0,0,0,-1);
 }
+
 game_set_speed(global.display_freq, gamespeed_fps);
 
 instance_create_layer(0, 0, "Instances", obj_road_generator);
@@ -120,7 +120,7 @@ global.bkg_soundtrack = choose(
 	snd_race_5
 )
 // background
-global.bkg_sprite_index = spr_night;
+global.bkg_sprite_index = spr_bkg_city;
 
 // outline shader setting
 global.outline_shader_pixel_w = shader_get_uniform(shd_outline, "pixel_w");

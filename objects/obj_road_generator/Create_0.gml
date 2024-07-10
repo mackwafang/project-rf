@@ -183,7 +183,7 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 	road.next_road = next_road;
 	road.direction = point_direction(road.x, road.y, next_road.x, next_road.y);
 	road.length = point_distance_3d(road.x, road.y, road.z, next_road.x, next_road.y, next_road.z);
-	road.elevation = arctan((road.z - next_road.z) / road.length);
+	road.elevation = -darcsin((road.z - next_road.z) / road.length);
 	road.beyond_range = [
 		road_offset_list.left[i],
 		road_offset_list.right[i],
