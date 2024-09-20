@@ -25,7 +25,7 @@ if (global.CAMERA_MODE_3D) {
 	display_reset(0, true);
 	init_bike_shadow_buffer();
 	
-	audio_listener_orientation(0,1,0,0,0,-1);
+	audio_listener_orientation(0,0,-1,0,1,0);
 }
 
 game_set_speed(global.display_freq, gamespeed_fps);

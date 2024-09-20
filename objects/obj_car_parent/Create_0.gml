@@ -334,14 +334,24 @@ vertex_position_3d_uv(vehicle_vertex_buffer, 0, 0, 0, 0, 0);
 vertex_end(vehicle_vertex_buffer);
 
 update_vertex_buffer = function() {
-	var w = surface_get_width(render_surface) * 0.25;
-	var h = surface_get_height(render_surface) * 0.625;
+	var scaling = {
+		w: 0.25,
+		h: 0.625
+	};
+	if (vehicle_type != VEHICLE_TYPE.BIKE) {
+		scaling = {
+			w: 0.5,
+			h: 1
+		};
+	}
+	var w = surface_get_width(render_surface) * scaling.w;
+	var h = surface_get_height(render_surface) * scaling.h;
 	var tex = surface_get_texture(render_surface);
 	var uv = texture_get_uvs(tex);
-	var x0 = lengthdir_x(w, direction+90);
-	var y0 = lengthdir_y(w, direction+90);
-	var x1 = lengthdir_x(w, direction-90);
-	var y1 = lengthdir_y(w, direction-90);
+	var x0 = lengthdir_x(w, image_angle+90);
+	var y0 = lengthdir_y(w, image_angle+90);
+	var x1 = lengthdir_x(w, image_angle-90);
+	var y1 = lengthdir_y(w, image_angle-90);
 	var coord_order = [
 		[x0, y0, h, uv[0], uv[1]],
 		[x0, y0, 0,	uv[0], uv[3]],

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"load_racer_names",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"load_racer_names",
+  "parent":{
+    "name":"data_loaders",
+    "path":"folders/Scripts/data_loaders.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

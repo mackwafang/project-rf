@@ -20,7 +20,8 @@ if (global.CAMERA_MODE_3D) {
 			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 64, 64, image_xscale, 1, 0, c_white, 1);
 			break;
 		case VEHICLE_TYPE.CAR:
-			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 64, 64, image_xscale, 1, 0, vehicle_color.primary, 1);
+			// draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 64, 64, image_xscale, 1, 0, vehicle_color.primary, 1);
+			draw_sprite_ext(spr_car_3d, vehicle_detail_subimage, 64, 64, 1, 1, 0, c_white, 1);
 			break;
 	}
 	surface_reset_target();

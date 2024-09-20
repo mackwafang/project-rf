@@ -1,0 +1,1 @@
+surface_free(render_surface);
