@@ -47,7 +47,7 @@ if (can_move) {
 		angle_diff = angle_difference(nav_road.direction + 180, direction);
 	}
 
-	if (accelerating) {
+	if (accelerating and turning == 0) {
 		if (is_player) {
 			engine_power += 0.1;
 			if (global.GAMEPLAY_TURN_GUIDE) {
@@ -126,7 +126,7 @@ if (can_move) {
 			if (!on_road) {
 				// off road, trying to get back on it
 				// but only for non-bridge zone, median barrier giving issue with turning
-				turn_rate += side / 400;
+				turn_rate += sign(side) / 40;
 			}
 			else {
 				// car turning on curved road and moving to its desired lane
@@ -134,8 +134,8 @@ if (can_move) {
 				
 				// moving go desired lane
 				if (on_road_index.zone != ZONE.RIVER) {
-					if (dist_to_lane > on_road_index.lane_width / 8) {
-						tr += sign(side) / 4;
+					if (dist_to_lane > on_road_index.lane_width / 2) {
+						tr += sign(side) / 5;
 					}
 				}
 				turn_rate += (tr / 10);
@@ -199,7 +199,7 @@ else {
 						if (_d_vert < 0) {vehicle_detail_index = spr_bike_3d_detail_2_walk_up;}
 						else {vehicle_detail_index = spr_bike_3d_detail_2_walk_down;}
 					}
-					if (abs(_d_hor) >= 0.125 and abs(_d_vert) < 0.25) {
+					else if (abs(_d_hor) >= 0.125 and abs(_d_vert) < 0.25) {
 						vehicle_detail_index = spr_bike_3d_detail_2_walk_side;
 					}
 					vehicle_detail_subimage = (counter div 10) % 6
@@ -282,7 +282,7 @@ if (hp <= 0) {
 	f_surface = -mass * global.gravity_3d * (vertical_on_road ? 10 : 0);
 }
 var f_brake = ((braking) ? -braking_power * 1000 : 0);
-var f_turn = -abs(turn_rate) * mass * 3;
+var f_turn = -abs(turn_rate) * mass / 10;
 if (velocity <= 0) {
 	f_brake = 0;
 	f_surface = 0;

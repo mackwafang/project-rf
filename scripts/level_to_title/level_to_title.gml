@@ -12,10 +12,4 @@ function clean_level() {
 			vertex_format_delete(road_vertex_format);
 		}
 	}
-	
-	if (instance_exists(obj_controller)) {
-		with (obj_controller) {
-			vertex_delete_buffer(skybox_vertex_buffer);
-		}
-	}
 }

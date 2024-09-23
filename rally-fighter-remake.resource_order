@@ -26,6 +26,7 @@
   ],
   "ResourceOrderSettings":[
     {"name":"anic_flash","order":1,"path":"animcurves/anic_flash/anic_flash.yy",},
+    {"name":"fnt_disclaimer","order":1,"path":"fonts/fnt_disclaimer/fnt_disclaimer.yy",},
     {"name":"obj_billboard","order":18,"path":"objects/obj_billboard/obj_billboard.yy",},
     {"name":"obj_building","order":7,"path":"objects/obj_building/obj_building.yy",},
     {"name":"obj_car_parent","order":1,"path":"objects/obj_car_parent/obj_car_parent.yy",},
@@ -33,6 +34,7 @@
     {"name":"obj_controller","order":2,"path":"objects/obj_controller/obj_controller.yy",},
     {"name":"obj_crashed_bike","order":16,"path":"objects/obj_crashed_bike/obj_crashed_bike.yy",},
     {"name":"obj_debug_cam","order":17,"path":"objects/obj_debug_cam/obj_debug_cam.yy",},
+    {"name":"obj_disclaimer","order":20,"path":"objects/obj_disclaimer/obj_disclaimer.yy",},
     {"name":"obj_dust_particle","order":12,"path":"objects/obj_dust_particle/obj_dust_particle.yy",},
     {"name":"obj_explosion","order":4,"path":"objects/obj_explosion/obj_explosion.yy",},
     {"name":"obj_light_test_world","order":1,"path":"objects/obj_light_test_world/obj_light_test_world.yy",},

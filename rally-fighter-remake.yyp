@@ -48,6 +48,7 @@
   "resources":[
     {"id":{"name":"anic_flash","path":"animcurves/anic_flash/anic_flash.yy",},},
     {"id":{"name":"anic_ping","path":"animcurves/anic_ping/anic_ping.yy",},},
+    {"id":{"name":"fnt_disclaimer","path":"fonts/fnt_disclaimer/fnt_disclaimer.yy",},},
     {"id":{"name":"fnt_game","path":"fonts/fnt_game/fnt_game.yy",},},
     {"id":{"name":"obj_billboard","path":"objects/obj_billboard/obj_billboard.yy",},},
     {"id":{"name":"obj_building","path":"objects/obj_building/obj_building.yy",},},
@@ -56,6 +57,7 @@
     {"id":{"name":"obj_controller","path":"objects/obj_controller/obj_controller.yy",},},
     {"id":{"name":"obj_crashed_bike","path":"objects/obj_crashed_bike/obj_crashed_bike.yy",},},
     {"id":{"name":"obj_debug_cam","path":"objects/obj_debug_cam/obj_debug_cam.yy",},},
+    {"id":{"name":"obj_disclaimer","path":"objects/obj_disclaimer/obj_disclaimer.yy",},},
     {"id":{"name":"obj_dust_particle","path":"objects/obj_dust_particle/obj_dust_particle.yy",},},
     {"id":{"name":"obj_explosion","path":"objects/obj_explosion/obj_explosion.yy",},},
     {"id":{"name":"obj_light_test_camera","path":"objects/obj_light_test_camera/obj_light_test_camera.yy",},},
