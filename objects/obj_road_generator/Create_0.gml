@@ -31,7 +31,7 @@ while (array_length(control_path) == 0) {
 	print("Creating grid");
 	// generating terrain
 	perlin_config = {
-		inc: global.difficulty * 0.6,	// determines rough ness of noise. higher = more noise
+		inc: global.difficulty * 0.4,	// determines rough ness of noise. higher = more noise
 		X: random(1000),
 		Y: random(1000),
 	}
@@ -324,21 +324,19 @@ function render_control_point(cp, range=0) {
 		}
 		
 		// switch road texture during transition
-		//if (left_lanes != next_left_lanes) {left_subimage = 0;}
-		//if (right_lanes != next_right_lanes) {right_subimage = 0;}
-		
 		// setup water "grass" texture
 		if (road.zone == ZONE.RIVER and next_road.zone != ZONE.RIVER) {
 			off_shoulder_z = road.sea_level;
 			next_off_shoulder_z = road.sea_level;
 		}
 		
+		// 
 		if (left_lanes != next_left_lanes) {
-			left_lane_sprite = global.ROAD_SPRITE_INDEX[left_lanes];
+			left_lane_sprite = global.ROAD_SPRITE_INDEX[min(left_lanes, next_left_lanes)];
 			left_subimage = 2;
 		}
 		if (right_lanes != next_right_lanes) {
-			right_lane_sprite = global.ROAD_SPRITE_INDEX[right_lanes];
+			right_lane_sprite = global.ROAD_SPRITE_INDEX[min(right_lanes, next_right_lanes)];
 			right_subimage = 2;
 		}
 		
@@ -477,7 +475,6 @@ function render_control_point(cp, range=0) {
 			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_z), new Point(grass_uv[2], grass_uv[1])],
 			
 		];
-		// TODO : FIX THIS
 		// added missing segment when lane changes
 		if (road.get_lanes() != next_road.get_lanes()) {
 			road_seg_data = array_concat(road_seg_data,[
@@ -572,6 +569,8 @@ function render_control_point(cp, range=0) {
 
 /************* create props *************/
 var prop_chain = 0;
+var prop_image_index = 1;
+var prop_side_len = 0;
 //vertex_begin(global.prop_vertex_buffer, prop_vertex_format);
 for (var i = 0; i < array_length(road_list) - 1; i++) {
 	var road = road_list[@i];
@@ -641,23 +640,25 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	
 	// prop chain 
 	if (prop_chain > 0) {
-		var len = choose(-left_lanes, 0, right_lanes) * road.lane_width;
 		var prop_obj = instance_create_layer(
-			road.x + lengthdir_x(len, road.direction-90),
-			road.y + lengthdir_y(len, road.direction-90),
+			road.x + lengthdir_x(prop_side_len, road.direction-90),
+			road.y + lengthdir_y(prop_side_len, road.direction-90),
 			"Instances",
 			obj_traffic_prop
 		);
-		prop_obj.display_image_index = 1;
+		prop_obj.display_image_index = prop_image_index;
 		prop_obj.z = road.z;
-		prop_obj.image_xscale = 4;
+		prop_obj.image_xscale = 8;
 		prop_obj.image_yscale = 24;
 		prop_obj.direction = road.direction;
 		array_push(road.props, prop_obj);
 		
 		prop_chain -= 1;
 		if (prop_chain == 0) {
+			// reseting  chain
 			prop_chain -= 15;
+			prop_image_index = choose(1, 6);
+			prop_side_len = choose(-left_lanes, 0, right_lanes) * road.lane_width
 		}
 	}
 	else {

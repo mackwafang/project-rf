@@ -10,6 +10,7 @@ var main_camera_size = {
 };
 var port_width = view_wport[main_camera];
 var port_height = view_hport[main_camera];
+var port_width_half = port_width / 2;
 
 #region Health Bar
 if (ai_behavior.part_of_race) {
@@ -106,22 +107,22 @@ if (obj_controller.main_camera_target.id == id) {
 		
 	// health bar
 	var bar_border = 2;
-	var bar_x = (port_width / 2) - 75;
-	var bar_y = port_height - 56;
-	var bar_height = 16;
+	var bar_x = port_width_half - 75;
+	var bar_y = port_height - 32;
+	var bar_height = 28;
 	var bar_width = 150;
 	var bar_color = c_green;
 	hp_display += ((hp / max_hp) - hp_display) * 0.05;
 	draw_bar_color_border(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
 	draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
-	draw_set_valign(fa_top);
+	draw_set_valign(fa_middle);
 	draw_set_halign(fa_center);
-	draw_text(bar_x + (bar_width / 2) + 2, bar_y, $"{hp}/{max_hp}");
+	draw_text(bar_x + (bar_width / 2) + 2, bar_y - (bar_height / 2), $"{hp}/{max_hp}");
 	
 	// boost bar 
 	bar_border = 2;
-	bar_x = (port_width / 2) - 75;
-	bar_y = port_height - 72;
+	bar_x = port_width_half - 75;
+	bar_y = port_height - 64;
 	bar_height = 8;
 	bar_width = 150;
 	draw_bar_color_border(bar_x, bar_y, boost_juice, 100, bar_width, bar_height, bar_border, c_yellow, c_yellow, c_yellow, c_yellow, 0);
@@ -129,10 +130,15 @@ if (obj_controller.main_camera_target.id == id) {
 	draw_set_halign(fa_left);
 
 	// rpm odometer
-	var odometer_x = 64;
+	var odometer_x = port_width_half - 64;
 	var odometer_y = port_height - 80;
 	odometer_rpm += ((engine_rpm / engine_rpm_max) - odometer_rpm) * 0.1;
 	draw_sprite(spr_odometer_bkg, 0, odometer_x, odometer_y);
+	
+	draw_set_valign(fa_bottom);
+	draw_set_halign(fa_center);
+	draw_text_transformed(odometer_x, odometer_y - 20, gear, 0.75, 0.75, 0);
+	
 	draw_line_width_color(
 		odometer_x,
 		odometer_y,
@@ -142,12 +148,12 @@ if (obj_controller.main_camera_target.id == id) {
 		c_red,
 		c_red
 	)
-	draw_set_valign(fa_bottom);
-	draw_set_halign(fa_center);
-	draw_text(odometer_x, odometer_y - 64, $"{round(odometer_rpm * 10000)} RPM");
+	//draw_set_valign(fa_bottom);
+	//draw_set_halign(fa_center);
+	//draw_text(odometer_x, odometer_y - 64, $"{round(odometer_rpm * 10000)} RPM");
 	
 	// speed odometer
-	odometer_x = 192;
+	odometer_x = port_width_half + 64;
 	odometer_y = port_height - 80;
 	odometer_speed += ((velocity / 3000) - odometer_speed) * 0.1;
 	var speed_odometer_spr_index = 0;
@@ -160,6 +166,14 @@ if (obj_controller.main_camera_target.id == id) {
 			break;
 	}
 	draw_sprite(spr_odometer_bkg, speed_odometer_spr_index, odometer_x, odometer_y);
+	
+	// vehicle speed
+	draw_set_valign(fa_bottom);
+	draw_set_halign(fa_center);
+	var speed_unit = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? "KMH" : "MPH");
+	var speed_scale = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);
+	draw_text_transformed(odometer_x, odometer_y - 20, $"{round(velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)}", 0.75, 0.75, 0);
+	
 	draw_line_width_color(
 		odometer_x,
 		odometer_y,
@@ -168,30 +182,21 @@ if (obj_controller.main_camera_target.id == id) {
 		3,
 		c_red,
 		c_red
-	)
-	draw_set_valign(fa_bottom);
-	draw_set_halign(fa_right);
-	var speed_unit = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? "KMH" : "MPH");
-	var speed_scale = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);
-	draw_text(odometer_x, odometer_y - 64, $"{round(velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
+	);
 	
-	draw_set_valign(fa_top);
-	draw_set_halign(fa_right);
-	draw_text(odometer_x + 32, odometer_y, $"Max: {round(max_velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
+	//draw_set_valign(fa_top);
+	//draw_set_halign(fa_right);
+	//draw_text(odometer_x + 32, odometer_y, $"Max: {round(max_velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
 	
-	draw_set_valign(fa_bottom);
-	draw_set_halign(fa_left);
-	draw_text(odometer_x, odometer_y - 64, $"{speed_unit}");
-	
-	// gear
-	draw_set_valign(fa_top);
-	draw_set_halign(fa_center);
-	draw_text(64,port_height - 64,$"{gear} gear");
+	//draw_set_valign(fa_bottom);
+	//draw_set_halign(fa_left);
+	//draw_text(odometer_x, odometer_y - 20, $"{speed_unit}");
 	
 	// race rank
-	draw_set_valign(fa_bottom);
-	draw_set_halign(fa_center);
-	draw_text(port_width / 2, port_height - 80, $"{race_rank}");
+	//draw_set_valign(fa_bottom);
+	//draw_set_halign(fa_center);
+	// draw_text(port_width / 2, port_height - 80, $"{race_rank}");
+	draw_sprite(spr_race_rank, race_rank-1, port_width_half, port_height - 128);
 	
 	// distance
 	draw_set_valign(fa_top);

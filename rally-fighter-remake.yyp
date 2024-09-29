@@ -142,6 +142,7 @@
     {"id":{"name":"spr_bike_3d_detail_2_crashed","path":"sprites/spr_bike_3d_detail_2_crashed/spr_bike_3d_detail_2_crashed.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_get_on","path":"sprites/spr_bike_3d_detail_2_get_on/spr_bike_3d_detail_2_get_on.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_stand","path":"sprites/spr_bike_3d_detail_2_stand/spr_bike_3d_detail_2_stand.yy",},},
+    {"id":{"name":"spr_bike_3d_detail_2_start","path":"sprites/spr_bike_3d_detail_2_start/spr_bike_3d_detail_2_start.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_turn","path":"sprites/spr_bike_3d_detail_2_turn/spr_bike_3d_detail_2_turn.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_victory","path":"sprites/spr_bike_3d_detail_2_victory/spr_bike_3d_detail_2_victory.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_walk_down","path":"sprites/spr_bike_3d_detail_2_walk_down/spr_bike_3d_detail_2_walk_down.yy",},},

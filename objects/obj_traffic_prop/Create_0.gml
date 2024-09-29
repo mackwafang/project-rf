@@ -1,9 +1,10 @@
 event_inherited();
-render_scale = {
-	x: 0.1,
-	y: 0.1,
-	z: 0.1
-}
 display_sprite_index = spr_prop;
-image_xscale = 8;
-image_yscale = 8;
+switch(display_image_index) {
+	case 1: case 6:
+		render_scale.x *= 0.5;
+		render_scale.y *= 0.5;
+		break;
+}
+image_xscale = 16;
+image_yscale = 16;

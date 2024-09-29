@@ -4,7 +4,7 @@ if (other != self) {
 			var deg = angle_difference(image_angle, point_direction(x,y,other.x,other.y));
 			
 			if (!is_completed) {
-				hp -= abs((abs(other.velocity - velocity) / velocity) * dsin(deg) * ((other.mass - mass) / mass)) * 5;
+				hp -= abs(((other.velocity - velocity) / velocity) * dsin(deg) * ((other.mass - mass) / mass));
 			}
 			
 			// push_vector.x += abs(other.velocity - velocity) * dcos(deg) * other.mass;

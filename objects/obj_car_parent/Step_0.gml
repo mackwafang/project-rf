@@ -63,24 +63,22 @@ if (can_move) {
 	if (!is_player and !is_completed) {
 		// checking other cars
 		var look_ahead_threshold = 512;
-		var look_ahead_angle = 8;
+		var look_ahead_angle = 7;
 		//if (on_road_index.zone == ZONE.RIVER) {
 		//	look_ahead_threshold = 128;
 		//	look_ahead_angle = 2;
 		//}
 		var instance_ahead = [
-			collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction), y+lengthdir_y(look_ahead_threshold, direction), obj_car_parent, true, true),
-			collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction+look_ahead_angle), obj_car_parent, true, true),
-			collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction-look_ahead_angle), obj_car_parent, true, true),
+			collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction), y+lengthdir_y(look_ahead_threshold, direction), obj_car_parent, false, true),
+			collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction+look_ahead_angle), obj_car_parent, false, true),
+			collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction-look_ahead_angle), obj_car_parent, false, true),
 		];
 		// set special condition to when vehicle evasion can be ignored
 		for (var i = 0; i < 3; i++) {
 			if (instance_exists(instance_ahead[i])) {
 				if (ai_behavior.part_of_race and instance_ahead[i].ai_behavior.part_of_race) {
-					if (instance_ahead[i].velocity > velocity) {
-						instance_ahead[i] = noone;
-						continue;
-					}
+					instance_ahead[i] = noone;
+					continue;
 				}
 			}
 		}
@@ -88,8 +86,8 @@ if (can_move) {
 		var car_look_ahead = instance_exists(instance_ahead[0]);
 		var car_look_left = instance_exists(instance_ahead[1]);
 		var car_look_right = instance_exists(instance_ahead[2]);
-		var rail_look_left = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction+look_ahead_angle), obj_railing, false, true));
-		var rail_look_right = instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction-look_ahead_angle), obj_railing, false, true));
+		var rail_look_left = car_look_left | instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction+look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction+look_ahead_angle), obj_railing, false, true));
+		var rail_look_right = car_look_right | instance_exists(collision_line(x, y, x+lengthdir_x(look_ahead_threshold, direction-look_ahead_angle), y+lengthdir_y(look_ahead_threshold, direction-look_ahead_angle), obj_railing, false, true));
 		//var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
@@ -179,31 +177,39 @@ else {
 					velocity = 100;
 					
 					// changing sprite basd on walking direction
+					var cam_dir = image_angle;//point_direction(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
 					var length_to_cam = point_distance(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
-					var a_hor = new Point(
-						lengthdir_x(1, direction + 90),
-						lengthdir_y(1, direction + 90)
+
+					var a = new Point(
+						lengthdir_x(1, angle_difference(direction, cam_dir)),
+						lengthdir_y(1, angle_difference(direction, cam_dir))
 					);
-					var a_vert = new Point(
-						lengthdir_x(1, direction),
-						lengthdir_y(1, direction)
+					var a_hor = new Point(
+						lengthdir_x(1, angle_difference(direction, cam_dir)),
+						lengthdir_y(1, angle_difference(direction, cam_dir))
 					);
 					var b = new Point(
 						(obj_controller.main_camera_pos.x - x) / length_to_cam,
 						(obj_controller.main_camera_pos.y - y) / length_to_cam
 					);
-					var _d_hor = dot_product(a_hor.x, a_hor.y, b.x, b.y);
-					var _d_vert = dot_product(a_vert.x, a_vert.y, b.x, b.y);
+					var _d = -dot_product(a.x, a.y, b.x, b.y);
+					var _d_hor = -dot_product(a.x, a.y, b.x, b.y);
 					
-					if (_d_hor < 0.125) {
-						if (_d_vert < 0) {vehicle_detail_index = spr_bike_3d_detail_2_walk_up;}
-						else {vehicle_detail_index = spr_bike_3d_detail_2_walk_down;}
+					if (_d > 0.5) {
+						// forward
+						vehicle_detail_index = spr_bike_3d_detail_2_walk_up;
 					}
-					else if (abs(_d_hor) >= 0.125 and abs(_d_vert) < 0.25) {
+					else if (_d < -0.5) {
+						// towards
+						vehicle_detail_index = spr_bike_3d_detail_2_walk_down;
+					}
+					else {
+						//side
 						vehicle_detail_index = spr_bike_3d_detail_2_walk_side;
 					}
+					
 					vehicle_detail_subimage = (counter div 10) % 6
-					image_xscale = -(_d_hor == 0 ? 1 : sign(_d_vert));
+					image_xscale = sign(_d_hor);
 				}
 			}
 			else {
@@ -282,7 +288,7 @@ if (hp <= 0) {
 	f_surface = -mass * global.gravity_3d * (vertical_on_road ? 10 : 0);
 }
 var f_brake = ((braking) ? -braking_power * 1000 : 0);
-var f_turn = -abs(turn_rate) * mass / 10;
+var f_turn = -abs(turn_rate) * mass / 50;
 if (velocity <= 0) {
 	f_brake = 0;
 	f_surface = 0;

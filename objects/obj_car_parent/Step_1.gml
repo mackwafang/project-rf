@@ -103,11 +103,24 @@ if (!is_respawning) {
 			);
 			var _d = dot_product(a.x, a.y, b.x, b.y);
 			
-			if (velocity > 0 && abs(_d) > 0.25) {
-				// angled sprite
-				vehicle_detail_index = spr_bike_3d_detail_2;
-				vehicle_detail_subimage = 1;
+			if (abs(_d) > 0.25) {
+				if (velocity > 0) {
+					// angled sprite
+					vehicle_detail_index = spr_bike_3d_detail_2;
+					vehicle_detail_subimage = 1;
+				}
+				else {
+					// angled sprite
+					vehicle_detail_index = spr_bike_3d_detail_2;
+					vehicle_detail_subimage = 2;
+				}
+				
 				image_xscale = -(_d == 0 ? 1 : sign(_d));
+			}
+			if (ai_behavior.part_of_race) {
+				if (accelerating and velocity <= 200 * global.difficulty and gear == 1) {
+					vehicle_detail_index = spr_bike_3d_detail_2_start;
+				}
 			}
 		}
 		else {

@@ -10,8 +10,10 @@ draw_set_halign(fa_center);
 var anic = animcurve_get(anic_flash);
 var flash_freq = global.display_freq div 3;
 var alpha = animcurve_channel_evaluate(animcurve_get_channel(anic, 0), (wait_timer % flash_freq) / flash_freq);
+var _level_length = _level_distance[level] * (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);
+var _level_length_unit = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? "KM" : "MI");
 draw_set_alpha(alpha);
-draw_text(port_width / 2, port_height / 2, $"Level {round(level+1)}");
+draw_text(port_width / 2, port_height / 2, $"Level {round(level+1)}\n~{_level_length} {_level_length_unit}");
 draw_set_alpha(1);
 
 
