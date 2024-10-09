@@ -25,6 +25,7 @@
     {"name":"Timelines","order":6,"path":"folders/Timelines.yy",},
   ],
   "ResourceOrderSettings":[
+    {"name":"anic_boost","order":2,"path":"animcurves/anic_boost/anic_boost.yy",},
     {"name":"anic_flash","order":1,"path":"animcurves/anic_flash/anic_flash.yy",},
     {"name":"fnt_disclaimer","order":1,"path":"fonts/fnt_disclaimer/fnt_disclaimer.yy",},
     {"name":"obj_billboard","order":18,"path":"objects/obj_billboard/obj_billboard.yy",},
@@ -161,6 +162,7 @@
     {"name":"spr_traffic_light","order":12,"path":"sprites/spr_traffic_light/spr_traffic_light.yy",},
     {"name":"spr_tree","order":13,"path":"sprites/spr_tree/spr_tree.yy",},
     {"name":"spr_ui_ahead_behind","order":5,"path":"sprites/spr_ui_ahead_behind/spr_ui_ahead_behind.yy",},
+    {"name":"spr_ui_boost_bar","order":7,"path":"sprites/spr_ui_boost_bar/spr_ui_boost_bar.yy",},
     {"name":"spr_vehicle_shadow","order":6,"path":"sprites/spr_vehicle_shadow/spr_vehicle_shadow.yy",},
   ],
 }

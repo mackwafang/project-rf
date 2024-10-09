@@ -24,8 +24,6 @@ if (global.CAMERA_MODE_3D) {
 	gpu_set_alphatestref(64);
 	display_reset(0, true);
 	init_bike_shadow_buffer();
-	
-	audio_listener_orientation(1,0,0,0,1,0);
 }
 
 game_set_speed(global.display_freq, gamespeed_fps);
@@ -53,7 +51,7 @@ for (var i = 0; i < array_length(participating_vehicles); i++) {
 	car.race_rank = (array_length(participating_vehicles) - i);
 	var road = obj_road_generator.road_list[(i div 3) + 1];
 	var lane_position_x = (((i % 3) / 3) * road.length);
-	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (irandom(road.lane_width / 3) * irandom_range(-1, 1));
+	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 3) * random_range(-1, 1));
 	
 	var dist = point_distance(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y);
 	var dir = point_direction(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y) + road.direction;

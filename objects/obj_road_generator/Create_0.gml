@@ -330,7 +330,7 @@ function render_control_point(cp, range=0) {
 			next_off_shoulder_z = road.sea_level;
 		}
 		
-		// 
+		// lane change 
 		if (left_lanes != next_left_lanes) {
 			left_lane_sprite = global.ROAD_SPRITE_INDEX[min(left_lanes, next_left_lanes)];
 			left_subimage = 2;
@@ -369,8 +369,10 @@ function render_control_point(cp, range=0) {
 			right_subimage = 0;
 		}
 	
-		var left_uv = sprite_get_uvs(left_lane_sprite, left_subimage);
-		var right_uv = sprite_get_uvs(right_lane_sprite, right_subimage);
+		var left_uv = sprite_get_uvs(left_lane_sprite, left_subimage);		// left lanes uv
+		var right_uv = sprite_get_uvs(right_lane_sprite, right_subimage);	// right lanes uv
+		var left_change_uv = sprite_get_uvs(left_lane_sprite, 0);			// left lanes uv for lane change
+		var right_change_uv = sprite_get_uvs(right_lane_sprite, 0);			// right lanes uv for lane change
 		var road_render_points = [
 			 [
 				road.x+lengthdir_x(lane_width*min(left_lanes, next_left_lanes), road.direction+90),
@@ -479,21 +481,21 @@ function render_control_point(cp, range=0) {
 		if (road.get_lanes() != next_road.get_lanes()) {
 			road_seg_data = array_concat(road_seg_data,[
 				// missing grass floor on the center
-				[new Point3D(road_render_points[0][0], road_render_points[1][0], road.z), new Point(left_uv[0], left_uv[1])],
-				[new Point3D(road_render_points[0][1], road_render_points[1][1], next_road.z), new Point(left_uv[2], left_uv[3])],
+				[new Point3D(road_render_points[0][0], road_render_points[1][0], road.z), new Point(left_change_uv[0], left_change_uv[1])],
+				[new Point3D(road_render_points[0][1], road_render_points[1][1], next_road.z), new Point(left_change_uv[2], left_change_uv[3])],
 				[new Point3D(
 					(left_lanes > next_left_lanes) ? shoulder_coord.left[0][0] : shoulder_coord.left[1][0], 
 					(left_lanes > next_left_lanes) ? shoulder_coord.left[0][1] : shoulder_coord.left[1][1], 
 					(left_lanes > next_left_lanes) ? road.z : next_road.z
-				), new Point(left_uv[2], left_uv[3])],
+				), new Point(left_change_uv[2], left_change_uv[3])],
 				
-				[new Point3D(road_render_points[0][2], road_render_points[1][2], next_road.z), new Point(left_uv[2], left_uv[3])],
-				[new Point3D(road_render_points[0][3], road_render_points[1][3], road.z), new Point(left_uv[0], left_uv[1])],
+				[new Point3D(road_render_points[0][2], road_render_points[1][2], next_road.z), new Point(right_change_uv[2], right_change_uv[3])],
+				[new Point3D(road_render_points[0][3], road_render_points[1][3], road.z), new Point(right_change_uv[0], right_change_uv[1])],
 				[new Point3D(
 					(right_lanes > next_right_lanes) ? shoulder_coord.right[1][0] : shoulder_coord.right[0][0], 
 					(right_lanes > next_right_lanes) ? shoulder_coord.right[1][1] : shoulder_coord.right[0][1], 
 					(right_lanes > next_right_lanes) ? road.z : next_road.z
-				), new Point(left_uv[2], left_uv[3])],
+				), new Point(right_change_uv[2], right_change_uv[3])],
 			]);
 		}
 		if (i > 0) {
@@ -667,6 +669,38 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 			prop_chain = 3+irandom(3);
 		}
 	}
+	
+	// finish line prop
+	if (global.destination_road_index - 5 < i and i <= global.destination_road_index) {
+		for (var j = 0; j < 5; j++) {
+			var prop_obj = instance_create_layer(
+				road.x + lengthdir_x(left_lanes * road.lane_width, road.direction+90),
+				road.y + lengthdir_y(left_lanes * road.lane_width, road.direction+90),
+				"Instances",
+				obj_traffic_prop
+			);
+			prop_obj.display_image_index = 7;
+			prop_obj.z = road.z;
+			prop_obj.image_xscale = 8;
+			prop_obj.image_yscale = 24;
+			prop_obj.direction = road.direction;
+			array_push(road.props, prop_obj);
+			
+			var prop_obj = instance_create_layer(
+				road.x + lengthdir_x(right_lanes * road.lane_width, road.direction-90),
+				road.y + lengthdir_y(right_lanes * road.lane_width, road.direction-90),
+				"Instances",
+				obj_traffic_prop
+			);
+			prop_obj.display_image_index = 7;
+			prop_obj.z = road.z;
+			prop_obj.image_xscale = 8;
+			prop_obj.image_yscale = 24;
+			prop_obj.direction = road.direction;
+			array_push(road.props, prop_obj);
+		}
+	}
+	
 	
 	// zone specific props
 	switch(road.zone) {

@@ -46,6 +46,7 @@
   },
   "name":"rally-fighter-remake",
   "resources":[
+    {"id":{"name":"anic_boost","path":"animcurves/anic_boost/anic_boost.yy",},},
     {"id":{"name":"anic_flash","path":"animcurves/anic_flash/anic_flash.yy",},},
     {"id":{"name":"anic_ping","path":"animcurves/anic_ping/anic_ping.yy",},},
     {"id":{"name":"fnt_disclaimer","path":"fonts/fnt_disclaimer/fnt_disclaimer.yy",},},
@@ -197,6 +198,7 @@
     {"id":{"name":"spr_traffic_light","path":"sprites/spr_traffic_light/spr_traffic_light.yy",},},
     {"id":{"name":"spr_tree","path":"sprites/spr_tree/spr_tree.yy",},},
     {"id":{"name":"spr_ui_ahead_behind","path":"sprites/spr_ui_ahead_behind/spr_ui_ahead_behind.yy",},},
+    {"id":{"name":"spr_ui_boost_bar","path":"sprites/spr_ui_boost_bar/spr_ui_boost_bar.yy",},},
     {"id":{"name":"spr_vehicle_shadow","path":"sprites/spr_vehicle_shadow/spr_vehicle_shadow.yy",},},
   ],
   "resourceType":"GMProject",

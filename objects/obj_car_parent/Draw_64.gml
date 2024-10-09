@@ -112,20 +112,47 @@ if (obj_controller.main_camera_target.id == id) {
 	var bar_height = 28;
 	var bar_width = 150;
 	var bar_color = c_green;
-	hp_display += ((hp / max_hp) - hp_display) * 0.05;
-	draw_bar_color_border(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
-	draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
+	var hp_frac = (hp / max_hp);
+	if (is_nan(hp_display)) {hp_display = 0;}
+	
+	if (hp_frac < hp_display) {
+		hp_display += max((hp_frac - hp_display) * 0.025, sign(hp_frac - hp_display) * 0.005);
+		draw_bar_color_border(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
+		draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
+	}
+	else {
+		hp_display += min((hp_frac - hp_display) * 0.025, sign(hp_frac - hp_display) * 0.005);
+		draw_bar_color_border(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
+		draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
+	}
 	draw_set_valign(fa_middle);
 	draw_set_halign(fa_center);
 	draw_text(bar_x + (bar_width / 2) + 2, bar_y - (bar_height / 2), $"{hp}/{max_hp}");
 	
 	// boost bar 
-	bar_border = 2;
-	bar_x = port_width_half - 75;
-	bar_y = port_height - 64;
-	bar_height = 8;
-	bar_width = 150;
-	draw_bar_color_border(bar_x, bar_y, boost_juice, 100, bar_width, bar_height, bar_border, c_yellow, c_yellow, c_yellow, c_yellow, 0);
+	//bar_border = 2;
+	//bar_x = port_width_half - 75;
+	//bar_y = port_height - 64;
+	//bar_height = 8;
+	//bar_width = 150;
+	// draw_bar_color_border(bar_x, bar_y, boost_juice, 100, bar_width, bar_height, bar_border, c_yellow, c_yellow, c_yellow, c_yellow, 0);
+	
+	bar_x = port_width_half - (16 * 5);
+	bar_y = port_height - 72;
+	var max_bar = 9;
+	var boost_color = (boost_juice < 100 ? c_yellow : c_orange);
+	draw_rectangle_color(bar_x, bar_y - 4, bar_x + (16 * 10), bar_y + 4, 0, 0, 0, 0, false);
+	for (var i = 0; i <= boost_juice div 10; i++) {
+		var anic = animcurve_get(anic_boost);
+		var segment = ((i+1) * max_bar)
+		var flash_freq = ((boost_juice mod max_bar) / max_bar) + (boost_juice div max_bar) - i - 1;
+		var alpha = animcurve_channel_evaluate(animcurve_get_channel(anic, 1), flash_freq);
+		var size = 1;
+		if (boost_active) {
+			size = animcurve_channel_evaluate(animcurve_get_channel(anic, 0), flash_freq);
+		}
+		draw_sprite_ext(spr_ui_boost_bar, 0, bar_x + 8 + (i * 16), bar_y, size, size, 0, boost_color, alpha);
+	}
 	draw_set_valign(fa_middle);
 	draw_set_halign(fa_left);
 
@@ -226,13 +253,23 @@ if (obj_controller.main_camera_target.id == id) {
 		}
 	}
 	
-	draw_set_valign(fa_bottom);
-	draw_set_halign(fa_right);
-	draw_sprite(spr_ui_ahead_behind, (ahead == -1) ? 0 : 1, port_width - 32, port_height - 66);
+	draw_sprite(spr_ui_ahead_behind, (ahead == -1) ? 0 : 1, port_width_half + 144, port_height - 64);
 	var real_dist = dist_to_closest / global.WORLD_TO_REAL_SCALE;
-	var scale = (real_dist < 10000) ? 10 : 10000;
-	var unit = (real_dist < 10000) ? "m" : "km";
-	draw_text(port_width - 48, port_height - 64, $"{real_dist / scale} {unit}");
-	draw_text(port_width - 32, port_height - 48, closest_car_index);
+	var scale = 10000;
+	var unit = "km";
+	var dist = real_dist / scale * dist_scale;
+	if (global.GAMEPLAY_MEASURE_METRICS == MEASURE.IMPERIAL) {
+		scale = 10000;
+		unit = "mi";
+		dist = real_dist / scale * dist_scale
+	}
+	dist = string_format(dist, 0, 3);
+	draw_set_valign(fa_bottom);
+	draw_set_halign(fa_left);
+	draw_text(port_width_half + 160, port_height - 64, $"{dist} {unit}");
+	
+	draw_set_valign(fa_top);
+	draw_set_halign(fa_left);
+	draw_text(port_width_half + 160, port_height - 64, closest_car_index);
 }
 #endregion

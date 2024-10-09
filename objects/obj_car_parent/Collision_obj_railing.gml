@@ -12,6 +12,8 @@ if (abs(z-other.z) < other.height) {
 	
 	var angle = other.direction + (90 * sign(-darccos(_d)+90));
 	hp -= max_hp * power(abs(_d), 5);
+	hp_regen_delay = -3;
+	
 	//move_outside_solid(angle, 6);
 	var vel = (velocity) * global.deltatime / global.WORLD_TO_REAL_SCALE;
 	move_outside_all(angle, vel);

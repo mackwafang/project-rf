@@ -51,7 +51,7 @@ if (can_move) {
 		if (is_player) {
 			engine_power += 0.1;
 			if (global.GAMEPLAY_TURN_GUIDE) {
-				turn_rate += (angle_diff / 360); // moving along curved road
+				turn_rate += (angle_diff / 360) * (ai_behavior.part_of_race ? 1 : 180); // moving along curved road
 			}
 		}
 	}
@@ -60,7 +60,7 @@ if (can_move) {
 	}
 	
 	#region Non-Player Car Movement
-	if (!is_player and !is_completed) {
+	if (!is_player) {
 		// checking other cars
 		var look_ahead_threshold = 512;
 		var look_ahead_angle = 7;
@@ -93,7 +93,7 @@ if (can_move) {
 			
 		engine_power = nav_road.get_ideal_throttle();
 			
-		var evade_turn_rate = 0.0625;
+		var evade_turn_rate = 0.035;
 		if (car_look_left ^ car_look_right) {
 			if (car_look_right) {turn_rate += evade_turn_rate;}
 			else if (car_look_left) {turn_rate -= evade_turn_rate;}
@@ -118,7 +118,7 @@ if (can_move) {
 				ai_behavior.change_lane(nav_road);
 			}
 			
-			var side = -(angle_difference(direction, point_direction(x, y, vec_to_road.x, vec_to_road.y)));
+			var side = -angle_difference(direction, point_direction(x, y, vec_to_road.x, vec_to_road.y));
 			var turn_adjustments = 1;
 		
 			if (!on_road) {
@@ -133,7 +133,7 @@ if (can_move) {
 				// moving go desired lane
 				if (on_road_index.zone != ZONE.RIVER) {
 					if (dist_to_lane > on_road_index.lane_width / 2) {
-						tr += sign(side) / 5;
+						tr += sign(side) / 4;
 					}
 				}
 				turn_rate += (tr / 10);
@@ -165,6 +165,7 @@ if (can_move) {
 
 	if (keyboard_check_pressed(vk_up)) {gear_shift_up();}
 	if (keyboard_check_pressed(vk_down)) {gear_shift_down();}
+	if (keyboard_check_pressed(ord("T"))) {hp = 0;}
 }
 else {
 	#region crashed, walking to bike
@@ -288,7 +289,7 @@ if (hp <= 0) {
 	f_surface = -mass * global.gravity_3d * (vertical_on_road ? 10 : 0);
 }
 var f_brake = ((braking) ? -braking_power * 1000 : 0);
-var f_turn = -abs(turn_rate) * mass / 50;
+var f_turn = -abs(turn_rate) * mass / 5000;
 if (velocity <= 0) {
 	f_brake = 0;
 	f_surface = 0;
@@ -381,7 +382,7 @@ else {
 	// health regen
 	hp_regen_delay += global.deltatime;
 	if (hp_regen_delay >= 0) {
-		hp = clamp(hp+(3 / global.difficulty), 0, max_hp);
+		hp = clamp(hp+(5 / global.difficulty), 0, max_hp);
 		hp_regen_delay = -1;
 	}
 }

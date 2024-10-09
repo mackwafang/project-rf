@@ -82,8 +82,15 @@ if (!global.DEBUG_FREE_CAMERA) {
 		main_camera_pos_to.x = main_camera_target.x+lengthdir_x(500, main_camera_target.image_angle);
 		main_camera_pos_to.y = main_camera_target.y+lengthdir_y(500, main_camera_target.image_angle);
 		main_camera_pos_to.z = main_camera_target.z+z-120;
+		
+		var cam_direction = point_direction(
+			main_camera_pos.x,
+			main_camera_pos.y,
+			main_camera_pos_to.x,
+			main_camera_pos_to.y
+		);
 		audio_listener_position(main_camera_pos.x, main_camera_pos.y, main_camera_pos.z);
-		//audio_listener_orientation(main_camera_pos_to.x, main_camera_pos_to.y, main_camera_pos_to.z, 0, 0, 1);
+		audio_listener_orientation(dcos(cam_direction), dsin(cam_direction), 0, 0, 0, 1);
 		gpu_set_zwriteenable(false);
 		global.view_matrix = matrix_build_lookat(
 			main_camera_pos.x,

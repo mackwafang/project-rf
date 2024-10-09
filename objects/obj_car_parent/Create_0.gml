@@ -127,7 +127,7 @@ ai_behavior = {
 	part_of_race: false,			// part of the ranking race
 	change_lane: function(road_index) {
 		/// @function	change_lane(road);
-		self.desired_lane = (self.reversed_direction ? -irandom(road_index.get_lanes_left()-1): irandom(road_index.get_lanes_right()-1));
+		self.desired_lane = (self.reversed_direction ? irandom(road_index.get_lanes_left()-1): irandom(road_index.get_lanes_right()-1));
 	},
 }
 race_rank = 0;
