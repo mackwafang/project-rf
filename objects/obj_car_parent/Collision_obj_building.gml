@@ -12,5 +12,9 @@ hp -= max_hp * _d * 4;
 turn_rate *= _d * 2;
 velocity *= _d;
 
-move_and_collide(dcos(direction), dsin(direction), obj_building);
+var dist_to_center = sqrt(sqr(other.building_width / 2) + sqr(other.building_height / 2));
+var other_center_x = other.x + lengthdir_x(dist_to_center, other.direction);
+var other_center_y = other.y + lengthdir_y(dist_to_center, other.direction);
+var push_dir = point_direction(other_center_x, other_center_y, x, y)
+move_and_collide(dcos(push_dir), dsin(push_dir), obj_building);
 move_outside_all(point_direction(x, y, other.x, other.y)+180, velocity);
