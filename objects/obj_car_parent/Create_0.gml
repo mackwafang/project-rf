@@ -17,6 +17,7 @@ engine_rpm = 1000;		// engine rpm
 test_rpm = 0;
 velocity = 0;			// car's speed
 max_velocity = 3000;	// car's max speed
+speed_limit = 999;		// vehicle's limit based on global.GAMEPLAY_MEASURE_METRICS, should be used for debugging
 wheel_radius = 0.32;	// wheel radius in m
 mass = 300;				// vehicle mass, in kg
 horsepower = 300;		// horsepower
@@ -80,8 +81,8 @@ gear_ratio = [3, 2.25, 1.9, 5/3, 10/7, 12/9];
 gear_shift_rpm = [
 	[0, 4000],
 	[1000, 4000],
-	[2550, 3750],
-	[2550, 3550],
+	[2550, 3850],
+	[2550, 3650],
 	[3050, 3275],
 	[3000, 3100],
 ];

@@ -44,7 +44,7 @@ if (can_move) {
 
 	var angle_diff = angle_difference(nav_road.direction, direction);
 	if (ai_behavior.reversed_direction) {
-		angle_diff = angle_difference(nav_road.direction + 180, direction);
+		angle_diff = angle_difference(direction, nav_road.direction);
 	}
 
 	if (accelerating and turning == 0) {
@@ -145,13 +145,6 @@ if (can_move) {
 			//}
 		
 			turn_rate += abs(turn_rate / 2) * global.deltatime;
-			
-			if (abs(turn_rate) > 7.5) {
-				hp = 0;
-				print($"dir: {direction}, angle_diff: {angle_diff}, turn_rate: {turn_rate}");
-				print($"on_road_index dir: {on_road_index.direction}");
-				print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Turn too hard");
-			}
 		
 			// enables boost
 			if (boost_juice >= 100) {
@@ -162,6 +155,13 @@ if (can_move) {
 		}
 	}
 	#endregion
+			
+	if (abs(turn_rate) > 7.5) {
+		hp = 0;
+		print($"dir: {direction}, angle_diff: {angle_diff}, turn_rate: {turn_rate}");
+		print($"on_road_index dir: {on_road_index.direction}");
+		print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Turn too hard");
+	}
 
 	if (keyboard_check_pressed(vk_up)) {gear_shift_up();}
 	if (keyboard_check_pressed(vk_down)) {gear_shift_down();}
@@ -233,17 +233,17 @@ else {
 // turning = (turn_rate < 0.1 ? 2 : (turn_rate > 0.1 ? 1 : 0));
 
 // "crash" on river
-if (on_road_index.zone == ZONE.RIVER) {
-	if (z <= on_road_index.sea_level) {
-		hp = 0;
-		velocity = 0;
-		image_alpha = 0;
+if (!on_road) {
+	if (on_road_index.zone == ZONE.RIVER) {
+		if (z <= on_road_index.z - 20) {
+			hp = 0;
+		}
 	}
 }
 // create dust particle
 if (!on_road && vertical_on_road) {
 	if (velocity > 100) {
-		if (!on_road_index.zone == ZONE.CITY or !on_road_index.zone == ZONE.RIVER) {
+		if (on_road_index.zone != ZONE.CITY or on_road_index.zone != ZONE.RIVER) {
 			var dust_part = instance_create_layer(x, y, "Instances", obj_dust_particle);
 			dust_part.z = z;
 			switch(on_road_index.zone) {
@@ -289,7 +289,7 @@ if (hp <= 0) {
 	f_surface = -mass * global.gravity_3d * (vertical_on_road ? 10 : 0);
 }
 var f_brake = ((braking) ? -braking_power * 1000 : 0);
-var f_turn = -abs(turn_rate) * mass / 5000;
+var f_turn = -abs(turn_rate) * mass / 10000;
 if (velocity <= 0) {
 	f_brake = 0;
 	f_surface = 0;
@@ -309,6 +309,7 @@ if (vertical_on_road) {
 	engine_rpm = (wheel_rotation_rate * engine_to_wheel_ratio * 60 / (2 * pi));
 }
 velocity = clamp(velocity, 0, max_velocity);
+velocity = clamp(velocity, 0, speed_limit / ((global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH) * global.WORLD_TO_REAL_SCALE / 10));
 
 if (engine_rpm <= 1000) {engine_rpm = 1000 - engine_rpm;}
 if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
@@ -371,6 +372,17 @@ else {
 
 //check alive
 if (hp <= 0) {
+	// respawning
+	// respawning process:
+	// when hp <= 0
+	// on_death is called
+	// changes player to a person rolling, this causes constant deceleration until stopping (begin step)
+	// once stopped, change state to standing up
+	// calls on_stand_up, create a bike object
+	// walks to bike object
+	// once close, change animation to get on
+	// once get on is done, turn off is_respawning and restore health
+	// go to idle state
 	on_death();
 	if (velocity <= 0) {
 		if (crash_timer.to_stand <= 0 and crash_timer.to_get_on <= 0) {

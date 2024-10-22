@@ -78,6 +78,7 @@ if (!is_respawning) {
 	turn_rate += -turn_rate * 0.05;
 	turn_rate = clamp(turn_rate, -15, 15);
 	
+	// change bike sprite at at certain behavior and direction to camera
 	if (vehicle_type == VEHICLE_TYPE.BIKE) {
 		if (velocity <= 0 || !global.race_started) {
 			// stopped sprite

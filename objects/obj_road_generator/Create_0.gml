@@ -54,7 +54,7 @@ while (array_length(control_path) == 0) {
 	control_path = a_star(grid, control_start, control_end, grid_width, a_star_heuristic); // holds grid values to generate control poitns
 }
 
-// stitch control path together to smooth
+// convert control_path coordinates to game world cordinates
 primary_count = array_length(control_path);
 for (var s = 0; s < array_length(control_path); s++) {
 	var xx = ((control_path[s] % grid_width) * control_points_dist) + (irandom(control_points_dist / 5) * choose(-1,1));

@@ -7,7 +7,7 @@ var b = new Point(
 	(other.x - x) / dist,
 	(other.y - y) / dist
 );
-var _d = abs(dot_product(b.x, b.y, a.x, a.y));
+var _d = 1 - abs(dot_product(b.x, b.y, a.x, a.y));
 
 if (abs(z-other.z) < 8) {
 	if (other.display_sprite_index == spr_prop) {
@@ -25,6 +25,11 @@ if (abs(z-other.z) < 8) {
 				//	print($"yeet {other.id} {zspeed}");
 				//}
 				break;
+		}
+	}
+	if (other.display_sprite_index == spr_bike) {
+		if (zspeed <= global.gravity_3d) {
+			zspeed += velocity / mass / 5;
 		}
 	}
 }

@@ -9,3 +9,6 @@ vehicle_color = {
 
 // color to replace
 racer_color_replace_dst = [];
+height = 16;
+image_xscale = 2;
+image_yscale = 2;

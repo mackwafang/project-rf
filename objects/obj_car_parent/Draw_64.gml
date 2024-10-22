@@ -82,7 +82,7 @@ if (ai_behavior.part_of_race) {
 
 #region Draw UI elements
 if (obj_controller.main_camera_target.id == id) {
-	//draw_text(16, 16, $"onroad: {on_road ? "true" : "false"}");
+	// draw_text(16, 16, $"{speed_limit}");
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
 	//draw_text(16, 16, $"accel: {accelerating}");

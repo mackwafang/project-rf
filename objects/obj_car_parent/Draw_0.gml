@@ -35,7 +35,7 @@ if (global.CAMERA_MODE_3D) {
 	//shader_reset();
 	
 	
-	matrix_set(matrix_world, matrix_build(x, y, z - 0.5, 0, 0, image_angle+90, 1, 1, 1));
+	matrix_set(matrix_world, matrix_build(x, y, zlerp - 0.5, 0, 0, image_angle+90, 1, 1, 1));
 	draw_set_alpha(0.5);
 	switch (vehicle_type) {
 		case VEHICLE_TYPE.BIKE:
