@@ -84,6 +84,7 @@
     {"name":"point_in_polygon","order":8,"path":"scripts/point_in_polygon/point_in_polygon.yy",},
     {"name":"point_to_line_3d","order":24,"path":"scripts/point_to_line_3d/point_to_line_3d.yy",},
     {"name":"point_to_line","order":11,"path":"scripts/point_to_line/point_to_line.yy",},
+    {"name":"rng","order":2,"path":"scripts/rng/rng.yy",},
     {"name":"torque_lookup","order":9,"path":"scripts/torque_lookup/torque_lookup.yy",},
     {"name":"vertex_position_3d_uv","order":15,"path":"scripts/vertex_position_3d_uv/vertex_position_3d_uv.yy",},
     {"name":"vertex_square","order":25,"path":"scripts/vertex_square/vertex_square.yy",},

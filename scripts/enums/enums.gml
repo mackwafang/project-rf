@@ -18,7 +18,14 @@ enum ZONE {
 	DESERT,
 	BEACH,
 	RIVER,
-	
+	FOREST
+}
+
+enum COURSES {
+	CITY,
+	SUBURBAN,
+	DESERT,
+	MOUNTAIN,
 }
 
 enum MEASURE {

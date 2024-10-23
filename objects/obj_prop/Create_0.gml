@@ -23,7 +23,7 @@ function init_vertex_buffer() {
 	var tw = texture_get_texel_width(tex);
 	var th = texture_get_texel_height(tex);
 	var w = abs(uv[2] - uv[0]) / tw;//sprite_get_w(spr_tree);
-	var h = abs(uv[3] - uv[1]) / th;//sprite_get_h(spr_tree);
+	var h = abs(uv[3] - uv[1]) / th * render_scale.z;//sprite_get_h(spr_tree);
 	var is_tree = display_sprite_index == spr_tree;
 	if (is_tree) {
 		switch(display_image_index) {
@@ -42,19 +42,18 @@ function init_vertex_buffer() {
 		}
 	}
 	
-	var x0 = x + lengthdir_x(w, direction+90);
-	var y0 = y + lengthdir_y(w, direction+90);
-	var x1 = x + lengthdir_x(w, direction-90);
-	var y1 = y + lengthdir_y(w, direction-90);
+	var x0 = x + (lengthdir_x(w, direction+90)) * render_scale.x;
+	var y0 = y + (lengthdir_y(w, direction+90)) * render_scale.x;
+	var x1 = x + (lengthdir_x(w, direction-90)) * render_scale.x;
+	var y1 = y + (lengthdir_y(w, direction-90)) * render_scale.x;
 	
 	// for cross polygons
-	var x2 = x + lengthdir_x(w, direction);
-	var y2 = y + lengthdir_y(w, direction);
-	var x3=  x + lengthdir_x(w, direction+180);
-	var y3 = y + lengthdir_y(w, direction+180);
+	var x2 = x + (lengthdir_x(w, direction)) * render_scale.y;
+	var y2 = y + (lengthdir_y(w, direction)) * render_scale.y;
+	var x3=  x + (lengthdir_x(w, direction+180)) * render_scale.y;
+	var y3 = y + (lengthdir_y(w, direction+180)) * render_scale.y;
 	//matrix = matrix_build(x, y, z, 0, 0, direction, 1, 1, 1);
 	image_angle = direction;
-	height = image_xscale;
 
 	vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+h	, uv[0], uv[1]);
 	vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z		, uv[0], uv[3]);

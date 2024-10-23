@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"rng",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"rng",
+  "parent":{
+    "name":"lib",
+    "path":"folders/Scripts/lib.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

@@ -93,7 +93,7 @@ if (can_move) {
 			
 		engine_power = nav_road.get_ideal_throttle();
 			
-		var evade_turn_rate = 0.035;
+		var evade_turn_rate = 0.025;
 		if (car_look_left ^ car_look_right) {
 			if (car_look_right) {turn_rate += evade_turn_rate;}
 			else if (car_look_left) {turn_rate -= evade_turn_rate;}

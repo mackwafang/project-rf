@@ -27,11 +27,12 @@ for (var i = 0; i < grid_height*grid_width; i++) {ds_list_add(grid, 0);}
 control_path = [];
 
 // generating level
+var course_data = get_course_weights(global.GAMEPLAY_COURSE);
 while (array_length(control_path) == 0) {
 	print("Creating grid");
 	// generating terrain
 	perlin_config = {
-		inc: global.difficulty * 0.4,	// determines rough ness of noise. higher = more noise
+		inc: global.difficulty * (global.GAMEPLAY_COURSE == COURSES.MOUNTAIN ? 1.2 : 0.4),	// determines rough ness of noise. higher = more noise
 		X: random(1000),
 		Y: random(1000),
 	}
@@ -122,7 +123,7 @@ var lane_change_to = 1+irandom(2); // change this side of road to this number of
 var cur_lane_change_to = lane_change_to; // current lane change for transition
 var prev_lane_lane_to = lane_change_to; // previous lane change
 var lane_side_affected = ROAD_LANE_CHANGE_AFFECT.BOTH; // which side of the road changes 
-var cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
+var cur_zone = course_data.STARTING_ZONE;
 var initial_river_seg = road_list[@ 0];//(cur_zone == ZONE.RIVER ? road_list[@ 0] : undefined);
 var building_color = make_color_hsv(irandom(255), choose(0, 192 + irandom(64)), 192 + irandom(64));
 for (var i = 0; i < array_length(road_list)-1; i++) {
@@ -138,17 +139,19 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 		prev_lane_lane_to = lane_change_to;
 		lane_side_affected = choose(ROAD_LANE_CHANGE_AFFECT.LEFT, ROAD_LANE_CHANGE_AFFECT.RIGHT, ROAD_LANE_CHANGE_AFFECT.BOTH);
 		lane_change_duration = 10;//30+irandom(10);
-		lane_change_to = 1+irandom(2);
-		if (irandom(2) == 0) {
-			// change zone
-			if (prev_road.zone != ZONE.RIVER) {
-				cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
-			}
-			else {
-				// pick a different zone thats not a river, 
-				cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT);
-			}
-		}
+		lane_change_to = 1+irandom(course_data.MAX_LANES-1);
+		
+		cur_zone = choose_weight(course_data.ZONES, course_data.WEIGTHS, 1)[0];
+		//if (irandom(2) == 0) {
+		//	// change zone
+		//	if (prev_road.zone != ZONE.RIVER) {
+		//		cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
+		//	}
+		//	else {
+		//		// pick a different zone thats not a river, 
+		//		cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT);
+		//	}
+		//}
 		
 		switch(cur_zone) {
 			case ZONE.RIVER:
@@ -819,6 +822,32 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 				}
 			}
 			break;
+		case ZONE.FOREST:
+			// create trees
+			if (global.GAMEPLAY_TREES) {
+				for (var tid = 0; tid < irandom(10); tid++) {
+					var begin_length = choose(
+						lane_width*(left_lanes+5) + irandom(beyond_shoulder_range)/4,
+						-lane_width*(right_lanes+5) - irandom(beyond_shoulder_range)/4,
+					);
+					var tree_obj = instance_create_layer(
+						road.x + lengthdir_x(begin_length, road.direction + 90) + random_range(-32,32),
+						road.y + lengthdir_y(begin_length, road.direction + 90) + random_range(-32,32),
+						"Instances",
+						obj_tree
+					);
+					tree_obj.display_image_index = 8;
+					tree_obj.z = road.z - irandom(32);
+					tree_obj.assigned_cp = i div road_segments;
+					tree_obj.image_xscale = 2;
+					tree_obj.image_yscale = 2;
+					tree_obj.render_scale.x = 2;
+					tree_obj.render_scale.y = 2;
+					tree_obj.render_scale.z = 4;
+					array_push(road.props, tree_obj);
+				}
+			}
+			break;
 		default:
 			// create trees
 			if (global.GAMEPLAY_TREES) {
@@ -845,36 +874,38 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	}
 	
 	//create light
-	if (i % 5 == 0) {
-		var side = [
-			lane_width*(left_lanes+1),
-			-lane_width*(right_lanes+1),
-			0,
-		];
-		var j_start = 0;
-		var j_end = 1;
-		var light_section = i div 5;
-		j_start = light_section % 2;
-		j_end = light_section % 2;
+	if (road.zone != ZONE.FOREST) {
+		if (i % 5 == 0) {
+			var side = [
+				lane_width*(left_lanes+1),
+				-lane_width*(right_lanes+1),
+				0,
+			];
+			var j_start = 0;
+			var j_end = 1;
+			var light_section = i div 5;
+			j_start = light_section % 2;
+			j_end = light_section % 2;
 		
-		if (road.zone == ZONE.RIVER) {
-			j_start = 2;
-			j_end = 2;
-		}
+			if (road.zone == ZONE.RIVER) {
+				j_start = 2;
+				j_end = 2;
+			}
 				
-		for (var j = j_start; j <= j_end; j++) {
-			var obj = instance_create_layer(
-				road.x + lengthdir_x(side[j], road.direction + 90),
-				road.y + lengthdir_y(side[j], road.direction + 90),
-				"Instances",
-				obj_street_light
-			);
-			obj.display_sprite_index = spr_street_light;
-			obj.display_image_index = j;
-			obj.z = road.z;
-			obj.assigned_cp = i div road_segments;
-			obj.direction = road.direction;
-			array_push(road.props, obj);
+			for (var j = j_start; j <= j_end; j++) {
+				var obj = instance_create_layer(
+					road.x + lengthdir_x(side[j], road.direction + 90),
+					road.y + lengthdir_y(side[j], road.direction + 90),
+					"Instances",
+					obj_street_light
+				);
+				obj.display_sprite_index = spr_street_light;
+				obj.display_image_index = j;
+				obj.z = road.z;
+				obj.assigned_cp = i div road_segments;
+				obj.direction = road.direction;
+				array_push(road.props, obj);
+			}
 		}
 	}
 }

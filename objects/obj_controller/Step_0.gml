@@ -143,8 +143,23 @@ if (global.game_state_paused) {exit;}
 // other car spawning
 if (global.GAMEPLAY_CARS) {
 	var road_at_view_edge = obj_road_generator.road_list[max(0, main_camera_target.on_road_index._id + choose(-15,15))];
+	var zone_modifier = 1;
+	switch(road_at_view_edge.zone) {
+		case ZONE.CITY:
+			zone_modifier = 0.25;
+			break;
+		case ZONE.SUBURBAN:
+			zone_modifier = 1;
+			break;
+		case ZONE.DESERT:
+			zone_modifier = 2;
+			break;
+		case ZONE.FOREST:
+			zone_modifier = 3;
+			break;
+	}
 	if (alarm[0] == -1 and road_at_view_edge.get_id() > 30) {
-		if (irandom(75 / global.difficulty) < 1 and instance_number(obj_car) < 20) {
+		if (irandom(75 / global.difficulty * zone_modifier) < 1 and instance_number(obj_car) < 20) {
 			var side = choose(-1, 1);
 			var road_function = (side == -1 ? road_at_view_edge.get_lanes_left : road_at_view_edge.get_lanes_right);
 			
