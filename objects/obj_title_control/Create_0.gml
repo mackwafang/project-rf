@@ -7,6 +7,7 @@ LEVEL_OPTIONS_INDEX_DIFFICULTY = 0;
 LEVEL_OPTIONS_INDEX_COURSE = 1;
 
 global.difficulty = 1;
+global.level = 1;
 _level_distance = [5, 12, 20, 30, 35]; // distance in kilometer
 course_string = [
 	"The City",

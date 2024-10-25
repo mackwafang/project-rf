@@ -1,4 +1,5 @@
 var dist = max(1, point_distance(x, y, other.x, other.y));
+var dir = point_direction(x, y, other.x, other.y);
 var a = new Point(
 	lengthdir_x(1, direction),
 	lengthdir_y(1, direction)
@@ -33,3 +34,5 @@ if (abs(z-other.z) < 8) {
 		}
 	}
 }
+move_contact_solid(point_direction(other.x,other.y,x,y),1);
+move_and_collide(dcos(dir), dsin(dir), obj_car_parent);

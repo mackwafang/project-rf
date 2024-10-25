@@ -21,7 +21,7 @@ if (global.CAMERA_MODE_3D) {
 	gpu_set_zwriteenable(true);
 	gpu_set_ztestenable(true);
 	gpu_set_alphatestenable(true);
-	gpu_set_alphatestref(64);
+	gpu_set_alphatestref(16);
 	display_reset(0, true);
 	init_bike_shadow_buffer();
 }
@@ -119,6 +119,17 @@ global.bkg_soundtrack = choose(
 )
 // background
 global.bkg_sprite_index = spr_bkg_city;
+switch(global.GAMEPLAY_COURSE) {
+	case COURSES.CITY:
+		global.bkg_sprite_index = spr_bkg_city;
+		break;
+	case COURSES.DESERT:
+		global.bkg_sprite_index = spr_bkg_sky;
+		break;
+	case COURSES.MOUNTAIN:
+		global.bkg_sprite_index = spr_bkg_mountain;
+		break;
+}
 
 // outline shader setting
 global.outline_shader_pixel_w = shader_get_uniform(shd_outline, "pixel_w");

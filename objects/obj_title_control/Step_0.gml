@@ -13,6 +13,7 @@ if (keyboard_check_pressed(vk_space)) {
 if (proceed_to_level) {
 	wait_timer += 1;
 	if (wait_timer >= 3 * global.display_freq) {
+		global.level = level_options[LEVEL_OPTIONS_INDEX_DIFFICULTY];
 		global.difficulty = global.LEVEL_TO_DIFFICULTY[level_options[LEVEL_OPTIONS_INDEX_DIFFICULTY]];
 		global.GAMEPLAY_COURSE = level_options[LEVEL_OPTIONS_INDEX_COURSE];
 		room_goto_next();

@@ -80,11 +80,11 @@ gear_ratio = [3, 2.25, 1.9, 5/3, 10/7, 12/9];
 //gear_ratio = [2.66, 1.78, 1.3, 1, 0.74, 0.5];
 gear_shift_rpm = [
 	[0, 4000],
-	[1000, 4000],
-	[2550, 3850],
-	[2550, 3650],
-	[3050, 3275],
-	[3000, 3100],
+	[3000, 4000],
+	[3550, 3850],
+	[3550, 3650],
+	[3150, 3275],
+	[3050, 3100],
 ];
 for (var g = 0; g < array_length(gear_shift_rpm); g++) {
 	gear_shift_rpm[g][0] *= global.difficulty;
@@ -106,7 +106,8 @@ on_road = false				// check if on road horizontally
 vertical_on_road = true;	// check if on road vertically
 on_road_index = 0;
 nearest_road = undefined;
-vec_to_road = new Point3D(0, 0, 0);
+vec_to_road_3d = new Point3D(0, 0, 0);
+vec_to_road = new Point(0, 0);
 
 // visual
 odometer_rpm = 0;
@@ -201,13 +202,14 @@ is_on_road = function(_x, _y, road_id) {
 		on_road_index.next_road.x, on_road_index.next_road.y, on_road_index.next_road.z,
 		x, y, z
 	);
-	vec_to_road = proj;
+	vec_to_road_3d = proj;
 	
 	proj = point_to_line(
 		on_road_index.x, on_road_index.y,
 		on_road_index.next_road.x, on_road_index.next_road.y,
 		x, y
 	);
+	vec_to_road = proj;
 	var side = sign(dcos(point_direction(x, y, proj.x, proj.y) - on_road_index.direction + 90)); // sign to make sure that value is -1 or 1
 	var dist = point_distance(x, y, proj.x, proj.y);
 

@@ -125,6 +125,8 @@
     {"name":"spr_billboard_pillar","order":2,"path":"sprites/spr_billboard_pillar/spr_billboard_pillar.yy",},
     {"name":"spr_billboard","order":1,"path":"sprites/spr_billboard/spr_billboard.yy",},
     {"name":"spr_bkg_city","order":20,"path":"sprites/spr_bkg_city/spr_bkg_city.yy",},
+    {"name":"spr_bkg_mountain","order":23,"path":"sprites/spr_bkg_mountain/spr_bkg_mountain.yy",},
+    {"name":"spr_bkg_sky","order":22,"path":"sprites/spr_bkg_sky/spr_bkg_sky.yy",},
     {"name":"spr_building_front_2_floors","order":14,"path":"sprites/spr_building_front_2_floors/spr_building_front_2_floors.yy",},
     {"name":"spr_building_side","order":1,"path":"sprites/spr_building_side/spr_building_side.yy",},
     {"name":"spr_car_3d","order":10,"path":"sprites/spr_car_3d/spr_car_3d.yy",},

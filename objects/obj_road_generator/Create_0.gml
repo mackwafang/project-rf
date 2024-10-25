@@ -28,23 +28,34 @@ control_path = [];
 
 // generating level
 var course_data = get_course_weights(global.GAMEPLAY_COURSE);
+var curve_modifier = 0.4;
+switch (global.GAMEPLAY_COURSE) {
+	case COURSES.MOUNTAIN:
+		curve_modifier = 1;
+		break;
+	case COURSES.DESERT:
+		curve_modifier = 0.1;
+		break;
+}
 while (array_length(control_path) == 0) {
 	print("Creating grid");
 	// generating terrain
 	perlin_config = {
-		inc: global.difficulty * (global.GAMEPLAY_COURSE == COURSES.MOUNTAIN ? 1.2 : 0.4),	// determines rough ness of noise. higher = more noise
+		inc: global.difficulty * curve_modifier,	// determines rough ness of noise. higher = more noise
 		X: random(1000),
 		Y: random(1000),
 	}
-	for (var yy = 0; yy < grid_height; yy++) {
-		var Y_temp = perlin_config.Y;
-		for (var xx = 0; xx < grid_width; xx++) {
-			var index = xx + (yy * grid_height);
-			var value = perlin_noise(perlin_config.X, Y_temp);
-			grid[|index] = value;
-			Y_temp += perlin_config.inc;
+	if (!global.DEBUG_STRAIGHT_MAP) {
+		for (var yy = 0; yy < grid_height; yy++) {
+			var Y_temp = perlin_config.Y;
+			for (var xx = 0; xx < grid_width; xx++) {
+				var index = xx + (yy * grid_height);
+				var value = perlin_noise(perlin_config.X, Y_temp);
+				grid[|index] = value;
+				Y_temp += perlin_config.inc;
+			}
+			perlin_config.X += perlin_config.inc;
 		}
-		perlin_config.X += perlin_config.inc;
 	}
 	print($"{ds_list_size(grid)} {grid_height * grid_width}");
 	print("Creating road");
@@ -58,8 +69,14 @@ while (array_length(control_path) == 0) {
 // convert control_path coordinates to game world cordinates
 primary_count = array_length(control_path);
 for (var s = 0; s < array_length(control_path); s++) {
-	var xx = ((control_path[s] % grid_width) * control_points_dist) + (irandom(control_points_dist / 5) * choose(-1,1));
-	var yy = ((control_path[s] div grid_width) * control_points_dist) + (irandom(control_points_dist / 5) * choose(-1,1));
+	var rand_x = 0;
+	var rand_y = 0;
+	if (!global.DEBUG_STRAIGHT_MAP) {
+		rand_x = (irandom(control_points_dist / 5) * choose(-1,1) * curve_modifier);
+		rand_y = (irandom(control_points_dist / 5) * choose(-1,1) * curve_modifier);
+	}
+	var xx = ((control_path[s] % grid_width) * control_points_dist) + rand_x;
+	var yy = ((control_path[s] div grid_width) * control_points_dist) + rand_y;
 	var zz = grid[|s] * 200 * global.difficulty;
 	control_points[s] = new Point3D(xx, yy, zz);
 }
@@ -89,7 +106,8 @@ road_offset_list = {
 }
 
 print("Rendering Road");
-global.destination_road_index = round(array_length(road_list) * ((global.difficulty * 0.8) - 0.6)) - (road_segments * 10);
+var race_length_modifier = [1.25, 1.1, 1, 0.9, 0.8];
+global.destination_road_index = round(array_length(road_list) * ((global.difficulty * 0.8) - 0.6) * race_length_modifier[global.level]) - (road_segments * 10);
 global.race_length = 0;
 
 //set up vertex buffers
@@ -119,7 +137,7 @@ global.road_vertex_buffer = vertex_create_buffer();
 
 // set up road node data
 var lane_change_duration = 10; //how many nodes until change to new lane
-var lane_change_to = 1+irandom(2); // change this side of road to this number of lanes
+var lane_change_to = course_data.MIN_LANES; // change this side of road to this number of lanes
 var cur_lane_change_to = lane_change_to; // current lane change for transition
 var prev_lane_lane_to = lane_change_to; // previous lane change
 var lane_side_affected = ROAD_LANE_CHANGE_AFFECT.BOTH; // which side of the road changes 
@@ -139,7 +157,7 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 		prev_lane_lane_to = lane_change_to;
 		lane_side_affected = choose(ROAD_LANE_CHANGE_AFFECT.LEFT, ROAD_LANE_CHANGE_AFFECT.RIGHT, ROAD_LANE_CHANGE_AFFECT.BOTH);
 		lane_change_duration = 10;//30+irandom(10);
-		lane_change_to = 1+irandom(course_data.MAX_LANES-1);
+		lane_change_to = course_data.MIN_LANES+irandom(course_data.MAX_LANES-course_data.MIN_LANES);
 		
 		cur_zone = choose_weight(course_data.ZONES, course_data.WEIGTHS, 1)[0];
 		//if (irandom(2) == 0) {
@@ -198,7 +216,7 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 		];
 	}
 	
-	road.ideal_throttle = min(1.1, road.length / (control_points_dist / road_segments)) * (global.difficulty < 1.5 ? 0.9 : 1.05);
+	road.ideal_throttle = min(1, road.length / (control_points_dist / road_segments)) * (global.difficulty < 1.5 ? 0.9 : 1.05);
 	if (i < 50) {
 		road.ideal_throttle = 1;
 	}
@@ -663,7 +681,14 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 			// reseting  chain
 			prop_chain -= 15;
 			prop_image_index = choose(1, 6);
-			prop_side_len = choose(-left_lanes, 0, right_lanes) * road.lane_width
+			switch(prop_image_index) {
+				case 6:
+					prop_side_len = choose(-left_lanes-0.5, 0, right_lanes+0.5) * road.lane_width;
+					break;
+				default:
+					prop_side_len = choose(-left_lanes, 0, right_lanes) * road.lane_width;
+					break;
+			}
 		}
 	}
 	else {
@@ -698,7 +723,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 			prop_obj.display_image_index = 7;
 			prop_obj.z = road.z;
 			prop_obj.image_xscale = 8;
-			prop_obj.image_yscale = 24;
+			prop_obj.image_yscale = 8;
 			prop_obj.direction = road.direction;
 			array_push(road.props, prop_obj);
 		}
@@ -806,8 +831,8 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 			if (global.GAMEPLAY_TREES) {
 				for (var tid = 0; tid < irandom(3); tid++) {
 					var begin_length = choose(
-						lane_width*(left_lanes+1) + irandom(beyond_shoulder_range),
-						-lane_width*(right_lanes+1) - irandom(beyond_shoulder_range),
+						lane_width*(left_lanes+1) + random(beyond_shoulder_range),
+						-lane_width*(right_lanes+1) - random(beyond_shoulder_range),
 					);
 					var tree_obj = instance_create_layer(
 						road.x + lengthdir_x(begin_length, road.direction + 90) + random_range(-16,16),
@@ -825,10 +850,10 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		case ZONE.FOREST:
 			// create trees
 			if (global.GAMEPLAY_TREES) {
-				for (var tid = 0; tid < irandom(10); tid++) {
+				for (var tid = 0; tid < irandom(5); tid++) {
 					var begin_length = choose(
-						lane_width*(left_lanes+5) + irandom(beyond_shoulder_range)/4,
-						-lane_width*(right_lanes+5) - irandom(beyond_shoulder_range)/4,
+						lane_width*(left_lanes+4) + random(beyond_shoulder_range)/4,
+						-lane_width*(right_lanes+4) - random(beyond_shoulder_range)/4,
 					);
 					var tree_obj = instance_create_layer(
 						road.x + lengthdir_x(begin_length, road.direction + 90) + random_range(-32,32),
@@ -837,6 +862,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 						obj_tree
 					);
 					tree_obj.display_image_index = 8;
+					tree_obj.direction = ((i/10) * 90) + (irandom(3) * 90);
 					tree_obj.z = road.z - irandom(32);
 					tree_obj.assigned_cp = i div road_segments;
 					tree_obj.image_xscale = 2;
@@ -852,10 +878,10 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 			// create trees
 			if (global.GAMEPLAY_TREES) {
 				if (road.zone != ZONE.RIVER) {
-					for (var tid = 0; tid < irandom(50); tid++) {
+					for (var tid = 0; tid < irandom(25); tid++) {
 						var begin_length = choose(
-							lane_width*(left_lanes+2) + irandom(beyond_shoulder_range),
-							-lane_width*(right_lanes+2) - irandom(beyond_shoulder_range),
+							lane_width*(left_lanes+2) + random(beyond_shoulder_range/2),
+							-lane_width*(right_lanes+2) - random(beyond_shoulder_range/2),
 						);
 						var tree_obj = instance_create_layer(
 							road.x + lengthdir_x(begin_length, road.direction + 90) + random_range(-32,32),
@@ -863,6 +889,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 							"Instances",
 							obj_tree
 						);
+						tree_obj.direction = (i/25) * 360;
 						tree_obj.display_image_index = irandom(8);
 						tree_obj.z = road.z - irandom(32);
 						tree_obj.assigned_cp = i div road_segments;
@@ -874,7 +901,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	}
 	
 	//create light
-	if (road.zone != ZONE.FOREST) {
+	if ((global.GAMEPLAY_COURSE != COURSES.DESERT) & (global.GAMEPLAY_COURSE != COURSES.MOUNTAIN)) {
 		if (i % 5 == 0) {
 			var side = [
 				lane_width*(left_lanes+1),

@@ -28,10 +28,10 @@ if (_z_restrict) {
 	var road_col_x = road.collision_points[0];
 	var road_col_y = road.collision_points[1];
 	var road_col_z = road.collision_points[2];
-	var lerp_value = point_distance_3d(road.x, road.y, road.z, vec_to_road.x, vec_to_road.y, vec_to_road.z) / road.length;
+	var lerp_value = point_distance_3d(road.x, road.y, road.z, vec_to_road_3d.x, vec_to_road_3d.y, vec_to_road_3d.z) / road.length;
 	var lerp_left = lerp_3d([road_col_x[0], road_col_y[0], road_col_z[0]], [road_col_x[1], road_col_y[1], road_col_z[1]], lerp_value);
 	var lerp_right = lerp_3d([road_col_x[3], road_col_y[3], road_col_z[3]], [road_col_x[2], road_col_y[2], road_col_z[2]], lerp_value);
-	zlerp = lerp_3d(lerp_left, lerp_right, point_distance_3d(x, y, z, vec_to_road.x, vec_to_road.y, vec_to_road.z)  / road.length)[2];
+	zlerp = lerp_3d(lerp_left, lerp_right, point_distance_3d(x, y, z, vec_to_road_3d.x, vec_to_road_3d.y, vec_to_road_3d.z)  / road.length)[2];
 	
 	vertical_on_road = (z+zspeed <= zlerp);
 	
