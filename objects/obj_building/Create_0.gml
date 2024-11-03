@@ -27,12 +27,22 @@ function init_vertex_buffer() {
 	building_height = 128 * floors;
 	
 	var building_color_drk = make_color_hsv(color_get_hue(building_color), color_get_saturation(building_color), color_get_value(building_color) - $11);
-	var building_sprite = spr_building_front;
+	var building_sprite = spr_building_front_1_floor;
 	var uv = sprite_get_uvs(spr_building_side, 0);
 	switch(floors) {
+		case 1: 
+			building_sprite = spr_building_front_1_floor;
+			uv = sprite_get_uvs(building_sprite, display_image_index);
+			break;
 		case 2: 
 			building_sprite = spr_building_front_2_floors;
 			uv = sprite_get_uvs(building_sprite, display_image_index);
+			break;
+		default:
+			if (floors > 2) {
+				building_sprite = spr_building_front_3_floors;
+				uv = sprite_get_uvs(building_sprite, display_image_index);
+			}
 			break;
 	}
 	var building_uv = sprite_get_uvs(building_sprite, display_image_index);

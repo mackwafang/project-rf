@@ -16,3 +16,7 @@ if (crash_timer.to_get_on > 0) {
 		on_respawn();
 	}
 }
+
+if (hit_immune > 0) {
+	hit_immune -= global.deltatime;
+}

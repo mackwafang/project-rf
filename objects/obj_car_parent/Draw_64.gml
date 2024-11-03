@@ -111,7 +111,7 @@ if (obj_controller.main_camera_target.id == id) {
 	var bar_y = port_height - 32;
 	var bar_height = 28;
 	var bar_width = 150;
-	var bar_color = c_green;
+	var bar_color = c_green;//(hit_immune ? c_gray : c_green);
 	var hp_frac = (hp / max_hp);
 	if (is_nan(hp_display)) {hp_display = 0;}
 	
@@ -139,19 +139,22 @@ if (obj_controller.main_camera_target.id == id) {
 	
 	bar_x = port_width_half - (16 * 5);
 	bar_y = port_height - 72;
-	var max_bar = 9;
+	var max_bar = 20;
+	var bar_frequency = (100 div max_bar);
 	var boost_color = (boost_juice < 100 ? c_yellow : c_orange);
 	draw_rectangle_color(bar_x, bar_y - 4, bar_x + (16 * 10), bar_y + 4, 0, 0, 0, 0, false);
-	for (var i = 0; i <= boost_juice div 10; i++) {
-		var anic = animcurve_get(anic_boost);
-		var segment = ((i+1) * max_bar)
-		var flash_freq = ((boost_juice mod max_bar) / max_bar) + (boost_juice div max_bar) - i - 1;
-		var alpha = animcurve_channel_evaluate(animcurve_get_channel(anic, 1), flash_freq);
-		var size = 1;
-		if (boost_active) {
-			size = animcurve_channel_evaluate(animcurve_get_channel(anic, 0), flash_freq);
+	for (var i = 0; i < max_bar; i++) {
+		var segment = boost_juice div bar_frequency;
+		if (segment >= i) {
+			var anic = animcurve_get(anic_boost);
+			var flash_freq = ((boost_juice - (i * bar_frequency)) / bar_frequency);
+			var alpha = animcurve_channel_evaluate(animcurve_get_channel(anic, 1), flash_freq);
+			var size = 1;
+			if (boost_active) {
+				size = animcurve_channel_evaluate(animcurve_get_channel(anic, 0), flash_freq);
+			}
+			draw_sprite_ext(spr_ui_boost_bar, 0, bar_x + (8 + (i * 16)) * (10 / max_bar), bar_y+1, size / 2 * (10 / max_bar), size / 2, 0, boost_color, alpha);
 		}
-		draw_sprite_ext(spr_ui_boost_bar, 0, bar_x + 8 + (i * 16), bar_y, size, size, 0, boost_color, alpha);
 	}
 	draw_set_valign(fa_middle);
 	draw_set_halign(fa_left);
@@ -270,6 +273,6 @@ if (obj_controller.main_camera_target.id == id) {
 	
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
-	draw_text(port_width_half + 160, port_height - 64, closest_car_index);
+	draw_text(port_width_half + 160, port_height - 64, closest_car_index.name);
 }
 #endregion

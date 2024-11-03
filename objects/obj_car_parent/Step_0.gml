@@ -63,7 +63,7 @@ if (can_move) {
 	if (!is_player) {
 		// checking other cars
 		var look_ahead_threshold = 512;
-		var look_ahead_angle = 7;
+		var look_ahead_angle = 9;
 		//if (on_road_index.zone == ZONE.RIVER) {
 		//	look_ahead_threshold = 128;
 		//	look_ahead_angle = 2;
@@ -91,7 +91,7 @@ if (can_move) {
 		//var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
-		engine_power = nav_road.get_ideal_throttle();
+		engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle());
 			
 		var evade_turn_rate = 0.025;
 		if (car_look_left ^ car_look_right) {
@@ -148,7 +148,7 @@ if (can_move) {
 		
 			// enables boost
 			if (boost_juice >= 100) {
-				if (irandom(40) < global.difficulty) {
+				if (irandom(400) < global.difficulty) {
 					boosting = true;
 				}
 			}
@@ -263,6 +263,9 @@ if (!is_completed) {
 	is_completed = (dist_along_road >= global.race_length) && (ai_behavior.part_of_race);
 	if (is_completed) {
 		print($"{dist_along_road} {global.race_length}");
+		if (obj_controller.main_camera_target == id) {
+			audio_play_sound(snd_yeah, 10, false);
+		}
 		completed_race_rank = race_rank;
 	}
 }

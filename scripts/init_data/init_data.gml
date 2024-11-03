@@ -1,4 +1,5 @@
 function init_data(){
+	load_racer_names();
 	//// init vehicle torque data
 	//global.vehicle_torque_table = array_create(10000, 0);
 	//var fd = file_text_open_read(working_directory + "rpm.txt");

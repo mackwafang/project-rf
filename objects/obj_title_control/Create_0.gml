@@ -14,6 +14,7 @@ course_string = [
 	"Sub-Urban",
 	"The Desert",
 	"Snake Trail",
+	"Mountain View",
 ];
 
 wait_timer = 0;

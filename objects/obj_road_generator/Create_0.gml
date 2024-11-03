@@ -13,6 +13,7 @@ control_points_dist = 2048;
 lane_width = 80;
 track_length = 0;
 beyond_shoulder_range = 4000;
+tunnel_height = 150;
 current_cp = 0; // current control point that is visible
 
 var t = current_time;
@@ -32,6 +33,9 @@ var curve_modifier = 0.4;
 switch (global.GAMEPLAY_COURSE) {
 	case COURSES.MOUNTAIN:
 		curve_modifier = 1;
+		break;
+	case COURSES.CITY:
+		curve_modifier = 0.5;
 		break;
 	case COURSES.DESERT:
 		curve_modifier = 0.1;
@@ -72,8 +76,8 @@ for (var s = 0; s < array_length(control_path); s++) {
 	var rand_x = 0;
 	var rand_y = 0;
 	if (!global.DEBUG_STRAIGHT_MAP) {
-		rand_x = (irandom(control_points_dist / 5) * choose(-1,1) * curve_modifier);
-		rand_y = (irandom(control_points_dist / 5) * choose(-1,1) * curve_modifier);
+		rand_x = (irandom(control_points_dist / 5) * choose(-1,1));
+		rand_y = (irandom(control_points_dist / 5) * choose(-1,1));
 	}
 	var xx = ((control_path[s] % grid_width) * control_points_dist) + rand_x;
 	var yy = ((control_path[s] div grid_width) * control_points_dist) + rand_y;
@@ -226,9 +230,14 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 	road.sea_level = road.z;
 	road.building_color = building_color;
 	
-	
 	next_road.length_to_point = road.length_to_point + road.length;
 	track_length += road.length;
+	
+	// set off road data
+	if (road.zone == ZONE.MOUNTAIN) {
+		road.beyond_range[0].z += 5000;
+		road.beyond_range[1].z -= 1000;
+	}
 	
 	// sea level height
 	if (i > 0) {
@@ -252,11 +261,9 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 		road.transition_lane = true;
 	}
 	
-	if (road.zone != ZONE.DESERT and road.zone != ZONE.RIVER) {
-		if (irandom(10) < 4) {
-			if (road.transition_lane) {
-				road.intersection = true;
-			}
+	if (road.zone != ZONE.DESERT and road.zone != ZONE.RIVER and global.GAMEPLAY_COURSE != COURSES.HILL) {
+		if (irandom(50) < 1) {
+			road.intersection = true;
 		}
 	}
 
@@ -323,8 +330,11 @@ function render_control_point(cp, range=0) {
 		var right_lane_sprite = global.ROAD_SPRITE_INDEX[right_lanes];
 		var shoulder_uv = sprite_get_uvs(spr_road_shoulder, 0);
 		var grass_uv = sprite_get_uvs(spr_grass, 0);
-		var off_shoulder_z = road.z;
-		var next_off_shoulder_z = next_road.z;
+		var tunnel_uv = sprite_get_uvs(spr_tunnel_wall, 0);
+		var off_shoulder_left_z = road.beyond_range[0].z;
+		var off_shoulder_right_z = road.beyond_range[1].z;
+		var next_off_shoulder_left_z = next_road.beyond_range[0].z;
+		var next_off_shoulder_right_z = next_road.beyond_range[1].z;
 		
 		// change grass and shoulder texture
 		switch(road.zone) {
@@ -332,7 +342,7 @@ function render_control_point(cp, range=0) {
 				shoulder_uv = sprite_get_uvs(spr_road_shoulder, 1);
 				grass_uv = sprite_get_uvs(spr_grass, 2);
 				break;
-			case ZONE.CITY:
+			case ZONE.CITY: case ZONE.TOWN: case ZONE.TUNNEL:
 				shoulder_uv = sprite_get_uvs(spr_road_shoulder, 1);
 				grass_uv = sprite_get_uvs(spr_grass, 1);
 				break;
@@ -344,13 +354,12 @@ function render_control_point(cp, range=0) {
 				break;
 		}
 		
-		// switch road texture during transition
-		// setup water "grass" texture
 		if (road.zone == ZONE.RIVER and next_road.zone != ZONE.RIVER) {
 			off_shoulder_z = road.sea_level;
 			next_off_shoulder_z = road.sea_level;
 		}
 		
+		// switch road texture during transition
 		// lane change 
 		if (left_lanes != next_left_lanes) {
 			left_lane_sprite = global.ROAD_SPRITE_INDEX[min(left_lanes, next_left_lanes)];
@@ -362,7 +371,7 @@ function render_control_point(cp, range=0) {
 		}
 		
 		if (road.zone != ZONE.DESERT and road.zone != ZONE.RIVER) {
-			if (road.transition_lane) {
+			if (road.intersection) {
 				// create lane intersection
 				shoulder_uv = sprite_get_uvs(spr_road_shoulder, 2);
 				grass_uv = sprite_get_uvs(spr_road_side, 0);
@@ -370,12 +379,12 @@ function render_control_point(cp, range=0) {
 				right_subimage = 0;
 			}
 			else {
-				if (next_road.transition_lane) {
+				if (next_road.intersection) {
 					left_subimage = 4;
 					right_subimage = 4;
 				}
 				if (i > 0) {
-					if (road_list[@ i-1].transition_lane) {
+					if (road_list[@ i-1].intersection) {
 						left_subimage = 3;
 						right_subimage = 3;
 					}
@@ -392,8 +401,8 @@ function render_control_point(cp, range=0) {
 	
 		var left_uv = sprite_get_uvs(left_lane_sprite, left_subimage);		// left lanes uv
 		var right_uv = sprite_get_uvs(right_lane_sprite, right_subimage);	// right lanes uv
-		var left_change_uv = sprite_get_uvs(left_lane_sprite, 0);			// left lanes uv for lane change
-		var right_change_uv = sprite_get_uvs(right_lane_sprite, 0);			// right lanes uv for lane change
+		var left_change_uv = sprite_get_uvs(spr_road_1_lane, 0);			// left lanes uv for lane change
+		var right_change_uv = sprite_get_uvs(spr_road_1_lane, 0);			// right lanes uv for lane change
 		var road_render_points = [
 			 [
 				road.x+lengthdir_x(lane_width*min(left_lanes, next_left_lanes), road.direction+90),
@@ -424,16 +433,16 @@ function render_control_point(cp, range=0) {
 		}
 		var grass_coord = {
 			left: [
-				shoulder_coord.left[0],
-				shoulder_coord.left[1],
+				[road.x+lengthdir_x(lane_width * (left_lanes+1), road.direction+90),				road.y+lengthdir_y(lane_width * (left_lanes+1), road.direction+90)],
+				[next_road.x+lengthdir_x(lane_width * (next_left_lanes+1), next_road.direction+90),	next_road.y+lengthdir_y(lane_width * (next_left_lanes+1), next_road.direction+90)],
 				[next_road.beyond_range[0].x, next_road.beyond_range[0].y],
 				[road.beyond_range[0].x, road.beyond_range[0].y]
 				//[shoulder_coord.left[2][0]+lengthdir_x(next_road.beyond_range, next_road.direction+90), shoulder_coord.left[2][1]+lengthdir_y(next_road.beyond_range, next_road.direction+90)],
 				//[shoulder_coord.left[3][0]+lengthdir_x(road.beyond_range, road.direction+90), shoulder_coord.left[3][1]+lengthdir_y(road.beyond_range, road.direction+90)]
 			],
 			right: [
-				shoulder_coord.right[0],
-				shoulder_coord.right[1],
+				[next_road.x+lengthdir_x(lane_width * (next_right_lanes+1), next_road.direction-90),	next_road.y+lengthdir_y(lane_width * (next_right_lanes+1), next_road.direction-90)],
+				[road.x+lengthdir_x(lane_width * (right_lanes+1), road.direction-90),					road.y+lengthdir_y(lane_width * (right_lanes+1), road.direction-90)],
 				[road.beyond_range[1].x, road.beyond_range[1].y],
 				[next_road.beyond_range[1].x, next_road.beyond_range[1].y],
 				//[shoulder_coord.right[2][0]+lengthdir_x(road.beyond_range, road.direction-90), shoulder_coord.right[2][1]+lengthdir_y(road.beyond_range, road.direction-90)],
@@ -444,13 +453,13 @@ function render_control_point(cp, range=0) {
 		var road_seg_data = [
 			
 			//left grass
-			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], off_shoulder_z-7), new Point(grass_uv[2], grass_uv[3])],
-			[new Point3D(grass_coord.left[1][0], grass_coord.left[1][1], next_off_shoulder_z-7), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z), new Point(grass_uv[0], grass_uv[1])],
+			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], road.z-7), new Point(grass_uv[2], grass_uv[3])],
+			[new Point3D(grass_coord.left[1][0], grass_coord.left[1][1], next_road.z-7), new Point(grass_uv[2], grass_uv[1])],
+			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_left_z), new Point(grass_uv[0], grass_uv[1])],
 		
-			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], off_shoulder_z-7), new Point(grass_uv[2], grass_uv[3])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_z), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_z), new Point(grass_uv[0], grass_uv[3])],
+			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], road.z-7), new Point(grass_uv[2], grass_uv[3])],
+			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_left_z), new Point(grass_uv[0], grass_uv[1])],
+			[new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_left_z), new Point(grass_uv[0], grass_uv[3])],
 			
 			//left shoulder 
 			[new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z), new Point(shoulder_uv[2], shoulder_uv[1])],
@@ -489,34 +498,67 @@ function render_control_point(cp, range=0) {
 			[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z), new Point(shoulder_uv[2], shoulder_uv[3])],
 		
 			// right grass
-			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_off_shoulder_z-7), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], off_shoulder_z-7), new Point(grass_uv[0], grass_uv[3])],
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[2], grass_uv[3])],
+			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_road.z-7), new Point(grass_uv[0], grass_uv[1])],
+			[new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], road.z-7), new Point(grass_uv[0], grass_uv[3])],
+			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_right_z), new Point(grass_uv[2], grass_uv[3])],
 		
-			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_off_shoulder_z-7), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_z), new Point(grass_uv[2], grass_uv[3])],
-			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_z), new Point(grass_uv[2], grass_uv[1])],
+			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_road.z-7), new Point(grass_uv[0], grass_uv[1])],
+			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_right_z), new Point(grass_uv[2], grass_uv[3])],
+			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_right_z), new Point(grass_uv[2], grass_uv[1])],
 			
 		];
+		
+		// create tunnel polygons
+		if (road.zone == ZONE.TUNNEL) {
+			road_seg_data = array_concat(road_seg_data,[
+				////left tunnel wall
+				[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z), new Point(tunnel_uv[2], tunnel_uv[3])],
+				[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
+				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z), new Point(tunnel_uv[0], tunnel_uv[3])],
+		
+				[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
+				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[1])],
+				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z), new Point(tunnel_uv[0], tunnel_uv[3])],
+				
+				// right tunnel wall
+				[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z), new Point(tunnel_uv[2], tunnel_uv[3])],
+				[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
+				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z), new Point(tunnel_uv[0], tunnel_uv[3])],
+		
+				[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
+				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[1])],
+				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z), new Point(tunnel_uv[0], tunnel_uv[3])],
+				
+				// roof
+				[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
+				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
+				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[3])],
+		
+				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[3])],
+				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[3])],
+				[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[1])],
+			]);
+		}
+		
 		// added missing segment when lane changes
 		if (road.get_lanes() != next_road.get_lanes()) {
 			road_seg_data = array_concat(road_seg_data,[
 				// missing grass floor on the center
-				[new Point3D(road_render_points[0][0], road_render_points[1][0], road.z), new Point(left_change_uv[0], left_change_uv[1])],
+				[new Point3D(road_render_points[0][0], road_render_points[1][0], road.z), new Point(left_change_uv[2], left_change_uv[1])],
 				[new Point3D(road_render_points[0][1], road_render_points[1][1], next_road.z), new Point(left_change_uv[2], left_change_uv[3])],
 				[new Point3D(
 					(left_lanes > next_left_lanes) ? shoulder_coord.left[0][0] : shoulder_coord.left[1][0], 
 					(left_lanes > next_left_lanes) ? shoulder_coord.left[0][1] : shoulder_coord.left[1][1], 
 					(left_lanes > next_left_lanes) ? road.z : next_road.z
-				), new Point(left_change_uv[2], left_change_uv[3])],
+				), new Point(right_change_uv[0], (right_lanes > next_right_lanes) ? right_change_uv[1] : right_change_uv[3])],
 				
-				[new Point3D(road_render_points[0][2], road_render_points[1][2], next_road.z), new Point(right_change_uv[2], right_change_uv[3])],
+				[new Point3D(road_render_points[0][2], road_render_points[1][2], next_road.z), new Point(right_change_uv[0], right_change_uv[3])],
 				[new Point3D(road_render_points[0][3], road_render_points[1][3], road.z), new Point(right_change_uv[0], right_change_uv[1])],
 				[new Point3D(
 					(right_lanes > next_right_lanes) ? shoulder_coord.right[1][0] : shoulder_coord.right[0][0], 
 					(right_lanes > next_right_lanes) ? shoulder_coord.right[1][1] : shoulder_coord.right[0][1], 
 					(right_lanes > next_right_lanes) ? road.z : next_road.z
-				), new Point(right_change_uv[2], right_change_uv[3])],
+				), new Point(right_change_uv[2], (right_lanes > next_right_lanes) ? right_change_uv[1] : right_change_uv[3])],
 			]);
 		}
 		if (i > 0) {
@@ -604,8 +646,8 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	// create traffic lights at intersections
 	if (road.intersection and !next_road.intersection) {
 		var traffic_light = instance_create_layer(
-			next_road.x + lengthdir_x((right_lanes+1) * lane_width, next_road.direction - 90),
-			next_road.y + lengthdir_y((right_lanes+1) * lane_width, next_road.direction - 90),
+			next_road.x + lengthdir_x((right_lanes + 0.5) * next_road.lane_width, next_road.direction - 90),
+			next_road.y + lengthdir_y((right_lanes + 0.5) * next_road.lane_width, next_road.direction - 90),
 			"Instances",
 			obj_traffic_prop
 		);
@@ -613,7 +655,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		traffic_light.image_yscale = 12;
 		traffic_light.image_index = 0;
 		traffic_light.display_sprite_index = spr_traffic_light;
-		traffic_light.display_image_index = 0;
+		traffic_light.display_image_index = next_road.get_lanes_right() - 1;
 		traffic_light.z = next_road.z;
 		traffic_light.direction = road.direction;
 		array_push(road.props, traffic_light);
@@ -671,22 +713,23 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		);
 		prop_obj.display_image_index = prop_image_index;
 		prop_obj.z = road.z;
-		prop_obj.image_xscale = 8;
-		prop_obj.image_yscale = 24;
 		prop_obj.direction = road.direction;
+		with(prop_obj) {
+			event_perform(ev_other, ev_user0);
+		}
 		array_push(road.props, prop_obj);
 		
 		prop_chain -= 1;
 		if (prop_chain == 0) {
 			// reseting  chain
-			prop_chain -= 15;
+			prop_chain -= round(50 / global.difficulty);
 			prop_image_index = choose(1, 6);
 			switch(prop_image_index) {
 				case 6:
-					prop_side_len = choose(-left_lanes-0.5, 0, right_lanes+0.5) * road.lane_width;
+					prop_side_len = choose(-left_lanes-0.5, right_lanes+0.5) * road.lane_width;
 					break;
 				default:
-					prop_side_len = choose(-left_lanes, 0, right_lanes) * road.lane_width;
+					prop_side_len = choose(-left_lanes, right_lanes) * road.lane_width;
 					break;
 			}
 		}
@@ -733,8 +776,8 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	// zone specific props
 	switch(road.zone) {
 		// create building
-		case ZONE.CITY:	
-			if (!road.transition_lane) {
+		case ZONE.CITY:	case ZONE.TOWN:	
+			if (!road.intersection) {
 				// create buildings on each side of the road
 				for (var j = -1; j <= 1; j += 2) {
 					var func = undefined;
@@ -757,7 +800,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					building_obj.z = road.z;
 					building_obj.direction = road.direction + (j == -1 ? 180 : 0);
 					building_obj.building_width = road.length * 0.8;
-					building_obj.floors = 1 + irandom(1);
+					building_obj.floors = (road.zone == ZONE.CITY ? 3 + irandom(2) : 1);
 					building_obj.z_start = road.z;
 					building_obj.z_end = next_road.z;
 					building_obj.building_color = road.building_color;
@@ -770,7 +813,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					array_push(road.buildings, building_obj);
 				}
 				if (i > 0) {
-					if (road_list[@i-1].transition_lane) {
+					if (road_list[@i-1].intersection | road_list[@i-1].zone != road.zone) {
 						// create buildings of intersection
 						for (var j = -1; j <= 1; j += 2) {
 							for (var k = 0; k < 10; k++) {
@@ -794,7 +837,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 								building_obj.z = road.z;
 								building_obj.direction = road.direction + 90;
 								building_obj.building_width = road.length * 0.9;
-								building_obj.floors = 2;
+								building_obj.floors = (road.zone == ZONE.CITY ? 3 + irandom(2) : 1);
 								building_obj.z_start = road.z;
 								building_obj.z_end = road.z;
 								building_obj.building_color = road.building_color;
@@ -850,10 +893,12 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		case ZONE.FOREST:
 			// create trees
 			if (global.GAMEPLAY_TREES) {
+				
+				// lorge tree
 				for (var tid = 0; tid < irandom(5); tid++) {
 					var begin_length = choose(
-						lane_width*(left_lanes+4) + random(beyond_shoulder_range)/4,
-						-lane_width*(right_lanes+4) - random(beyond_shoulder_range)/4,
+						lane_width*(left_lanes+5) + random(beyond_shoulder_range)/4,
+						-lane_width*(right_lanes+5) - random(beyond_shoulder_range)/4,
 					);
 					var tree_obj = instance_create_layer(
 						road.x + lengthdir_x(begin_length, road.direction + 90) + random_range(-32,32),
@@ -872,17 +917,37 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					tree_obj.render_scale.z = 4;
 					array_push(road.props, tree_obj);
 				}
+				
+				// some smaller trees
+				var begin_length = choose(
+					lane_width*(left_lanes+3),
+					-lane_width*(right_lanes+3),
+				);
+				var tree_obj = instance_create_layer(
+					road.x + lengthdir_x(begin_length, road.direction + 90) + random_range(-32,32),
+					road.y + lengthdir_y(begin_length, road.direction + 90) + random_range(-32,32),
+					"Instances",
+					obj_tree
+				);
+				tree_obj.display_image_index = 8;
+				tree_obj.direction = ((i/10) * 90) + (irandom(3) * 90);
+				tree_obj.z = road.z - irandom(32);
+				tree_obj.assigned_cp = i div road_segments;
+				tree_obj.image_xscale = 1;
+				tree_obj.image_yscale = 1;
+				array_push(road.props, tree_obj);
 			}
 			break;
 		default:
 			// create trees
 			if (global.GAMEPLAY_TREES) {
-				if (road.zone != ZONE.RIVER) {
+				if (road.zone != ZONE.RIVER and road.zone != ZONE.TUNNEL) {
 					for (var tid = 0; tid < irandom(25); tid++) {
-						var begin_length = choose(
+						var choose_index = choose(0,1);
+						var begin_length = [
 							lane_width*(left_lanes+2) + random(beyond_shoulder_range/2),
 							-lane_width*(right_lanes+2) - random(beyond_shoulder_range/2),
-						);
+						][choose_index];
 						var tree_obj = instance_create_layer(
 							road.x + lengthdir_x(begin_length, road.direction + 90) + random_range(-32,32),
 							road.y + lengthdir_y(begin_length, road.direction + 90) + random_range(-32,32),
@@ -891,7 +956,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 						);
 						tree_obj.direction = (i/25) * 360;
 						tree_obj.display_image_index = irandom(8);
-						tree_obj.z = road.z - irandom(32);
+						tree_obj.z =lerp(road.z - irandom(32), road.beyond_range[choose_index].z, abs(begin_length) / beyond_shoulder_range);
 						tree_obj.assigned_cp = i div road_segments;
 						array_push(road.props, tree_obj);
 					}
@@ -962,6 +1027,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 				prop_obj.display_image_index = 4 + sign(angle);
 				prop_obj.z = r.z;
 				prop_obj.direction = road_list[i].direction;
+				with (prop_obj) {event_user(0);}
 				array_push(r.props, prop_obj);
 				i += 2;
 			}
@@ -981,29 +1047,38 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	// create railing
 	var choose_side = [];
 	var angle_diff = angle_difference(road.direction, next_road.direction);
-	if (road.zone != ZONE.RIVER) {
-		if (abs(angle_diff) > 10) {
-			var s = sign(angle_diff);
-			switch(s) {
-				case -1:
-					choose_side = [1];
-					break;
-				case 1:
-					choose_side = [0];
-					break;
+	switch(road.zone) {
+		case ZONE.RIVER:
+			choose_side = [0,1,2];
+			left_lanes += 1;
+			right_lanes += 1;
+			next_left_lanes += 1;
+			next_right_lanes += 1;
+			railing_image = 1;
+			break;
+		case ZONE.MOUNTAIN:
+			choose_side = [0,1];
+			left_lanes += 1;
+			right_lanes += 1;
+			next_left_lanes += 1;
+			next_right_lanes += 1;
+			railing_image = 1;
+			break;
+		default:
+			if (abs(angle_diff) > 10) {
+				var s = sign(angle_diff);
+				switch(s) {
+					case -1:
+						choose_side = [1];
+						break;
+					case 1:
+						choose_side = [0];
+						break;
+				}
 			}
-		}
-		if (road.intersection) {
-			choose_side = [];
-		}
-	}
-	else {
-		choose_side = [0,1,2];
-		left_lanes += 1;
-		right_lanes += 1;
-		next_left_lanes += 1;
-		next_right_lanes += 1;
-		railing_image = 1;
+			if (road.intersection) {
+				choose_side = [];
+			}
 	}
 	
 	for (var j = 0; j < array_length(choose_side); j++) {

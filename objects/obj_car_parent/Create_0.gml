@@ -32,6 +32,8 @@ boost_juice = 0;		// boosting meter
 boost_usable = false;	// is boost usable
 boost_active = false;	// if boost is using
 boost_juice_penalty = 0;// penalty for using boost
+hit_immune = 0;
+name = "";				// racer name
 
 is_completed = false;	// did vehicle completed race
 

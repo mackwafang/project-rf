@@ -17,6 +17,7 @@ function RoadNode(_Point) constructor {
 	next_road = -1;
 	elevation = 0;				// segment elevation in rad
 	zone = ZONE.SUBURBAN		// road's current zone to render surrounding enviornment
+	zone_feature = ZONE_FEATURE.NONE;
 	transition_lane	= false;	// is road is transitioning to new lane count
 	intersection = false;		// is segment an intersection?
 	beyond_range = [new Point3D(0,0,0), new Point3D(0,0,0)]		// off road area

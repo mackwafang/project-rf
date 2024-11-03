@@ -1,3 +1,5 @@
+init_data();
+
 cam_move_speed = 16;
 cam_zoom = 1;
 cam_angle = 0;
@@ -36,13 +38,13 @@ for (var i = 0; i < global.total_participating_vehicles; i++) {
 	if (i == 0) {
 		car.is_player = true;
 		player_obj = car;
-
 	}
 	car.car_id = i+1;
 	car.depth = 10;
 	car.z = 100;
 	car.vehicle_type = VEHICLE_TYPE.BIKE;
 	car.ai_behavior.part_of_race = true;
+	car.name = global.racer_names[irandom(array_length(global.racer_names)-1)];
 	participating_vehicles[array_length(participating_vehicles)] = car;
 }
 
@@ -51,7 +53,10 @@ for (var i = 0; i < array_length(participating_vehicles); i++) {
 	car.race_rank = (array_length(participating_vehicles) - i);
 	var road = obj_road_generator.road_list[(i div 3) + 1];
 	var lane_position_x = (((i % 3) / 3) * road.length);
-	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 3) * random_range(-1, 1));
+	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
+	//var road = obj_road_generator.road_list[i + 1];
+	//var lane_position_x = 0;
+	//var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
 	
 	var dist = point_distance(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y);
 	var dir = point_direction(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y) + road.direction;
@@ -117,6 +122,7 @@ global.bkg_soundtrack = choose(
 	snd_race_4,
 	snd_race_5
 )
+
 // background
 global.bkg_sprite_index = spr_bkg_city;
 switch(global.GAMEPLAY_COURSE) {
@@ -126,7 +132,7 @@ switch(global.GAMEPLAY_COURSE) {
 	case COURSES.DESERT:
 		global.bkg_sprite_index = spr_bkg_sky;
 		break;
-	case COURSES.MOUNTAIN:
+	case COURSES.MOUNTAIN: case COURSES.HILL:
 		global.bkg_sprite_index = spr_bkg_mountain;
 		break;
 }
@@ -180,4 +186,3 @@ game_surface = surface_create(main_camera_size.width, main_camera_size.height);
 cluck_init();
 
 alarm[0] = round(6 * global.display_freq); // starting timer
-init_data();

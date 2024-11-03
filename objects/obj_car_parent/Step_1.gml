@@ -49,6 +49,7 @@ if (_z_restrict) {
 	
 	if (vertical_on_road) {
 		drive_force *= cos(on_road_index.elevation) + (on_road_index.elevation < 0 ? 2 : 0);
+		zspeed += -sin(on_road_index.elevation) * global.deltatime;
 		if (!on_road && on_road_index.zone != ZONE.RIVER) {
 			zspeed += (global.gravity_3d) * global.deltatime / 2;
 		}
@@ -76,7 +77,7 @@ if (_z_restrict) {
 // move car in direction
 if (!is_respawning) {
 	turn_rate += -turn_rate * 0.05;
-	turn_rate = clamp(turn_rate, -15, 15);
+	turn_rate = clamp(turn_rate, -10, 10);
 	
 	// change bike sprite at at certain behavior and direction to camera
 	if (vehicle_type == VEHICLE_TYPE.BIKE) {

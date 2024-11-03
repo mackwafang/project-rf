@@ -1,18 +1,37 @@
 if (other != self) {
 	if (abs(other.z - z) < 16) {
 		if (!other.is_respawning) {
-			var dir = point_direction(x, y, other.x, other.y);
+			var dir = point_direction(other.x,other.y,x,y);
+			var side = sign(angle_difference(dir, direction));
 			var force = ((mass * velocity) + (other.mass + other.velocity)) / global.deltatime;
+			var base_collision_hp_lost = (force / 500000);
 			if (!is_completed) {
-				var base_collision_hp_lost = (force / 1000000);
-				hp -= base_collision_hp_lost / 2;
+				if (hit_immune <= 0) {
+					var collision_sound_max_dist = 256;
+					var collision_sound_fall_off = 196;
+					
+					if (abs(angle_difference(dir, direction)) > 45) {
+						turn_rate = sign(force) * side * (other.mass / mass) * 2;
+						base_collision_hp_lost /= 4;
+					}
+					hp -= base_collision_hp_lost;
+					
+					if (base_collision_hp_lost < 10) {
+						audio_play_sound_at(snd_hit_light, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6);
+					}
+					else if (base_collision_hp_lost < 30) {
+						audio_play_sound_at(snd_hit_med, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6);
+					}
+					else {
+						audio_play_sound_at(snd_hit_hard, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6);
+					}
+					hit_immune = 1;
+				}
 			}
-			// push_vector.x += abs(other.velocity - velocity) * dcos(deg) * other.mass;
-			push_vector.x -= force / 10000;
-			push_vector.y += force / 10000;
-			turn_rate *= 3;
+			push_vector.y += abs(force);
 			if (hp <= 0) {
 				zspeed += abs(((vehicle_type == VEHICLE_TYPE.BIKE ? height/2 : height) - other.height) / 4) * (velocity / max_velocity);
+				turn_rate = 0;
 			}
 			if (is_respawning) {
 				if (crash_timer.is_walking) {
@@ -23,7 +42,7 @@ if (other != self) {
 					crash_timer.to_stand = crash_timer.TIME_TO_STAND;
 				}
 			}
-			move_contact_solid(point_direction(other.x,other.y,x,y),1);
+			move_contact_solid(dir,10);
 			move_and_collide(dcos(dir), dsin(dir), obj_car_parent);
 			hp_regen_delay = -3;
 		}

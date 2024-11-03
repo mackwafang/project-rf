@@ -10,18 +10,18 @@ var b = new Point(
 );
 var _d = 1 - abs(dot_product(b.x, b.y, a.x, a.y));
 
-if (abs(z-other.z) < 8) {
+if (abs(z-other.z) < other.height) {
 	if (other.display_sprite_index == spr_prop) {
 		switch(other.display_image_index) {
 			case 0:
-				hp -= (max_hp * _d);
+				hp -= (max_hp * (_d/5));
 				turn_rate *= _d * 2;
 				break;
 			case 1:
 				if (zspeed <= global.gravity_3d) {
-					zspeed += velocity / mass / 5;
+					zspeed += other.height/10;
 				}
-			
+				audio_play_sound_on(engine_sound_emitter, snd_hit_light, false, 2);
 				//if (is_player) {
 				//	print($"yeet {other.id} {zspeed}");
 				//}
@@ -34,5 +34,5 @@ if (abs(z-other.z) < 8) {
 		}
 	}
 }
-move_contact_solid(point_direction(other.x,other.y,x,y),1);
-move_and_collide(dcos(dir), dsin(dir), obj_car_parent);
+//move_contact_solid(point_direction(other.x,other.y,x,y),1);
+//move_and_collide(dcos(dir), dsin(dir), obj_car_parent);
