@@ -112,6 +112,7 @@
     {"id":{"name":"point_in_polygon","path":"scripts/point_in_polygon/point_in_polygon.yy",},},
     {"id":{"name":"point_to_line_3d","path":"scripts/point_to_line_3d/point_to_line_3d.yy",},},
     {"id":{"name":"point_to_line","path":"scripts/point_to_line/point_to_line.yy",},},
+    {"id":{"name":"polygons","path":"scripts/polygons/polygons.yy",},},
     {"id":{"name":"rng","path":"scripts/rng/rng.yy",},},
     {"id":{"name":"road_generator","path":"scripts/road_generator/road_generator.yy",},},
     {"id":{"name":"torque_lookup","path":"scripts/torque_lookup/torque_lookup.yy",},},

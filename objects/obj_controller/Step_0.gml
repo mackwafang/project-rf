@@ -38,7 +38,7 @@ if (keyboard_check_pressed(vk_f6)) {
 
 // play music
 if (alarm[0] == global.display_freq * 3) {
-	audio_play_sound(global.bkg_soundtrack, 128, false, 2);
+	audio_play_sound(global.bkg_soundtrack, 128, false, 1.5);
 }
 if (global.race_started) {
 	if (!audio_is_playing(global.bkg_soundtrack)) {
@@ -49,7 +49,7 @@ if (global.race_started) {
 			snd_race_4,
 			snd_race_5
 		)
-		audio_play_sound(global.bkg_soundtrack, 128, false, 2);
+		audio_play_sound(global.bkg_soundtrack, 128, false, 1.5);
 	}
 }
 
@@ -154,12 +154,12 @@ if (global.GAMEPLAY_CARS) {
 		case ZONE.DESERT:
 			zone_modifier = 2;
 			break;
-		case ZONE.FOREST:
+		case ZONE.FOREST: case ZONE.MOUNTAIN:
 			zone_modifier = 2;
 			break;
 	}
 	if (alarm[0] == -1 and road_at_view_edge.get_id() > 30) {
-		if (irandom(75 / global.difficulty * zone_modifier) < 1 and instance_number(obj_car) < 20) {
+		if (irandom(120 / global.difficulty * zone_modifier) < 1 and instance_number(obj_car) < 20) {
 			var side = choose(-1, 1);
 			var road_function = (side == -1 ? road_at_view_edge.get_lanes_left : road_at_view_edge.get_lanes_right);
 			

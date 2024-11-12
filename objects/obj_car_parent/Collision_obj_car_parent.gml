@@ -10,10 +10,10 @@ if (other != self) {
 					var collision_sound_max_dist = 256;
 					var collision_sound_fall_off = 196;
 					
-					if (abs(angle_difference(dir, direction)) > 45) {
-						turn_rate = sign(force) * side * (other.mass / mass) * 2;
-						base_collision_hp_lost /= 4;
+					if (abs(angle_difference(direction, dir)) < 120) {
+						base_collision_hp_lost /= 2;
 					}
+					turn_rate = sign(force) * side * (other.mass / mass) / 10;
 					hp -= base_collision_hp_lost;
 					
 					if (base_collision_hp_lost < 10) {

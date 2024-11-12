@@ -2,9 +2,9 @@
   "$GMSprite":"",
   "%Name":"spr_road_1_lane",
   "bboxMode":0,
-  "bbox_bottom":31,
+  "bbox_bottom":63,
   "bbox_left":0,
-  "bbox_right":63,
+  "bbox_right":31,
   "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -20,7 +20,7 @@
   ],
   "gridX":8,
   "gridY":8,
-  "height":32,
+  "height":64,
   "HTile":false,
   "layers":[
     {"$GMImageLayer":"","%Name":"5d5739ba-0781-4665-94e0-af8f75979179","blendMode":0,"displayName":"default","isLocked":false,"name":"5d5739ba-0781-4665-94e0-af8f75979179","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
@@ -121,5 +121,5 @@
   },
   "type":0,
   "VTile":false,
-  "width":64,
+  "width":32,
 }

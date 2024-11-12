@@ -2,6 +2,12 @@ function print(str) {
 	show_debug_message(str);
 }
 
+function print_debug(str) {
+	if (global.DEBUG_PRINT) {
+		print(str);
+	}
+}
+
 function get_course_weights(course) {
 	switch(course) {
 		case COURSES.CITY:

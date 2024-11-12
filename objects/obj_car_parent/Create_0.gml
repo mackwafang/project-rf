@@ -275,8 +275,8 @@ on_stand_up = function() {
 	hp += 1;
 	if (!instance_exists(bike_obj)) {
 		bike_obj = instance_create_layer(
-			road.x + lengthdir_x(road.get_lanes_right() * road.lane_width, road.direction - 90),
-			road.y + lengthdir_y(road.get_lanes_right() * road.lane_width, road.direction - 90),
+			road.x + lengthdir_x((road.get_lanes_right()+0.5) * road.lane_width, road.direction - 90),
+			road.y + lengthdir_y((road.get_lanes_right()+0.5) * road.lane_width, road.direction - 90),
 			"Instances",
 			obj_crashed_bike
 		);
@@ -304,10 +304,15 @@ on_death = function() {
 			//solid = false;
 			mask_index = spr_empty;
 			direction = on_road_index.direction;
-			print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Crashed");
+			z += height / 2;
+			if (global.DEBUG_PRINT_VEHICLE_CRASH_REASON) {
+				print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Crashed");
+			}
 		}
 		else {
-			print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. HP: {hp}");
+			if (global.DEBUG_PRINT_VEHICLE_CRASH_REASON) {
+				print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. HP: {hp}");
+			}
 			instance_destroy();
 		}
 		//velocity = 0;

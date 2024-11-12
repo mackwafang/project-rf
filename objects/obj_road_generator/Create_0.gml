@@ -81,7 +81,7 @@ for (var s = 0; s < array_length(control_path); s++) {
 	}
 	var xx = ((control_path[s] % grid_width) * control_points_dist) + rand_x;
 	var yy = ((control_path[s] div grid_width) * control_points_dist) + rand_y;
-	var zz = grid[|s] * 200 * global.difficulty;
+	var zz = grid[|s] * course_data.Z_ROUGHNESS * global.difficulty;
 	control_points[s] = new Point3D(xx, yy, zz);
 }
 
@@ -189,20 +189,22 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 		}
 	}
 	
-	switch(lane_side_affected) {
-		case ROAD_LANE_CHANGE_AFFECT.LEFT:
-			road.set_lanes_left(cur_lane_change_to);
-			road.set_lanes_right(road_list[@i-1].get_lanes_right());
-			break;
-		case ROAD_LANE_CHANGE_AFFECT.RIGHT:
-			road.set_lanes_left(road_list[@i-1].get_lanes_left());
-			road.set_lanes_right(cur_lane_change_to);
-			break;
-		case ROAD_LANE_CHANGE_AFFECT.BOTH:
-			road.set_lanes_side(cur_lane_change_to);
-			break;
+	if (road.zone != ZONE.TUNNEL) {
+		switch(lane_side_affected) {
+			case ROAD_LANE_CHANGE_AFFECT.LEFT:
+				road.set_lanes_left(cur_lane_change_to);
+				road.set_lanes_right(road_list[@i-1].get_lanes_right());
+				break;
+			case ROAD_LANE_CHANGE_AFFECT.RIGHT:
+				road.set_lanes_left(road_list[@i-1].get_lanes_left());
+				road.set_lanes_right(cur_lane_change_to);
+				break;
+			case ROAD_LANE_CHANGE_AFFECT.BOTH:
+				road.set_lanes_side(cur_lane_change_to);
+				break;
+		}
+		lane_change_duration--;
 	}
-	lane_change_duration--;
 	
 	// set up road data
 	road.next_road = next_road;
@@ -255,13 +257,12 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 			}
 		}
 	}
-	
 	if (cur_lane_change_to != lane_change_to) {
 		cur_lane_change_to += sign(lane_change_to - prev_lane_lane_to);
 		road.transition_lane = true;
 	}
 	
-	if (road.zone != ZONE.DESERT and road.zone != ZONE.RIVER and global.GAMEPLAY_COURSE != COURSES.HILL) {
+	if (road.zone != ZONE.DESERT and road.zone != ZONE.RIVER and road.zone != ZONE.TUNNEL and global.GAMEPLAY_COURSE != COURSES.HILL) {
 		if (irandom(50) < 1) {
 			road.intersection = true;
 		}
@@ -315,6 +316,7 @@ function render_control_point(cp, range=0) {
 	var ri_start = max(0, (cp - 2) * obj_road_generator.road_segments);
 	var ri_end = min(global.road_list_length, max(1, cp+range) * obj_road_generator.road_segments);
 	
+	
 	vertex_begin(global.road_vertex_buffer, road_vertex_format);
 	for (var i = ri_start; i < ri_end - 1; i++) {
 		var road = road_list[@ i];
@@ -330,9 +332,11 @@ function render_control_point(cp, range=0) {
 		var right_lane_sprite = global.ROAD_SPRITE_INDEX[right_lanes];
 		var shoulder_uv = sprite_get_uvs(spr_road_shoulder, 0);
 		var grass_uv = sprite_get_uvs(spr_grass, 0);
-		var tunnel_uv = sprite_get_uvs(spr_tunnel_wall, 0);
 		var off_shoulder_left_z = road.beyond_range[0].z;
 		var off_shoulder_right_z = road.beyond_range[1].z;
+		var tunnel_outer_uv = sprite_get_uvs(spr_grass, 4);
+		var tunnel_uv = sprite_get_uvs(spr_tunnel_wall, 0);
+		var tunnel_roof_uv = sprite_get_uvs(spr_tunnel_wall, 1);
 		var next_off_shoulder_left_z = next_road.beyond_range[0].z;
 		var next_off_shoulder_right_z = next_road.beyond_range[1].z;
 		
@@ -450,100 +454,182 @@ function render_control_point(cp, range=0) {
 			]
 		}
 		#region Road Render Polygons
-		var road_seg_data = [
+		var road_seg_data = array_concat(
+			// left grass
+			polygon_create_square_points_3d(
+				new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_left_z),
+				new Point3D(grass_coord.left[1][0], grass_coord.left[1][1], next_road.z-7),
+				new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], road.z-7),
+				new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_left_z),
+				grass_uv
+			),
 			
-			//left grass
-			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], road.z-7), new Point(grass_uv[2], grass_uv[3])],
-			[new Point3D(grass_coord.left[1][0], grass_coord.left[1][1], next_road.z-7), new Point(grass_uv[2], grass_uv[1])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_left_z), new Point(grass_uv[0], grass_uv[1])],
-		
-			[new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], road.z-7), new Point(grass_uv[2], grass_uv[3])],
-			[new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_left_z), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_left_z), new Point(grass_uv[0], grass_uv[3])],
+			// left_shoulder
+			polygon_create_square_points_3d(
+				new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z),
+				new Point3D(shoulder_coord.left[1][0], shoulder_coord.left[1][1], next_road.z),
+				new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z),
+				new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z),
+				shoulder_uv
+			),
 			
-			//left shoulder 
-			[new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z), new Point(shoulder_uv[2], shoulder_uv[1])],
-			[new Point3D(shoulder_coord.left[1][0], shoulder_coord.left[1][1], next_road.z), new Point(shoulder_uv[0], shoulder_uv[1])],
-			[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z), new Point(shoulder_uv[0], shoulder_uv[3])],
-		
-			[new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z), new Point(shoulder_uv[2], shoulder_uv[1])],
-			[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z), new Point(shoulder_uv[0], shoulder_uv[3])],
-			[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z), new Point(shoulder_uv[2], shoulder_uv[3])],
+			// left road
+			polygon_create_square_points_3d(
+				new Point3D(road_render_points[0][1], road_render_points[1][1], next_road.z),
+				new Point3D(next_road.x, next_road.y, next_road.z),
+				new Point3D(road.x, road.y, road.z),
+				new Point3D(road_render_points[0][0], road_render_points[1][0], road.z),
+				left_uv
+			),
 			
-			//left road
-			[new Point3D(road_render_points[0][0], road_render_points[1][0], road.z), new Point(left_uv[0], left_uv[3])],
-			[new Point3D(road.x, road.y, road.z), new Point(left_uv[0], left_uv[1])],
-			[new Point3D(road_render_points[0][1], road_render_points[1][1], next_road.z), new Point(left_uv[2], left_uv[3])],
-		
-			[new Point3D(road.x, road.y, road.z), new Point(left_uv[0], left_uv[1])],
-			[new Point3D(next_road.x, next_road.y, next_road.z), new Point(left_uv[2], left_uv[1])],
-			[new Point3D(road_render_points[0][1], road_render_points[1][1], next_road.z), new Point(left_uv[2], left_uv[3])],
-		
-			//right road
-			[new Point3D(road_render_points[0][2], road_render_points[1][2], next_road.z), new Point(right_uv[2], right_uv[3])],
-			[new Point3D(next_road.x, next_road.y, next_road.z), new Point(right_uv[2], right_uv[1])],
-			[new Point3D(road_render_points[0][3], road_render_points[1][3], road.z), new Point(right_uv[0], right_uv[3])],
+			// right road
+			polygon_create_square_points_3d(
+				new Point3D(next_road.x, next_road.y, next_road.z),
+				new Point3D(road_render_points[0][2], road_render_points[1][2], next_road.z),
+				new Point3D(road_render_points[0][3], road_render_points[1][3], road.z),
+				new Point3D(road.x, road.y, road.z),
+				[right_uv[2], right_uv[1], right_uv[0], right_uv[3]] // flip left and right uv
+			),
 			
-			[new Point3D(road.x, road.y, road.z), new Point(right_uv[0], right_uv[1])],
-			[new Point3D(road_render_points[0][3], road_render_points[1][3], road.z), new Point(right_uv[0], right_uv[3])],
-			[new Point3D(next_road.x, next_road.y, next_road.z), new Point(right_uv[2], right_uv[1])],
-		
-			//right shoulder 
-			[new Point3D(shoulder_coord.right[0][0], shoulder_coord.right[0][1], next_road.z), new Point(shoulder_uv[2], shoulder_uv[1])],
-			[new Point3D(shoulder_coord.right[1][0], shoulder_coord.right[1][1], road.z), new Point(shoulder_uv[0], shoulder_uv[1])],
-			[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z), new Point(shoulder_uv[0], shoulder_uv[3])],
-		
-			[new Point3D(shoulder_coord.right[0][0], shoulder_coord.right[0][1], next_road.z), new Point(shoulder_uv[2], shoulder_uv[1])],
-			[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z), new Point(shoulder_uv[0], shoulder_uv[3])],
-			[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z), new Point(shoulder_uv[2], shoulder_uv[3])],
-		
+			// right shoulder
+			polygon_create_square_points_3d(
+				new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z),
+				new Point3D(shoulder_coord.right[1][0], shoulder_coord.right[1][1], road.z),
+				new Point3D(shoulder_coord.right[0][0], shoulder_coord.right[0][1], next_road.z),
+				new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z),
+				shoulder_uv
+			),
+			
 			// right grass
-			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_road.z-7), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], road.z-7), new Point(grass_uv[0], grass_uv[3])],
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_right_z), new Point(grass_uv[2], grass_uv[3])],
-		
-			[new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_road.z-7), new Point(grass_uv[0], grass_uv[1])],
-			[new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_right_z), new Point(grass_uv[2], grass_uv[3])],
-			[new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_right_z), new Point(grass_uv[2], grass_uv[1])],
-			
-		];
+			polygon_create_square_points_3d(
+				new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_right_z),
+				new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], road.z-7),
+				new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_road.z-7),
+				new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_right_z),
+				grass_uv
+			),
+		);
 		
 		// create tunnel polygons
 		if (road.zone == ZONE.TUNNEL) {
-			road_seg_data = array_concat(road_seg_data,[
-				////left tunnel wall
-				[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z), new Point(tunnel_uv[2], tunnel_uv[3])],
-				[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
-				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z), new Point(tunnel_uv[0], tunnel_uv[3])],
-		
-				[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
-				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[1])],
-				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z), new Point(tunnel_uv[0], tunnel_uv[3])],
+			#region main tunnel
+			road_seg_data = array_concat(
+				road_seg_data, 
+				//left tunnel wall
+				polygon_create_square_points_3d(
+					new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + (tunnel_height / 2)),
+					new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + (tunnel_height / 2)),
+					new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z),
+					new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z),
+					tunnel_uv
+				),
 				
-				// right tunnel wall
-				[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z), new Point(tunnel_uv[2], tunnel_uv[3])],
-				[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
-				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z), new Point(tunnel_uv[0], tunnel_uv[3])],
-		
-				[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
-				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[1])],
-				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z), new Point(tunnel_uv[0], tunnel_uv[3])],
+				// left angled roof
+				polygon_create_square_points_3d(
+					new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z + tunnel_height),
+					new Point3D(shoulder_coord.left[1][0], shoulder_coord.left[1][1], next_road.z + tunnel_height),
+					new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + (tunnel_height / 2)),
+					new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + (tunnel_height / 2)),
+					tunnel_uv
+				),
+				
+				//right tunnel wall
+				polygon_create_square_points_3d(
+					new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z + (tunnel_height / 2)),
+					new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + (tunnel_height / 2)),
+					new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z),
+					new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z),
+					tunnel_uv
+				),
+				
+				//right angled roof
+				polygon_create_square_points_3d(
+					new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + (tunnel_height / 2)),
+					new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z + (tunnel_height / 2)),
+					new Point3D(shoulder_coord.right[0][0], shoulder_coord.right[0][1], next_road.z + tunnel_height),
+					new Point3D(shoulder_coord.right[1][0], shoulder_coord.right[1][1], road.z + tunnel_height),
+					tunnel_uv
+				),
 				
 				// roof
-				[new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
-				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[1])],
-				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[3])],
-		
-				[new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height), new Point(tunnel_uv[2], tunnel_uv[3])],
-				[new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[3])],
-				[new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + tunnel_height), new Point(tunnel_uv[0], tunnel_uv[1])],
-			]);
+				polygon_create_square_points_3d(
+					new Point3D(shoulder_coord.left[1][0], shoulder_coord.left[1][1], next_road.z + tunnel_height),
+					new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z + tunnel_height),
+					new Point3D(shoulder_coord.right[1][0], shoulder_coord.right[1][1], road.z + tunnel_height),
+					new Point3D(shoulder_coord.right[0][0], shoulder_coord.right[0][1], next_road.z + tunnel_height),
+					tunnel_roof_uv
+				),
+			);
+			#endregion
+			
+			// create wall to hide culled side
+			if (road_list[@i-1].zone != ZONE.TUNNEL) {
+				// left triangle dirt
+				road_seg_data = array_concat(
+					road_seg_data, 
+					polygon_create_triangle_points_3d(
+						new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z + tunnel_height),
+						new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height),
+						new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + (tunnel_height / 2)),
+						new Point(tunnel_outer_uv[0], tunnel_outer_uv[1]),
+						new Point(tunnel_outer_uv[2], tunnel_outer_uv[1]),
+						new Point(tunnel_outer_uv[2], tunnel_outer_uv[3])
+					),
+				);
+				
+				// left off grid dirt
+				road_seg_data = array_concat(
+					road_seg_data, 
+					polygon_create_square_points_3d(
+						new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_right_z + tunnel_height),
+						new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height),
+						new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z),
+						new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_right_z),
+						tunnel_outer_uv
+					),
+				);
+				
+				// right triangle dirt
+				road_seg_data = array_concat(
+					road_seg_data, 
+					polygon_create_triangle_points_3d(
+						new Point3D(shoulder_coord.right[1][0], shoulder_coord.right[1][1], road.z + tunnel_height),
+						new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + (tunnel_height / 2)),
+						new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + tunnel_height),
+						new Point(tunnel_outer_uv[0], tunnel_outer_uv[1]),
+						new Point(tunnel_outer_uv[2], tunnel_outer_uv[3]),
+						new Point(tunnel_outer_uv[2], tunnel_outer_uv[1])
+					),
+				);
+				// right off grid dirt
+				road_seg_data = array_concat(
+					road_seg_data, 
+					polygon_create_square_points_3d(
+						new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z + tunnel_height),
+						new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_right_z + tunnel_height),
+						new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_right_z),
+						new Point3D(shoulder_coord.right[2][0], shoulder_coord.right[2][1], road.z),
+						tunnel_outer_uv
+					),
+				);
+				
+				// top
+				road_seg_data = array_concat(
+					road_seg_data, 
+					polygon_create_square_points_3d(
+						new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], road.z + tunnel_height),
+						new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], (road_list[@i-1].beyond_range[0].z) / 4),
+						new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], (road_list[@i-1].beyond_range[1].z) / 4),
+						new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], road.z + tunnel_height),
+						tunnel_outer_uv
+					),
+				);
+			}
 		}
 		
 		// added missing segment when lane changes
 		if (road.get_lanes() != next_road.get_lanes()) {
 			road_seg_data = array_concat(road_seg_data,[
-				// missing grass floor on the center
 				[new Point3D(road_render_points[0][0], road_render_points[1][0], road.z), new Point(left_change_uv[2], left_change_uv[1])],
 				[new Point3D(road_render_points[0][1], road_render_points[1][1], next_road.z), new Point(left_change_uv[2], left_change_uv[3])],
 				[new Point3D(
@@ -797,7 +883,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 						"Instances",
 						obj_building
 					);
-					building_obj.z = road.z;
+					building_obj.z = road.z-8;
 					building_obj.direction = road.direction + (j == -1 ? 180 : 0);
 					building_obj.building_width = road.length * 0.8;
 					building_obj.floors = (road.zone == ZONE.CITY ? 3 + irandom(2) : 1);
@@ -834,7 +920,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 									"Instances",
 									obj_building
 								);
-								building_obj.z = road.z;
+								building_obj.z = road.z-8;
 								building_obj.direction = road.direction + 90;
 								building_obj.building_width = road.length * 0.9;
 								building_obj.floors = (road.zone == ZONE.CITY ? 3 + irandom(2) : 1);

@@ -2,9 +2,9 @@
   "$GMSprite":"",
   "%Name":"spr_road_shoulder",
   "bboxMode":0,
-  "bbox_bottom":31,
+  "bbox_bottom":63,
   "bbox_left":0,
-  "bbox_right":63,
+  "bbox_right":31,
   "bbox_top":0,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -18,7 +18,7 @@
   ],
   "gridX":0,
   "gridY":0,
-  "height":32,
+  "height":64,
   "HTile":true,
   "layers":[
     {"$GMImageLayer":"","%Name":"763927f1-4910-48f4-bd35-9dddacc4cfae","blendMode":0,"displayName":"default","isLocked":false,"name":"763927f1-4910-48f4-bd35-9dddacc4cfae","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
@@ -94,5 +94,5 @@
   },
   "type":0,
   "VTile":true,
-  "width":64,
+  "width":32,
 }

@@ -26,17 +26,6 @@ if (can_move) {
 			boosting = keyboard_check_pressed(global.player_input.boost);
 		}
 		turning = (keyboard_check(global.player_input.turn.right) << 1) | (keyboard_check(global.player_input.turn.left));
-		if (turning != 0) {
-			// checking turning
-			if (turning & 1 == 0) {
-				// checking left turn
-				turn_rate -= max(10, abs(turn_rate / 2)) * global.deltatime;
-			}
-			else if (turning & 2 == 0) {
-				// checking right turn
-				turn_rate += max(10, abs(turn_rate / 2)) * global.deltatime;
-			}
-		}
 	}
 	else {
 		accelerating = !is_completed;
@@ -63,7 +52,7 @@ if (can_move) {
 	if (!is_player) {
 		// checking other cars
 		var look_ahead_threshold = 512;
-		var look_ahead_angle = 9;
+		var look_ahead_angle = 5;
 		//if (on_road_index.zone == ZONE.RIVER) {
 		//	look_ahead_threshold = 128;
 		//	look_ahead_angle = 2;
@@ -92,22 +81,22 @@ if (can_move) {
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
 		engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle());
+		turning = 0;
 			
-		var evade_turn_rate = 0.025;
+		var evade_turn_rate = 0.05;
 		if (car_look_left ^ car_look_right) {
-			if (car_look_right) {turn_rate += evade_turn_rate;}
-			else if (car_look_left) {turn_rate -= evade_turn_rate;}
-		}
-		else {
-			if (car_look_ahead) {
-				turn_rate += evade_turn_rate;
-			}
+			//if (car_look_right) {turn_rate += evade_turn_rate;}
+			//else if (car_look_left) {turn_rate -= evade_turn_rate;}
+			if (car_look_right) {turning = 2;}
+			else if (car_look_left) {turning = 1;}
 		}
 		
 		if (!(car_look_left & car_look_right)) {
 			
-			if (rail_look_left) {turn_rate -= evade_turn_rate;}
-			else if (rail_look_right) {turn_rate += evade_turn_rate;}
+			//if (rail_look_left) {turn_rate -= evade_turn_rate;}
+			//else if (rail_look_right) {turn_rate += evade_turn_rate;}
+			if (rail_look_left) {turning = 2;}
+			else if (rail_look_right) {turning = 1;}
 			
 			//if (!is_off_road_left | !is_off_road_right) {
 			//	turn_rate += (-(is_off_road_left/100) + (is_off_road_right/100));
@@ -158,14 +147,29 @@ if (can_move) {
 			
 	if (abs(turn_rate) > 7.5) {
 		hp = 0;
-		print($"dir: {direction}, angle_diff: {angle_diff}, turn_rate: {turn_rate}");
-		print($"on_road_index dir: {on_road_index.direction}");
-		print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Turn too hard");
+		if (global.DEBUG_PRINT_VEHICLE_CRASH_REASON) {
+			print($"dir: {direction}, angle_diff: {angle_diff}, turn_rate: {turn_rate}");
+			print($"on_road_index dir: {on_road_index.direction}");
+			print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Turn too hard");
+		}
 	}
 
 	if (keyboard_check_pressed(vk_up)) {gear_shift_up();}
 	if (keyboard_check_pressed(vk_down)) {gear_shift_down();}
 	if (keyboard_check_pressed(ord("T"))) {hp = 0;}
+	
+	
+	if (turning != 0) {
+		// checking turning
+		if (turning & 1 == 0) {
+			// checking left turn
+			turn_rate -= max(10, abs(turn_rate / 2)) * global.deltatime;
+		}
+		else if (turning & 2 == 0) {
+			// checking right turn
+			turn_rate += max(10, abs(turn_rate / 2)) * global.deltatime;
+		}
+	}
 }
 else {
 	#region crashed, walking to bike
@@ -262,7 +266,6 @@ if (!on_road && vertical_on_road) {
 if (!is_completed) {
 	is_completed = (dist_along_road >= global.race_length) && (ai_behavior.part_of_race);
 	if (is_completed) {
-		print($"{dist_along_road} {global.race_length}");
 		if (obj_controller.main_camera_target == id) {
 			audio_play_sound(snd_yeah, 10, false);
 		}
