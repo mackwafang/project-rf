@@ -5,6 +5,12 @@ on_road_index = set_on_road();
 on_road = is_on_road(x,y,last_road_index);
 
 var vel = (velocity) * global.deltatime / global.WORLD_TO_REAL_SCALE;
+var dist_to_median = point_distance(x,y,vec_to_road.x,vec_to_road.y);
+
+// -1 left, 1 right
+var side_from_median = dsin(angle_difference(point_direction(x,y,vec_to_road.x,vec_to_road.y), on_road_index.direction));
+
+
 //var vec_to_road = point_to_line(
 //	new Point(on_road_index.x, on_road_index.y),
 //	new Point(on_road_index.next_road.x, on_road_index.next_road.y),
@@ -152,8 +158,19 @@ else {
 		}
 	}
 }
-x += dcos(direction) * vel;
-y -= dsin(direction) * vel;
+
+//TODO: adjust road limit to account for both side
+if (dist_to_median <= (((side_from_median == -1 ? on_road_index.get_lanes_left() : on_road_index.get_lanes_right())+1) * on_road_index.lane_width)) {
+	// move freely
+	x += dcos(direction) * vel;
+	y -= dsin(direction) * vel;
+}
+else {
+	// push back
+	var dir_to_median = point_direction(x, y, vec_to_road.x,vec_to_road.y);
+	x += dcos(dir_to_median) * vel / 2;
+	y -= dsin(dir_to_median) * vel / 2;
+}
 
 if (!crash_timer.is_walking) {
 	image_angle = direction;

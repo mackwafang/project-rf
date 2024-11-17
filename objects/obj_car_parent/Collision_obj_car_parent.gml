@@ -16,10 +16,10 @@ if (other != self) {
 					turn_rate = sign(force) * side * (other.mass / mass) / 10;
 					hp -= base_collision_hp_lost;
 					
-					if (base_collision_hp_lost < 10) {
+					if (base_collision_hp_lost < 20) {
 						audio_play_sound_at(snd_hit_light, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6);
 					}
-					else if (base_collision_hp_lost < 30) {
+					else if (base_collision_hp_lost < 50) {
 						audio_play_sound_at(snd_hit_med, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6);
 					}
 					else {

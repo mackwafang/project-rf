@@ -332,13 +332,17 @@ function render_control_point(cp, range=0) {
 		var right_lane_sprite = global.ROAD_SPRITE_INDEX[right_lanes];
 		var shoulder_uv = sprite_get_uvs(spr_road_shoulder, 0);
 		var grass_uv = sprite_get_uvs(spr_grass, 0);
+		var shoulder_left_z = road.z-5;
+		var shoulder_right_z = road.z-5;
 		var off_shoulder_left_z = road.beyond_range[0].z;
 		var off_shoulder_right_z = road.beyond_range[1].z;
+		var next_shoulder_left_z = next_road.z-5;
+		var next_shoulder_right_z = next_road.z-5;
+		var next_off_shoulder_left_z = next_road.beyond_range[0].z;
+		var next_off_shoulder_right_z = next_road.beyond_range[1].z;
 		var tunnel_outer_uv = sprite_get_uvs(spr_grass, 4);
 		var tunnel_uv = sprite_get_uvs(spr_tunnel_wall, 0);
 		var tunnel_roof_uv = sprite_get_uvs(spr_tunnel_wall, 1);
-		var next_off_shoulder_left_z = next_road.beyond_range[0].z;
-		var next_off_shoulder_right_z = next_road.beyond_range[1].z;
 		
 		// change grass and shoulder texture
 		switch(road.zone) {
@@ -353,14 +357,27 @@ function render_control_point(cp, range=0) {
 			case ZONE.RIVER:
 				shoulder_uv = sprite_get_uvs(spr_road_shoulder, 1);
 				grass_uv = sprite_get_uvs(spr_grass, 3);
-				off_shoulder_z = road.sea_level;
-				next_off_shoulder_z = next_road.sea_level;
+				shoulder_left_z = road.sea_level;
+				shoulder_right_z = road.sea_level;
+				next_shoulder_left_z = next_road.sea_level;
+				next_shoulder_right_z = next_road.sea_level;
+				
+				off_shoulder_left_z = road.sea_level;
+				off_shoulder_right_z = road.sea_level;
+				next_off_shoulder_left_z = next_road.sea_level;
+				next_off_shoulder_right_z = next_road.sea_level;
 				break;
 		}
 		
 		if (road.zone == ZONE.RIVER and next_road.zone != ZONE.RIVER) {
-			off_shoulder_z = road.sea_level;
-			next_off_shoulder_z = road.sea_level;
+			shoulder_left_z = road.sea_level;
+			shoulder_right_z = road.sea_level;
+			next_shoulder_left_z = road.sea_level;
+			next_shoulder_right_z = road.sea_level;
+			off_shoulder_left_z = road.sea_level;
+			off_shoulder_right_z = road.sea_level;
+			next_off_shoulder_left_z = road.sea_level;
+			next_off_shoulder_right_z = road.sea_level;
 		}
 		
 		// switch road texture during transition
@@ -458,8 +475,8 @@ function render_control_point(cp, range=0) {
 			// left grass
 			polygon_create_square_points_3d(
 				new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_left_z),
-				new Point3D(grass_coord.left[1][0], grass_coord.left[1][1], next_road.z-7),
-				new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], road.z-7),
+				new Point3D(grass_coord.left[1][0], grass_coord.left[1][1], next_shoulder_left_z),
+				new Point3D(grass_coord.left[0][0], grass_coord.left[0][1], shoulder_left_z),
 				new Point3D(grass_coord.left[3][0], grass_coord.left[3][1], off_shoulder_left_z),
 				grass_uv
 			),
@@ -503,8 +520,8 @@ function render_control_point(cp, range=0) {
 			// right grass
 			polygon_create_square_points_3d(
 				new Point3D(grass_coord.right[2][0], grass_coord.right[2][1], off_shoulder_right_z),
-				new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], road.z-7),
-				new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_road.z-7),
+				new Point3D(grass_coord.right[1][0], grass_coord.right[1][1], shoulder_right_z),
+				new Point3D(grass_coord.right[0][0], grass_coord.right[0][1], next_shoulder_right_z),
 				new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_right_z),
 				grass_uv
 			),

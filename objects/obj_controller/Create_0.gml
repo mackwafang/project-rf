@@ -51,12 +51,12 @@ for (var i = 0; i < global.total_participating_vehicles; i++) {
 for (var i = 0; i < array_length(participating_vehicles); i++) {
 	var car = participating_vehicles[i];
 	car.race_rank = (array_length(participating_vehicles) - i);
-	var road = obj_road_generator.road_list[((i div 3) * round(global.difficulty)) + 1];
-	var lane_position_x = (((i % 3) / 3) * road.length);
-	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
-	//var road = obj_road_generator.road_list[i + 1];
-	//var lane_position_x = 0;
+	//var road = obj_road_generator.road_list[(i div 3) + 1];
+	//var lane_position_x = i * road.length;//(((i % 3) / 3) * road.length);
 	//var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
+	var road = obj_road_generator.road_list[i + 1];
+	var lane_position_x = 0;
+	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
 	
 	var dist = point_distance(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y);
 	var dir = point_direction(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y) + road.direction;

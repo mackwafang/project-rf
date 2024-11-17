@@ -61,33 +61,34 @@ switch(global.difficulty) {
 }
 
 //gear's ratio
-// gear_ratio = [3, 2.5, 2, 5/3, 10/7, 11/9];
-gear_ratio = [3, 2.25, 1.9, 5/3, 10/7, 12/9];
+gear_ratio = [3, 2.25, 1.9, 6/4, 10/7, 11/9];
 //gear_shift_rpm = [
-//	[0, 4500],
-//	[2000, 4250],
-//	[2750, 4000],
-//	[2750, 4000],
-//	[2750, 4000],
-//	[2750, 2750],
+//	[0, 4000],
+//	[3000, 4000],
+//	[3550, 3850],
+//	[3550, 3650],
+//	[3150, 3275],
+//	[3050, 3100],
 //];
-//gear_shift_rpm = [
-//	[0, 9000],
-//	[4000, 8500],
-//	[5500, 8000],
-//	[5500, 8000],
-//	[5500, 8000],
-//	[5500, 5500],
-//];
-//gear_ratio = [2.66, 1.78, 1.3, 1, 0.74, 0.5];
 gear_shift_rpm = [
-	[0, 4000],
-	[3000, 4000],
-	[3550, 3850],
-	[3550, 3650],
-	[3150, 3275],
-	[3050, 3100],
+	[0, 4500],
+	[3000, 4500],
+	[3550, 4500],
+	[3550, 4500],
+	[3150, 4500],
+	[3050, 4500],
 ];
+
+// drive force required for gear shift
+force_shift_rpm = [
+	[0, 2000],
+	[0, 2000],
+	[0, 1000],
+	[0, 500],
+	[0, 200],
+	[0, 100000],
+];
+
 for (var g = 0; g < array_length(gear_shift_rpm); g++) {
 	gear_shift_rpm[g][0] *= global.difficulty;
 	gear_shift_rpm[g][1] *= global.difficulty;
@@ -168,6 +169,7 @@ gear_shift_up = function() {
 		gear_shift_wait = 60;
 	}
 	gear = min(gear+1, min(max_gear, array_length(gear_shift_rpm)));
+	gear_shift_wait = 60;
 }
 
 gear_shift_down = function() {
@@ -177,15 +179,16 @@ gear_shift_down = function() {
 		engine_power = 0;
 	}
 	gear = max(gear-1, 1);
+	gear_shift_wait = 60;
 }
 
 gear_shift = function() {
 	var gear_shift_rpm_upper = gear_shift_rpm[gear-1][1]
 	var gear_shift_rpm_lower = gear_shift_rpm[gear-1][0];
-		
-	//if (gear_shift_wait == 0) {
-		if (accelerating or (engine_rpm > 9000)) {
-			if ((engine_rpm > gear_shift_rpm_upper)) {
+	
+	if (gear_shift_wait <= 0) {
+		if (accelerating) {
+			if (engine_rpm > 9000 or drive_force < force_shift_rpm[gear-1][1]) {
 				gear_shift_up();
 			}
 		}
@@ -194,7 +197,7 @@ gear_shift = function() {
 				gear_shift_down();
 			}
 		}
-	//}
+	}
 }
 
 is_on_road = function(_x, _y, road_id) {
