@@ -47,7 +47,10 @@ if (ai_behavior.part_of_race) {
 		if (obj_controller.main_camera_target.id != id) {
 			var screen_coord = world_to_screen(x, y, z+30, global.view_matrix, global.projection_matrix);
 			if (screen_coord[0] != -1 && screen_coord[1] != -1) {
-				var dist_alpha = 1 - (abs(dist_along_road - obj_controller.main_camera_target.dist_along_road) / 1024);
+				var dist_alpha = max(0, 1 - (abs(dist_along_road - obj_controller.main_camera_target.dist_along_road) / 1024));
+				if (global.race_timer < 15) {
+					dist_alpha *= max(-1, global.race_timer - 15)+1;
+				}
 				var rank_display = is_completed ? completed_race_rank : race_rank;
 				// var bar_border = 2;
 				// var bar_height = 8;

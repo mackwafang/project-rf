@@ -4,7 +4,7 @@ if (global.game_state_paused) {exit;}
 on_road_index = set_on_road();
 on_road = is_on_road(x,y,last_road_index);
 
-var vel = (velocity) * global.deltatime / global.WORLD_TO_REAL_SCALE;
+var vel = (velocity) * global.deltatime;
 var dist_to_median = point_distance(x,y,vec_to_road.x,vec_to_road.y);
 
 // -1 left, 1 right
@@ -95,7 +95,7 @@ if (!is_respawning) {
 		else {
 			// turning sprite
 			vehicle_detail_index = spr_bike_3d_detail_2_turn;
-			vehicle_detail_subimage = round(min(sprite_get_number(vehicle_detail_index), (abs(turn_rate) / 5 / global.deltatime) / 100 * sprite_get_number(vehicle_detail_index)));
+			vehicle_detail_subimage = round(min(sprite_get_number(vehicle_detail_index), (abs(turn_rate) / 4 / global.deltatime) / 100 * sprite_get_number(vehicle_detail_index)));
 		}
 		image_xscale = -(turn_rate == 0 ? 1 : sign(turn_rate));
 		if (!is_completed) {
@@ -159,8 +159,23 @@ else {
 	}
 }
 
-//TODO: adjust road limit to account for both side
-if (dist_to_median <= (((side_from_median == -1 ? on_road_index.get_lanes_left() : on_road_index.get_lanes_right())+1) * on_road_index.lane_width)) {
+// invisible walls to attempt to revent stuck behind buildings
+var side_limit = ((side_from_median == -1 ? on_road_index.get_lanes_left() : on_road_index.get_lanes_right())+1); // building limits
+switch(on_road_index.zone) {
+	case ZONE.FOREST:
+		side_limit = 6;
+		break;
+	case ZONE.SUBURBAN:
+		side_limit = 6;
+		break;
+	case ZONE.DESERT:
+		side_limit = 6;
+		break;
+	case ZONE.RIVER:
+		side_limit = 6;
+		break;
+}
+if (dist_to_median <= (side_limit * on_road_index.lane_width)) {
 	// move freely
 	x += dcos(direction) * vel;
 	y -= dsin(direction) * vel;

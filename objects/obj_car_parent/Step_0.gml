@@ -40,7 +40,7 @@ if (can_move) {
 		if (is_player and turning == 0) {
 			engine_power += 0.1;
 			if (global.GAMEPLAY_TURN_GUIDE) {
-				turn_rate += (angle_diff / 360); // moving along curved road
+				turn_rate += (angle_diff / 720); // moving along curved road
 			}
 		}
 	}
@@ -113,7 +113,7 @@ if (can_move) {
 			if (!on_road) {
 				// off road, trying to get back on it
 				// but only for non-bridge zone, median barrier giving issue with turning
-				turn_rate += sign(side) / 40;
+				turn_rate += clamp(sign(side) / 40, -1, 1);
 			}
 			else {
 				// car turning on curved road and moving to its desired lane
@@ -179,7 +179,7 @@ else {
 				// walking to bike
 				if (crash_timer.is_walking) {
 					direction += angle_difference(point_direction(x, y, bike_obj.x, bike_obj.y), direction) * 0.05;
-					velocity = 100;
+					velocity = 80;
 					
 					// changing sprite basd on walking direction
 					var cam_dir = image_angle;//point_direction(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);

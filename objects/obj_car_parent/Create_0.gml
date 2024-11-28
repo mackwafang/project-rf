@@ -53,15 +53,15 @@ _z_restrict = true;
 
 // max gear based on difficulty
 switch(global.difficulty) {
-	case 1:		max_gear = 3; break;
-	case 1.25:	max_gear = 4; break;
-	case 1.5:	max_gear = 5; break;
+	case 1:		max_gear = 2; break;
+	case 1.25:	max_gear = 3; break;
+	case 1.5:	max_gear = 4; break;
 	case 1.75:	max_gear = 5; break;
 	case 2:		max_gear = 6; break;
 }
 
 //gear's ratio
-gear_ratio = [3, 2.25, 1.9, 6/4, 10/7, 11/9];
+gear_ratio = [3, 2.5, 1.9, 6/4, 10/7, 9/7];
 //gear_shift_rpm = [
 //	[0, 4000],
 //	[3000, 4000],
@@ -81,11 +81,11 @@ gear_shift_rpm = [
 
 // drive force required for gear shift
 force_shift_rpm = [
-	[0, 2000],
+	[0, 4000],
 	[0, 2000],
 	[0, 1000],
-	[0, 500],
 	[0, 200],
+	[0, 100],
 	[0, 100000],
 ];
 
