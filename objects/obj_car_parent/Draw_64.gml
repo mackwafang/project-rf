@@ -87,7 +87,7 @@ if (ai_behavior.part_of_race) {
 if (obj_controller.main_camera_target.id == id) {
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
-	draw_text(64, 64, $"{drive_force}");
+	//draw_text(64, 64, $"{drive_force}");
 	//draw_text(16, 16, $"accel: {accelerating}");
 	//draw_text(16, 32, $"boost: {boosting}");
 	//draw_text(16, 48, $"brake: {braking}");

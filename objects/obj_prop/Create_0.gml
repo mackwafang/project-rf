@@ -14,6 +14,8 @@ display_image_index = 0;
 matrix = matrix_build(0,0,0,0,0,0,0,0,0);
 identity_matrix = matrix_build_identity();
 assigned_cp = undefined; // assigned cp to render when camera on said 
+mass = 10;
+velocity = 0;
 image_alpha = 0;
 alarm[0] = 1;
 

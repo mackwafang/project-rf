@@ -66,7 +66,7 @@ if (_z_restrict) {
 		if (z+zspeed <= zlerp) {
 			if (zspeed > global.gravity_3d) {
 				zspeed *= -1/3;
-				turn_rate *= 3;
+				//turn_rate *= 3;
 			}
 		}
 	}

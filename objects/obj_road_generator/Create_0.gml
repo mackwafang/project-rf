@@ -1,5 +1,5 @@
-// randomize();
-random_set_seed(1);
+randomize();
+// random_set_seed(1);
 depth = 1000;
 
 // primary_count = 80 * global.difficulty;
@@ -358,6 +358,19 @@ function render_control_point(cp, range=0) {
 				shoulder_uv = sprite_get_uvs(spr_road_shoulder, 1);
 				grass_uv = sprite_get_uvs(spr_grass, 1);
 				break;
+			case ZONE.MOUNTAIN:	
+				if (((road.zone_feature >> ZONE_FEATURE.MOUNTAIN_SIDE_LEFT-1) & 1) == 1) {
+					// mountain on left side
+					shoulder_left_z = road.z + 100;
+					next_shoulder_left_z = next_road.z + 100;
+				}
+				
+				if (((road.zone_feature >> ZONE_FEATURE.MOUNTAIN_SIDE_RIGHT-1) & 1) == 1) {
+					// mountain on right side
+					shoulder_right_z = road.z + 100;
+					next_shoulder_right_z = next_road.z + 100;
+				}
+				break;
 			case ZONE.RIVER:
 				shoulder_uv = sprite_get_uvs(spr_road_shoulder, 1);
 				grass_uv = sprite_get_uvs(spr_grass, 3);
@@ -458,22 +471,53 @@ function render_control_point(cp, range=0) {
 		}
 		var grass_coord = {
 			left: [
-				[road.x+lengthdir_x(lane_width * (left_lanes+0.5), road.direction+90),					road.y+lengthdir_y(lane_width * (left_lanes+0.5), road.direction+90)],
-				[next_road.x+lengthdir_x(lane_width * (next_left_lanes+0.5), next_road.direction+90),	next_road.y+lengthdir_y(lane_width * (next_left_lanes+0.5), next_road.direction+90)],
-				[next_road.beyond_range[0].x, next_road.beyond_range[0].y],
-				[road.beyond_range[0].x, road.beyond_range[0].y]
+				[road.x+lengthdir_x(lane_width * (left_lanes+0.5), road.direction+90),					road.y+lengthdir_y(lane_width * (left_lanes+0.5), road.direction+90),				 road.z],
+				[next_road.x+lengthdir_x(lane_width * (next_left_lanes+0.5), next_road.direction+90),	next_road.y+lengthdir_y(lane_width * (next_left_lanes+0.5), next_road.direction+90), next_road.z],
+				[next_road.beyond_range[0].x, next_road.beyond_range[0].y, next_road.beyond_range[0].z],
+				[road.beyond_range[0].x, road.beyond_range[0].y, next_road.beyond_range[0].z]
 				//[shoulder_coord.left[2][0]+lengthdir_x(next_road.beyond_range, next_road.direction+90), shoulder_coord.left[2][1]+lengthdir_y(next_road.beyond_range, next_road.direction+90)],
 				//[shoulder_coord.left[3][0]+lengthdir_x(road.beyond_range, road.direction+90), shoulder_coord.left[3][1]+lengthdir_y(road.beyond_range, road.direction+90)]
 			],
 			right: [
-				[next_road.x+lengthdir_x(lane_width * (next_right_lanes+0.5), next_road.direction-90),	next_road.y+lengthdir_y(lane_width * (next_right_lanes+0.5), next_road.direction-90)],
-				[road.x+lengthdir_x(lane_width * (right_lanes+0.5), road.direction-90),					road.y+lengthdir_y(lane_width * (right_lanes+0.5), road.direction-90)],
-				[road.beyond_range[1].x, road.beyond_range[1].y],
-				[next_road.beyond_range[1].x, next_road.beyond_range[1].y],
+				[next_road.x+lengthdir_x(lane_width * (next_right_lanes+0.5), next_road.direction-90),	next_road.y+lengthdir_y(lane_width * (next_right_lanes+0.5), next_road.direction-90),	next_road.z],
+				[road.x+lengthdir_x(lane_width * (right_lanes+0.5), road.direction-90),					road.y+lengthdir_y(lane_width * (right_lanes+0.5), road.direction-90),					road.z],
+				[road.beyond_range[1].x, road.beyond_range[1].y, next_road.beyond_range[1].z],
+				[next_road.beyond_range[1].x, next_road.beyond_range[1].y, next_road.beyond_range[1].z],
 				//[shoulder_coord.right[2][0]+lengthdir_x(road.beyond_range, road.direction-90), shoulder_coord.right[2][1]+lengthdir_y(road.beyond_range, road.direction-90)],
 				//[shoulder_coord.right[3][0]+lengthdir_x(next_road.beyond_range, next_road.direction-90), shoulder_coord.right[3][1]+lengthdir_y(next_road.beyond_range, next_road.direction-90)],
 			]
 		}
+		
+		// post initalization adjustments
+		// adjust grass cord for mountain zones
+		if (road.zone == ZONE.MOUNTAIN) {
+			if (((road.zone_feature >> ZONE_FEATURE.MOUNTAIN_SIDE_LEFT-1) & 1) == 1) {
+				grass_coord.left[0] = [
+					road.x+lengthdir_x(lane_width * (left_lanes+1),
+					road.direction+90), road.y+lengthdir_y(lane_width * (left_lanes+1), road.direction+90),
+					road.z
+				];
+				grass_coord.left[1] = [
+					next_road.x+lengthdir_x(lane_width * (next_left_lanes+1), next_road.direction+90),
+					next_road.y+lengthdir_y(lane_width * (next_left_lanes+1), next_road.direction+90),
+					next_road.z
+				];
+			}
+			
+			if (((road.zone_feature >> ZONE_FEATURE.MOUNTAIN_SIDE_RIGHT-1) & 1) == 1) {
+				grass_coord.right[0] = [
+					next_road.x+lengthdir_x(lane_width * (next_right_lanes+1), next_road.direction-90),
+					next_road.y+lengthdir_y(lane_width * (next_right_lanes+1), next_road.direction-90),	
+					next_road.z
+				];
+				grass_coord.right[1] = [
+					road.x+lengthdir_x(lane_width * (right_lanes+1), road.direction-90),
+					road.y+lengthdir_y(lane_width * (right_lanes+1), road.direction-90),
+					road.z
+				];
+			}
+		}
+		
 		#region Road Render Polygons
 		var road_seg_data = array_concat(
 			// left grass
@@ -683,7 +727,7 @@ function render_control_point(cp, range=0) {
 					);
 				}
 				
-				if (((road_list[@i-1].zone_feature >> (ZONE_FEATURE.MOUNTAIN_SIDE_RIGHT-1)) & 1) == 1) {
+				if (((road_list[@i-1].zone_feature >> ZONE_FEATURE.MOUNTAIN_SIDE_RIGHT-1) & 1) == 1) {
 					// top-left
 					road_seg_data = array_concat(
 						road_seg_data, 
@@ -1192,7 +1236,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	var left_lanes = road.get_lanes_left();
 	var right_lanes = road.get_lanes_right();
 	
-	for (var j = 1; j < 8; j++) {
+	for (var j = 1; j < 4; j++) {
 		if (i + j < array_length(road_list)) {
 			var angle = angle_difference(road_list[i].direction, road_list[i+j].direction);
 			var r = road_list[i+j];
@@ -1212,7 +1256,6 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 				prop_obj.direction = road_list[i].direction;
 				with (prop_obj) {event_user(0);}
 				array_push(r.props, prop_obj);
-				i += 2;
 			}
 		}
 	}
@@ -1226,7 +1269,12 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	var right_lanes = road.get_lanes_right();
 	var next_left_lanes = next_road.get_lanes_left();
 	var next_right_lanes = next_road.get_lanes_right();
+	var railing_height = 32;
 	var railing_image = 0;
+	
+	// skips intersection
+	if (road.intersection) {continue;}
+	
 	// create railing
 	var choose_side = [];
 	var angle_diff = angle_difference(road.direction, next_road.direction);
@@ -1245,7 +1293,19 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 			right_lanes += 1;
 			next_left_lanes += 1;
 			next_right_lanes += 1;
-			railing_image = 1;
+			railing_image = 3;
+			railing_height = 128;
+			break;
+		case ZONE.SUBURBAN:
+			if (global.GAMEPLAY_COURSE == COURSES.CITY) {
+				choose_side = [0,1];
+				left_lanes += 1;
+				right_lanes += 1;
+				next_left_lanes += 1;
+				next_right_lanes += 1;
+				railing_image = 2;
+				railing_height = 128;
+			}
 			break;
 		default:
 			if (abs(angle_diff) > 10) {
@@ -1299,6 +1359,15 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		railing_obj.z = road.z - 5;
 		railing_obj.z_end = next_road.z - 5;
 		railing_obj.display_image_index = railing_image;
+		if (((road.zone_feature >> ZONE_FEATURE.MOUNTAIN_SIDE_LEFT-1) & 1) == 1) {
+			if (s == 0) {railing_obj.height = railing_height;} else {railing_obj.height = 32;}
+		}
+		else if (((road.zone_feature >> ZONE_FEATURE.MOUNTAIN_SIDE_RIGHT-1) & 1) == 1) {
+			if (s == 1) {railing_obj.height = railing_height;} else {railing_obj.height = 32;}
+		}
+		else {
+			railing_obj.height = railing_height;
+		}
 		railing_obj.assigned_cp = i div road_segments;
 		array_push(road.props, railing_obj);
 	}

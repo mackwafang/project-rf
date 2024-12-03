@@ -11,6 +11,7 @@ billboard_index = irandom(1);
 image_xscale = 8;
 image_yscale = 8;
 height = 128;
+render_pillar = true;
 
 function init_vertex_buffer() {
 	var ad_tex = sprite_get_texture(display_sprite_index, display_image_index)
@@ -20,12 +21,11 @@ function init_vertex_buffer() {
 		sprite_get_texture(spr_billboard_pillar, 0),
 		sprite_get_texture(spr_billboard_pillar, 1),
 	];
-	var pillar_uv = [
-		sprite_get_uvs(spr_billboard_pillar, 0),
-		sprite_get_uvs(spr_billboard_pillar, 1),
-	];
+	var pillar_base_uv = sprite_get_uvs(spr_billboard_pillar, 0);
+	var pillar_column_uv = sprite_get_uvs(spr_billboard_pillar, 1);
 	var billboard_tex = sprite_get_texture(spr_billboard, billboard_index);
 	var billboard_uv = sprite_get_uvs(spr_billboard, billboard_index);
+	
 	var ad_tw = texture_get_texel_width(ad_tex);
 	var ad_th = texture_get_texel_height(ad_tex);
 	var ad_w = abs(ad_uv[2] - ad_uv[0]) / ad_tw * 2;
@@ -33,8 +33,8 @@ function init_vertex_buffer() {
 	
 	var pillar_base_tw = texture_get_texel_width(pillar_tex[0]);
 	var pillar_base_th = texture_get_texel_height(pillar_tex[0]);
-	var pillar_base_w = abs(pillar_uv[0][2] - pillar_uv[0][0]) / pillar_base_tw;
-	var pillar_base_h = abs(pillar_uv[0][3] - pillar_uv[0][1]) / pillar_base_th;
+	var pillar_base_w = abs(pillar_base_uv[2] - pillar_base_uv[0]) / pillar_base_tw;
+	var pillar_base_h = abs(pillar_base_uv[3] - pillar_base_uv[1]) / pillar_base_th;
 	
 	var billboard_tw = texture_get_texel_width(billboard_tex);
 	var billboard_th = texture_get_texel_height(billboard_tex);
@@ -66,20 +66,27 @@ function init_vertex_buffer() {
 	var ad_y1 = y + lengthdir_y(dist, dir2);
 	
 	var ad_height_adjust = 26;
+	var billboard_height_adjust = (billboard_index == 1 ? 18 : 0);
 	
 	image_angle = direction;
-
-	// generating pillars
-	for (var i = 0; i <= height div 32; i++) {
-		var uv = pillar_uv[0];
-		if (i > 0) {uv = pillar_uv[1];}
-		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+((i+1)* 32)	, uv[0], uv[1]);
-		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+(i* 32)		, uv[0], uv[3]);
-		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z+((i+1)* 32)	, uv[2], uv[1]);
+	if (render_pillar) {
+		// pillar base
+		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+32	, pillar_base_uv[0], pillar_base_uv[1]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z		, pillar_base_uv[0], pillar_base_uv[3]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z+32	, pillar_base_uv[2], pillar_base_uv[1]);
 	
-		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z+((i+1)* 32)	, uv[2], uv[1]);
-		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+(i* 32)		, uv[0], uv[3]);
-		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z+(i* 32)		, uv[2], uv[3]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z+32	, pillar_base_uv[2], pillar_base_uv[1]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z		, pillar_base_uv[0], pillar_base_uv[3]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z		, pillar_base_uv[2], pillar_base_uv[3]);
+
+		// generating pillars
+		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+height+billboard_height_adjust	, pillar_column_uv[0], pillar_column_uv[1]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+32								, pillar_column_uv[0], pillar_column_uv[3]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z+height+billboard_height_adjust	, pillar_column_uv[2], pillar_column_uv[1]);
+	
+		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z+height+billboard_height_adjust	, pillar_column_uv[2], pillar_column_uv[1]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x0, y0, z+32								, pillar_column_uv[0], pillar_column_uv[3]);
+		vertex_position_3d_uv(global.prop_vertex_buffer, x1, y1, z+32								, pillar_column_uv[2], pillar_column_uv[3]);
 	}
 	
 	// draw board
