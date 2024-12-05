@@ -1,0 +1,12 @@
+{
+  "$GMShader":"",
+  "%Name":"shd_sprite_billboard_color_replace",
+  "name":"shd_sprite_billboard_color_replace",
+  "parent":{
+    "name":"Shaders",
+    "path":"folders/Shaders.yy",
+  },
+  "resourceType":"GMShader",
+  "resourceVersion":"2.0",
+  "type":1,
+}
