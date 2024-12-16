@@ -4,7 +4,7 @@
   "bboxMode":0,
   "bbox_bottom":63,
   "bbox_left":7,
-  "bbox_right":43,
+  "bbox_right":42,
   "bbox_top":10,
   "collisionKind":1,
   "collisionTolerance":0,
@@ -12,16 +12,16 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"98358294-b552-41f8-a91c-32e2e2847b57","name":"98358294-b552-41f8-a91c-32e2e2847b57","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"95fc2051-c870-4230-b79a-20bce3412c6b","name":"95fc2051-c870-4230-b79a-20bce3412c6b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"5a592faa-c941-4ed5-b867-a48acc06d707","name":"5a592faa-c941-4ed5-b867-a48acc06d707","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"","%Name":"a21a524b-3a13-4500-a69e-a4339e8cf0b5","name":"a21a524b-3a13-4500-a69e-a4339e8cf0b5","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"","%Name":"fe9dbf43-3d6f-4167-9e04-1e362dd45b5c","name":"fe9dbf43-3d6f-4167-9e04-1e362dd45b5c","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"","%Name":"c53f70b3-077f-4fd8-b4b5-5340cbdbf469","name":"c53f70b3-077f-4fd8-b4b5-5340cbdbf469","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":24,
   "gridY":16,
   "height":64,
   "HTile":false,
   "layers":[
-    {"$GMImageLayer":"","%Name":"8e88c93d-49cc-47c2-9156-c5cf2df3e8b1","blendMode":0,"displayName":"default","isLocked":false,"name":"8e88c93d-49cc-47c2-9156-c5cf2df3e8b1","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
+    {"$GMImageLayer":"","%Name":"6a189b9f-2ad4-464a-aec1-58dcb1b55c31","blendMode":0,"displayName":"default","isLocked":false,"name":"6a189b9f-2ad4-464a-aec1-58dcb1b55c31","opacity":100.0,"resourceType":"GMImageLayer","resourceVersion":"2.0","visible":true,},
   ],
   "name":"spr_bike_3d_detail_2",
   "nineSlice":null,
@@ -71,14 +71,14 @@
     "tracks":[
       {"$GMSpriteFramesTrack":"","builtinName":0,"events":[],"inheritsTrackColour":true,"interpolation":1,"isCreationTrack":false,"keyframes":{"$KeyframeStore<SpriteFrameKeyframe>":"","Keyframes":[
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"98358294-b552-41f8-a91c-32e2e2847b57","path":"sprites/spr_bike_3d_detail_2/spr_bike_3d_detail_2.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"55877634-ccab-4be0-920b-de19f84b3604","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"a21a524b-3a13-4500-a69e-a4339e8cf0b5","path":"sprites/spr_bike_3d_detail_2/spr_bike_3d_detail_2.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"448c8ed6-d660-4cf4-8d42-6d266463704e","IsCreationKey":false,"Key":0.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"95fc2051-c870-4230-b79a-20bce3412c6b","path":"sprites/spr_bike_3d_detail_2/spr_bike_3d_detail_2.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"3ee8b1f5-cc1d-41c7-8e38-0a0ddd43744e","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"fe9dbf43-3d6f-4167-9e04-1e362dd45b5c","path":"sprites/spr_bike_3d_detail_2/spr_bike_3d_detail_2.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"6a364d38-8d85-4299-ac74-1b0b37800a78","IsCreationKey":false,"Key":1.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
             {"$Keyframe<SpriteFrameKeyframe>":"","Channels":{
-                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"5a592faa-c941-4ed5-b867-a48acc06d707","path":"sprites/spr_bike_3d_detail_2/spr_bike_3d_detail_2.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
-              },"Disabled":false,"id":"dceffb98-6236-45e3-b46d-7ee1e11f91a4","IsCreationKey":false,"Key":2.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
+                "0":{"$SpriteFrameKeyframe":"","Id":{"name":"c53f70b3-077f-4fd8-b4b5-5340cbdbf469","path":"sprites/spr_bike_3d_detail_2/spr_bike_3d_detail_2.yy",},"resourceType":"SpriteFrameKeyframe","resourceVersion":"2.0",},
+              },"Disabled":false,"id":"f827e711-6bf9-47ed-849e-bd6fd5daf1d3","IsCreationKey":false,"Key":2.0,"Length":1.0,"resourceType":"Keyframe<SpriteFrameKeyframe>","resourceVersion":"2.0","Stretch":false,},
           ],"resourceType":"KeyframeStore<SpriteFrameKeyframe>","resourceVersion":"2.0",},"modifiers":[],"name":"frames","resourceType":"GMSpriteFramesTrack","resourceVersion":"2.0","spriteId":null,"trackColour":0,"tracks":[],"traits":0,},
     ],
     "visibleRange":null,
