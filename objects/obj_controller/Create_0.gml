@@ -51,12 +51,12 @@ for (var i = 0; i < global.total_participating_vehicles; i++) {
 for (var i = 0; i < array_length(participating_vehicles); i++) {
 	var car = participating_vehicles[i];
 	car.race_rank = (array_length(participating_vehicles) - i);
-	//var road = obj_road_generator.road_list[(i div 2) + 1];
-	//var lane_position_x = (((i % 2) / 2) * road.length);
-	//var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width) * random_range(-1, 1));
-	var road = obj_road_generator.road_list[i + 1];
-	var lane_position_x = 0;
-	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
+	var road = obj_road_generator.road_list[(i div 2) + 1];
+	var lane_position_x = (((i % 2) / 2) * road.length);
+	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width) * random_range(-0.5, 0.5));
+	//var road = obj_road_generator.road_list[i + 1];
+	//var lane_position_x = 0;
+	//var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
 	
 	var dist = point_distance(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y);
 	var dir = point_direction(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y) + road.direction;
@@ -76,21 +76,8 @@ global.car_ranking = [];
 array_copy(global.car_ranking, 0, participating_vehicles, 0, array_length(participating_vehicles));
 debug_cam_obj = instance_create_layer(participating_vehicles[0].x, participating_vehicles[0].y, "Instances", obj_debug_cam);
 
-if (!global.DEBUG_FREE_CAMERA) {
-	if (global.CAMERA_MODE_3D) {
-		main_camera_size = {width: 1024, height: 768,}
-	}
-	else {
-		main_camera_size = {width: 480, height: 640,}
-	}
-	main_camera_target = participating_vehicles[0];
-}
-else {
-	main_camera_size = {
-		width: 640,
-		height: 480,
-	}
-}
+main_camera_size = {width: 1024, height: 768,}
+main_camera_target = participating_vehicles[0];
 vehicle_current_pos_ping = 0;
 // set camera size
 participating_camera_index = 0;
@@ -105,7 +92,15 @@ view_set_hport(0, main_camera_size.height);
 window_set_size(main_camera_size.width, main_camera_size.height);
 camera_set_view_size(main_camera, main_camera_size.width, main_camera_size.height);
 surface_resize(application_surface, main_camera_size.width, main_camera_size.height);
-global.view_matrix = undefined;
+global.view_matrix = matrix_build_lookat(
+    main_camera_target.x,
+    main_camera_target.y,
+    main_camera_target.z,
+    main_camera_pos_to.x,
+    main_camera_pos_to.y,
+    main_camera_pos_to.z,
+    0, 0, 1
+);
 global.projection_matrix = matrix_build_projection_perspective_fov(-100, -4/3, 1, 4000);
 
 // sounds
@@ -125,7 +120,7 @@ global.bkg_soundtrack = choose(
 
 // background
 global.bkg_sprite_index = spr_bkg_city;
-switch(global.GAMEPLAY_COURSE) {
+switch(global.gameplay_course) {
 	case COURSES.CITY:
 		global.bkg_sprite_index = spr_bkg_city;
 		break;
@@ -135,6 +130,10 @@ switch(global.GAMEPLAY_COURSE) {
 	case COURSES.MOUNTAIN: case COURSES.HILL:
 		global.bkg_sprite_index = spr_bkg_mountain;
 		break;
+}
+// background override for night
+if (global.GAMEPLAY_LIGHTING) {
+    global.bkg_sprite_index = spr_night;
 }
 
 // outline shader setting
@@ -146,6 +145,12 @@ global.outline_shader_alpha_override = shader_get_uniform(shd_outline, "alpha_ov
 global.color_replace_replace_color = shader_get_uniform(shd_color_replace, "replace_color");
 global.color_replace_src_color = shader_get_uniform(shd_color_replace, "src_color");
 global.color_replace_dst_color = shader_get_uniform(shd_color_replace, "dst_color");
+
+// shd_sprite_billboard_color_replace
+global.sbcr_color = shader_get_uniform(shd_sprite_billboard_color_replace, "replace_color");
+global.sbcr_src_color = shader_get_uniform(shd_sprite_billboard_color_replace, "src_color");
+global.sbcr_dst_color = shader_get_uniform(shd_sprite_billboard_color_replace, "dst_color");
+
 global.racer_color_replace_src = [
 	1,			0,			33/255,
 	148/255,	0,			0,

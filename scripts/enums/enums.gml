@@ -41,6 +41,12 @@ enum COURSES {
 	HILL,
 }
 
+enum INTERFACE_MODE {
+	NONE = 0,
+	FULL = 1,
+	SIMPLE = 2
+}
+
 enum MEASURE {
 	METRIC,
 	IMPERIAL

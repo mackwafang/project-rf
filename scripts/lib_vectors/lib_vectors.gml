@@ -1,6 +1,8 @@
 function Point(_x, _y) constructor {
 	x = _x;
 	y = _y;
+    u = _x;
+    v = _y;
 }
 
 function Point3D(_x, _y, _z) constructor {

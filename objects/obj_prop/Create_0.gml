@@ -2,7 +2,7 @@ z = 0;
 image_speed = 0;
 
 // tree_vertex_buffer = create_tree_vertex(sprite_index, image_index);
-use_billboard = true; // refer to sprite billboarding
+use_billboard = false; // refer to sprite billboarding
 render_scale = {
 	x: 1,
 	y: 1,
@@ -20,6 +20,8 @@ image_alpha = 0;
 alarm[0] = 1;
 
 function init_vertex_buffer() {
+	if (use_billboard) {return;}
+	
 	var tex = sprite_get_texture(display_sprite_index, display_image_index)
 	var uv = sprite_get_uvs(display_sprite_index, display_image_index);
 	var tw = texture_get_texel_width(tex);

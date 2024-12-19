@@ -1,5 +1,5 @@
-function draw_bar_color_border(xx, yy, value, max_value, width, height, border, color1, color2, color3, color4, bkg_color) {
-	/// @function			draw_bar_color_border(xx, yy, value, max_value, width, height, border, color1, color2, color3, color4, bkg_color);
+function draw_bar_color_border(xx, yy, value, max_value, width, height, border, color1, color2, color3, color4, bkg_color, vertical=false) {
+	/// @function			draw_bar_color_border(xx, yy, value, max_value, width, height, border, color1, color2, color3, color4, bkg_color, vertical);
 	/// @param				xx
 	/// @param				yy
 	/// @param				value
@@ -12,17 +12,36 @@ function draw_bar_color_border(xx, yy, value, max_value, width, height, border, 
 	/// @param				color3
 	/// @param				color4
 	/// @param				bkg_color
-	var bar_border = border;
-	var bar_x = xx;
-	var bar_y = yy;
-	var bar_height = height;
-	var bar_width = width;
-	draw_rectangle_color(bar_x, bar_y, bar_x + bar_width, bar_y - bar_height, bkg_color, bkg_color, bkg_color, bkg_color, false);
-	draw_rectangle_color(bar_x + bar_border, bar_y - bar_border, bar_x + value/max_value*(bar_width - bar_border), bar_y - bar_height + bar_border, color1, color2, color3, color4, false);
+	/// @param				vertical
+	draw_rectangle_color(
+		xx - border, 
+		yy + border, 
+		xx + width + border, 
+		yy - height - border, 
+		bkg_color, 
+		bkg_color, 
+		bkg_color, 
+		bkg_color, 
+		false
+	);
+	draw_bar_color_border_no_bkg(
+		xx, 
+		yy, 
+		value, 
+		max_value, 
+		width, 
+		height, 
+		border, 
+		color1, 
+		color2, 
+		color3, 
+		color4, 
+		vertical
+	);
 }
 
-function draw_bar_color_border_no_bkg(xx, yy, value, max_value, width, height, border, color1, color2, color3, color4) {
-	/// @function			draw_bar_color_border_no_bkg(xx, yy, value, max_value, width, height, border, color1, color2, color3, color4);
+function draw_bar_color_border_no_bkg(xx, yy, value, max_value, width, height, border, color1, color2, color3, color4, vertical=false) {
+	/// @function			draw_bar_color_border_no_bkg(xx, yy, value, max_value, width, height, border, color1, color2, color3, color4, vertical);
 	/// @param				xx
 	/// @param				yy
 	/// @param				value
@@ -34,10 +53,31 @@ function draw_bar_color_border_no_bkg(xx, yy, value, max_value, width, height, b
 	/// @param				color2
 	/// @param				color3
 	/// @param				color4
-	var bar_border = border;
-	var bar_x = xx;
-	var bar_y = yy;
-	var bar_height = height;
-	var bar_width = width;
-	draw_rectangle_color(bar_x + bar_border, bar_y - bar_border, bar_x + value/max_value*(bar_width - bar_border), bar_y - bar_height + bar_border, color1, color2, color3, color4, false);
+	/// @param				vertical
+	if (vertical) {
+		draw_rectangle_color(
+			xx, 
+			yy, 
+			xx + width, 
+			yy - ((value/max_value)*(height)), 
+			color1, 
+			color2, 
+			color3, 
+			color4, 
+			false
+		);
+	}
+	else {
+		draw_rectangle_color(
+			xx, 
+			yy, 
+			xx + ((value/max_value)*width), 
+			yy - height, 
+			color1, 
+			color2, 
+			color3, 
+			color4, 
+			false
+			);
+	}
 }

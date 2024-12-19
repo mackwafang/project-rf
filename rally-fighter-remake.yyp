@@ -42,11 +42,12 @@
   "isEcma":false,
   "LibraryEmitters":[],
   "MetaData":{
-    "IDEVersion":"2024.6.0.157",
+    "IDEVersion":"2024.11.0.179",
   },
   "name":"rally-fighter-remake",
   "resources":[
     {"id":{"name":"anic_boost","path":"animcurves/anic_boost/anic_boost.yy",},},
+    {"id":{"name":"anic_fade_flash","path":"animcurves/anic_fade_flash/anic_fade_flash.yy",},},
     {"id":{"name":"anic_flash","path":"animcurves/anic_flash/anic_flash.yy",},},
     {"id":{"name":"anic_ping","path":"animcurves/anic_ping/anic_ping.yy",},},
     {"id":{"name":"fnt_disclaimer","path":"fonts/fnt_disclaimer/fnt_disclaimer.yy",},},
@@ -126,6 +127,7 @@
     {"id":{"name":"shd_game_world","path":"shaders/shd_game_world/shd_game_world.yy",},},
     {"id":{"name":"shd_lighting","path":"shaders/shd_lighting/shd_lighting.yy",},},
     {"id":{"name":"shd_outline","path":"shaders/shd_outline/shd_outline.yy",},},
+    {"id":{"name":"shd_sprite_billboard_color_replace","path":"shaders/shd_sprite_billboard_color_replace/shd_sprite_billboard_color_replace.yy",},},
     {"id":{"name":"shd_sprite_billboard","path":"shaders/shd_sprite_billboard/shd_sprite_billboard.yy",},},
     {"id":{"name":"snd_boost","path":"sounds/snd_boost/snd_boost.yy",},},
     {"id":{"name":"snd_car_2","path":"sounds/snd_car_2/snd_car_2.yy",},},
@@ -148,6 +150,7 @@
     {"id":{"name":"spr_bike_3d_detail_2_crashed_roll2","path":"sprites/spr_bike_3d_detail_2_crashed_roll2/spr_bike_3d_detail_2_crashed_roll2.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_crashed","path":"sprites/spr_bike_3d_detail_2_crashed/spr_bike_3d_detail_2_crashed.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_get_on","path":"sprites/spr_bike_3d_detail_2_get_on/spr_bike_3d_detail_2_get_on.yy",},},
+    {"id":{"name":"spr_bike_3d_detail_2_side","path":"sprites/spr_bike_3d_detail_2_side/spr_bike_3d_detail_2_side.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_stand","path":"sprites/spr_bike_3d_detail_2_stand/spr_bike_3d_detail_2_stand.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_start","path":"sprites/spr_bike_3d_detail_2_start/spr_bike_3d_detail_2_start.yy",},},
     {"id":{"name":"spr_bike_3d_detail_2_turn","path":"sprites/spr_bike_3d_detail_2_turn/spr_bike_3d_detail_2_turn.yy",},},
@@ -220,7 +223,8 @@
   "templateType":"game",
   "TextureGroups":[
     {"$GMTextureGroup":"","%Name":"Default","autocrop":false,"border":2,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"Default","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
-    {"$GMTextureGroup":"","%Name":"tex_road","autocrop":true,"border":8,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":{"name":"Default","path":"texturegroups/Default",},"isScaled":false,"loadType":"dynamicpages","mipsToGenerate":0,"name":"tex_road","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
-    {"$GMTextureGroup":"","%Name":"debug","autocrop":true,"border":2,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":{"name":"tex_road","path":"texturegroups/tex_road",},"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"debug","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMTextureGroup":"","%Name":"texgroup_road","autocrop":true,"border":8,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":{"name":"Default","path":"texturegroups/Default",},"isScaled":false,"loadType":"dynamicpages","mipsToGenerate":0,"name":"texgroup_road","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMTextureGroup":"","%Name":"debug","autocrop":true,"border":2,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":{"name":"texgroup_road","path":"texturegroups/texgroup_road",},"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"debug","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
+    {"$GMTextureGroup":"","%Name":"texgroup_prop","autocrop":true,"border":2,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"texgroup_prop","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
   ],
 }

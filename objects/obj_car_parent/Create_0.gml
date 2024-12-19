@@ -17,7 +17,7 @@ engine_rpm = 1000;		// engine rpm
 test_rpm = 0;
 velocity = 0;			// car's speed
 max_velocity = 3000;	// car's max speed
-speed_limit = 999;		// vehicle's limit based on global.GAMEPLAY_MEASURE_METRICS, should be used for debugging
+speed_limit = 999;		// vehicle's limit based on global.gameplay_measure_metrics, should be used for debugging
 wheel_radius = 0.32;	// wheel radius in m
 mass = 300;				// vehicle mass, in kg
 horsepower = 300;		// horsepower
@@ -327,19 +327,19 @@ on_death = function() {
 	}
 }
 
-on_collision_with_entity = function() {
+on_collision_with_entity = function(hp_lost_modifier=1) {
 	if (other == self) {return;}
 	if (abs(other.z - z) > other.height) {return;}
 	
 	var dir = point_direction(other.x,other.y,x,y);
 	var side = sign(angle_difference(dir, direction));
 	var force = ((mass * velocity) + (other.mass + other.velocity)) / global.deltatime;
-	var base_collision_hp_lost = (force / 500000);
+	var base_collision_hp_lost = (force / 750000) * hp_lost_modifier;
 	if (!is_completed) {
 		if (hit_immune <= 0) {
 			var collision_sound_max_dist = 256;
 			var collision_sound_fall_off = 196;
-					
+			var collision_sound_pitch = random_range(0.95, 1.05);
 			if (abs(angle_difference(direction, dir)) < 120) {
 				base_collision_hp_lost /= 2;
 			}
@@ -347,13 +347,13 @@ on_collision_with_entity = function() {
 			hp -= base_collision_hp_lost;
 					
 			if (base_collision_hp_lost < 20) {
-				audio_play_sound_at(snd_hit_light, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6);
+				audio_play_sound_at(snd_hit_light, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6, 1, 0, collision_sound_pitch);
 			}
 			else if (base_collision_hp_lost < 50) {
-				audio_play_sound_at(snd_hit_med, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6);
+				audio_play_sound_at(snd_hit_med, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6, 1, 0, collision_sound_pitch);
 			}
 			else {
-				audio_play_sound_at(snd_hit_hard, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6);
+				audio_play_sound_at(snd_hit_hard, x, y, z, collision_sound_fall_off, collision_sound_max_dist, 1, false, 6, 1, 0, collision_sound_pitch);
 			}
 			hit_immune = 1;
 		}

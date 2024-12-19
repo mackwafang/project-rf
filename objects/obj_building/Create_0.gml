@@ -12,17 +12,17 @@ display_image_index = 0;
 floors = 1;
 
 function init_vertex_buffer() {
-	var x0 = x;
-	var y0 = y;
-	var x1 = x + lengthdir_x(building_width, direction);
-	var y1 = y + lengthdir_y(building_width, direction);
-	var x2 = x + lengthdir_x(building_length, direction-90);
-	var y2 = y + lengthdir_y(building_length, direction-90);
-	var x3 = x1 + lengthdir_x(building_length, direction-90);
-	var y3 = y1 + lengthdir_y(building_length, direction-90);
+	var x0 = x + lengthdir_x(building_width / 2 , direction+45);
+	var y0 = y + lengthdir_y(building_width / 2, direction+45);
+	var x1 = x + lengthdir_x(building_width / 2, direction+135);
+	var y1 = y + lengthdir_y(building_width / 2, direction+135);
+	var x2 = x + lengthdir_x(building_length / 2, direction-135);
+	var y2 = y + lengthdir_y(building_length / 2, direction-135);
+	var x3 = x + lengthdir_x(building_length / 2, direction-45);
+	var y3 = y + lengthdir_y(building_length / 2, direction-45);
 	//matrix = matrix_build(x, y, z, 0, 0, direction, 1, 1, 1);
-	image_xscale = building_width;
-	image_yscale = building_length;
+	image_xscale = building_width / 2;
+	image_yscale = building_length / 2;
 	image_angle = direction;
 	building_height = 128 * floors;
 	
@@ -46,51 +46,67 @@ function init_vertex_buffer() {
 			break;
 	}
 	var building_uv = sprite_get_uvs(building_sprite, display_image_index);
-	//bottom
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx, yy-128, z_start, uv[0], uv[1]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx+building_width, yy-128, z_end, uv[2], uv[1]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx+building_width, yy+128, z_end, uv[2], uv[3]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx+building_width, yy+128, z_end, uv[2], uv[3]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx, yy+128, z_start, uv[0], uv[3]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx, yy-128, z_start, uv[0], uv[1]);
-
-	//top
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx, yy-128, z_start+building_height, uv[0], uv[1]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx, yy+128, z_start+building_height, uv[0], uv[3]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx+building_width, yy+128, z_end+building_height, uv[2], uv[3]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx+building_width, 128, z_end+building_height, uv[2], uv[3]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx+building_width, yy-128, z_end+building_height, uv[2], uv[1]);
-	//vertex_position_3d_uv(global.road_vertex_buffer, xx, yy-128, z_start+building_height, uv[0], uv[1]);
+    var points = [];
+	// -y
+    points = array_concat(
+        points, 
+        polygon_create_square_points_3d(
+            new Point3D(x0, y0, z_end + building_height),
+            new Point3D(x1, y1, z_start + building_height),
+            new Point3D(x1, y1, z_start),
+            new Point3D(x0, y0, z_end),
+          building_uv 
+      )
+    );
 
 	// +y
-	vertex_position_3d_uv(global.road_vertex_buffer, x2, y2, z_start+building_height, uv[0], uv[1], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x2, y2, z_start, uv[0], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x3, y3, z_end, uv[2], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x3, y3, z_end, uv[2], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x3, y3, z_end+building_height, uv[2], uv[1], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x2, y2, z_start+building_height, uv[0], uv[1], building_color_drk);
-
-	// -y
-	vertex_position_3d_uv(global.road_vertex_buffer, x1, y1, z_end+building_height, building_uv[0], building_uv[1], building_color);
-	vertex_position_3d_uv(global.road_vertex_buffer, x1, y1, z_end, building_uv[0], building_uv[3], building_color);
-	vertex_position_3d_uv(global.road_vertex_buffer, x0, y0, z_start, building_uv[2], building_uv[3], building_color);
-	vertex_position_3d_uv(global.road_vertex_buffer, x0, y0, z_start, building_uv[2], building_uv[3], building_color);
-	vertex_position_3d_uv(global.road_vertex_buffer, x0, y0, z_start+building_height, building_uv[2], building_uv[1], building_color);
-	vertex_position_3d_uv(global.road_vertex_buffer, x1, y1, z_end+building_height, building_uv[0], building_uv[1], building_color);
+    points = array_concat(
+        points, 
+        polygon_create_square_points_3d(
+            new Point3D(x2, y2, z_start + building_height),
+            new Point3D(x3, y3, z_end + building_height),
+            new Point3D(x3, y3, z_end),
+            new Point3D(x2, y2, z_start),
+            building_uv 
+        )
+    );
 
 	// -x
-	vertex_position_3d_uv(global.road_vertex_buffer, x0, y0, z_start+building_height, uv[0], uv[1], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x0, y0, z_start, uv[0], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x2, y2, z_start, uv[2], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x2, y2, z_start, uv[2], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x2, y2, z_start+building_height, uv[2], uv[1], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x0, y0, z_start+building_height, uv[0], uv[1], building_color_drk);
+    points = array_concat(
+        points, 
+        polygon_create_square_points_3d(
+            new Point3D(x1, y1, z_start + building_height),
+            new Point3D(x2, y2, z_start + building_height),
+            new Point3D(x2, y2, z_start),
+            new Point3D(x1, y1, z_start),
+            building_uv 
+        )
+    );
 
 	// +x
-	vertex_position_3d_uv(global.road_vertex_buffer, x3, y3, z_end+building_height, uv[0], uv[1], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x3, y3, z_end, uv[0], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x1, y1, z_end, uv[2], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x1, y1, z_end, uv[2], uv[3], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x1, y1, z_end+building_height, uv[2], uv[1], building_color_drk);
-	vertex_position_3d_uv(global.road_vertex_buffer, x3, y3, z_end+building_height, uv[0], uv[1], building_color_drk);
+    points = array_concat(
+        points, 
+        polygon_create_square_points_3d(
+            new Point3D(x3, y3, z_end + building_height),
+            new Point3D(x0, y0, z_end + building_height),
+            new Point3D(x0, y0, z_end),
+            new Point3D(x3, y3, z_end),
+            building_uv 
+        )
+    );
+    
+    // add points to vertex buffer
+    for (var i = 0; i < array_length(points); i++) {
+        var data = points[@ i];
+        var point = data[@ 0];
+        var uv = data[@ 1];
+        vertex_position_3d_uv(
+            global.road_vertex_buffer,
+            point.x,
+            point.y,
+            point.z,
+            uv.u,
+            uv.v
+        );
+    }
 }

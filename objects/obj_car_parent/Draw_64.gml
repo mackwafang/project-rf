@@ -12,6 +12,9 @@ var port_width = view_wport[main_camera];
 var port_height = view_hport[main_camera];
 var port_width_half = port_width / 2;
 
+// disable ui if mode is 0
+if (global.gameplay_race_interface_mode == INTERFACE_MODE.NONE) {exit;}
+
 #region Health Bar
 if (ai_behavior.part_of_race) {
 	// 2d data
@@ -85,6 +88,7 @@ if (ai_behavior.part_of_race) {
 
 #region Draw UI elements
 if (obj_controller.main_camera_target.id == id) {
+	#region Globally available U
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
 	//draw_text(64, 64, $"{drive_force}");
@@ -107,141 +111,19 @@ if (obj_controller.main_camera_target.id == id) {
 	//draw_set_halign(fa_left);
 	//draw_text(64, 80, $"to_stand: {string_replace(crash_timer, ":", "\n")}");
 	// draw_text(64, 96, $"walking: {crash_timer}");
-		
-	// health bar
-	var bar_border = 2;
-	var bar_x = port_width_half - 75;
-	var bar_y = port_height - 32;
-	var bar_height = 28;
-	var bar_width = 150;
-	var bar_color = c_green;//(hit_immune ? c_gray : c_green);
 	var hp_frac = (hp / max_hp);
-	if (is_nan(hp_display)) {hp_display = 0;}
-	
-	if (hp_frac < hp_display) {
-		hp_display += max((hp_frac - hp_display) * 0.025, sign(hp_frac - hp_display) * 0.005);
-		draw_bar_color_border(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
-		draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
-	}
-	else {
-		hp_display += min((hp_frac - hp_display) * 0.025, sign(hp_frac - hp_display) * 0.005);
-		draw_bar_color_border(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
-		draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
-	}
-	draw_set_valign(fa_middle);
-	draw_set_halign(fa_center);
-	draw_text(bar_x + (bar_width / 2) + 2, bar_y - (bar_height / 2), $"{hp}/{max_hp}");
-	
-	// boost bar 
-	//bar_border = 2;
-	//bar_x = port_width_half - 75;
-	//bar_y = port_height - 64;
-	//bar_height = 8;
-	//bar_width = 150;
-	// draw_bar_color_border(bar_x, bar_y, boost_juice, 100, bar_width, bar_height, bar_border, c_yellow, c_yellow, c_yellow, c_yellow, 0);
-	
-	bar_x = port_width_half - (16 * 5);
-	bar_y = port_height - 72;
-	var max_bar = 20;
-	var bar_frequency = (100 div max_bar);
-	var boost_color = (boost_juice < 100 ? c_yellow : c_orange);
-	draw_rectangle_color(bar_x, bar_y - 4, bar_x + (16 * 10), bar_y + 4, 0, 0, 0, 0, false);
-	for (var i = 0; i < max_bar; i++) {
-		var segment = boost_juice div bar_frequency;
-		if (segment >= i) {
-			var anic = animcurve_get(anic_boost);
-			var flash_freq = ((boost_juice - (i * bar_frequency)) / bar_frequency);
-			var alpha = animcurve_channel_evaluate(animcurve_get_channel(anic, 1), flash_freq);
-			var size = 1;
-			if (boost_active) {
-				size = animcurve_channel_evaluate(animcurve_get_channel(anic, 0), flash_freq);
-			}
-			draw_sprite_ext(spr_ui_boost_bar, 0, bar_x + (8 + (i * 16)) * (10 / max_bar), bar_y+1, size / 2 * (10 / max_bar), size / 2, 0, boost_color, alpha);
-		}
-	}
-	draw_set_valign(fa_middle);
-	draw_set_halign(fa_left);
-
-	// rpm odometer
-	var odometer_x = port_width_half - 64;
-	var odometer_y = port_height - 80;
-	odometer_rpm += ((engine_rpm / engine_rpm_max) - odometer_rpm) * 0.1;
-	draw_sprite(spr_odometer_bkg, 0, odometer_x, odometer_y);
-	
-	draw_set_valign(fa_bottom);
-	draw_set_halign(fa_center);
-	draw_text_transformed(odometer_x, odometer_y - 20, gear, 0.75, 0.75, 0);
-	
-	draw_line_width_color(
-		odometer_x,
-		odometer_y,
-		odometer_x + lengthdir_x(32,180 - (odometer_rpm * 180)),
-		odometer_y + lengthdir_y(32,180 - (odometer_rpm * 180)),
-		3,
-		c_red,
-		c_red
-	)
-	//draw_set_valign(fa_bottom);
-	//draw_set_halign(fa_center);
-	//draw_text(odometer_x, odometer_y - 64, $"{round(odometer_rpm * 10000)} RPM");
-	
-	// speed odometer
-	odometer_x = port_width_half + 64;
-	odometer_y = port_height - 80;
-	odometer_speed += ((velocity / 3000) - odometer_speed) * 0.1;
-	var speed_odometer_spr_index = 0;
-	switch (global.GAMEPLAY_MEASURE_METRICS) {
-		case MEASURE.METRIC:
-			speed_odometer_spr_index = 1;
-			break;
-		case MEASURE.IMPERIAL:
-			speed_odometer_spr_index = 2;
-			break;
-	}
-	draw_sprite(spr_odometer_bkg, speed_odometer_spr_index, odometer_x, odometer_y);
-	
-	// vehicle speed
-	draw_set_valign(fa_bottom);
-	draw_set_halign(fa_center);
-	var speed_unit = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? "KMH" : "MPH");
-	var speed_scale = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);
-	draw_text_transformed(odometer_x, odometer_y - 20, $"{round(velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)}", 0.75, 0.75, 0);
-	
-	draw_line_width_color(
-		odometer_x,
-		odometer_y,
-		odometer_x + lengthdir_x(32,180 - (odometer_speed * 180)),
-		odometer_y + lengthdir_y(32,180 - (odometer_speed * 180)),
-		3,
-		c_red,
-		c_red
-	);
-	
-	//draw_set_valign(fa_top);
-	//draw_set_halign(fa_right);
-	//draw_text(odometer_x + 32, odometer_y, $"Max: {round(max_velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)} ");
-	
-	//draw_set_valign(fa_bottom);
-	//draw_set_halign(fa_left);
-	//draw_text(odometer_x, odometer_y - 20, $"{speed_unit}");
-	
-	// race rank
-	//draw_set_valign(fa_bottom);
-	//draw_set_halign(fa_center);
-	// draw_text(port_width / 2, port_height - 80, $"{race_rank}");
-	draw_sprite(spr_race_rank, race_rank-1, port_width_half, port_height - 128);
 	
 	// distance
-	draw_set_valign(fa_top);
+	draw_set_valign(fa_bottom);
 	draw_set_halign(fa_center);
-	var dist_scale = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);	
+	var dist_scale = (global.gameplay_measure_metrics == MEASURE.METRIC ? 1 : KMH_TO_MPH);	
 	var distance_display = string_format(dist_along_road / global.WORLD_TO_REAL_SCALE * dist_scale / 10000, 2, 1);
 	var dist_unit = "km";
-	if (global.GAMEPLAY_MEASURE_METRICS == MEASURE.IMPERIAL) {
+	if (global.gameplay_measure_metrics == MEASURE.IMPERIAL) {
 		dist_unit = "mi";
 	}
-	draw_text(port_width / 2, port_height - 32, $"{distance_display} {dist_unit}");
-	draw_bar_color_border(port_width / 2 - 64, port_height, dist_along_road, global.race_length, 128, 8, 2, c_white, c_white, c_white, c_white, 0);
+	draw_text(port_width / 2, port_height - 8, $"{distance_display} {dist_unit}");
+	draw_bar_color_border(port_width / 2 - 64, port_height-4, dist_along_road, global.race_length, 128, 4, 2, c_white, c_white, c_white, c_white, 0);
 	
 	// draw info to nearest vehicle
 	var dist_to_closest = infinity;
@@ -264,7 +146,7 @@ if (obj_controller.main_camera_target.id == id) {
 	var scale = 10000;
 	var unit = "km";
 	var dist = real_dist / scale * dist_scale;
-	if (global.GAMEPLAY_MEASURE_METRICS == MEASURE.IMPERIAL) {
+	if (global.gameplay_measure_metrics == MEASURE.IMPERIAL) {
 		scale = 10000;
 		unit = "mi";
 		dist = real_dist / scale * dist_scale
@@ -276,6 +158,173 @@ if (obj_controller.main_camera_target.id == id) {
 	
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
-	draw_text(port_width_half + 160, port_height - 64, closest_car_index.name);
+	draw_text(port_width_half + 160, port_height - 64, (instance_exists(closest_car_index) ? closest_car_index.name : ""));
+	
+	draw_sprite(spr_race_rank, race_rank-1, port_width_half, port_height - 128);
+	#endregion
+	
+	#region Full UI
+	if (global.gameplay_race_interface_mode == INTERFACE_MODE.FULL) {
+		// health bar
+		var bar_border = 2;
+		var bar_x = port_width_half - 75;
+		var bar_y = port_height - 32;
+		var bar_height = 18;
+		var bar_width = 150;
+		var bar_color = c_green;//(hit_immune ? c_gray : c_green);
+		if (is_nan(hp_display)) {hp_display = 0;}
+	
+		if (hp_frac < hp_display) {
+			hp_display += max((hp_frac - hp_display) * 0.025, sign(hp_frac - hp_display) * 0.005);
+			draw_bar_color_border(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
+			draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
+		}
+		else {
+			hp_display += min((hp_frac - hp_display) * 0.025, sign(hp_frac - hp_display) * 0.005);
+			draw_bar_color_border(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, 0);
+			draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp_display*max_hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color);
+		}
+		draw_set_valign(fa_middle);
+		draw_set_halign(fa_center);
+		draw_text(bar_x + (bar_width / 2) + 2, bar_y - (bar_height / 2), $"{hp}/{max_hp}");
+		
+		// boost bar 
+		bar_x = port_width_half - (16 * 5);
+		bar_y = port_height - 64;
+		var max_bar = 20;
+		var bar_frequency = (100 div max_bar);
+		var boost_color = (boost_juice < 100 ? c_yellow : c_orange);
+		draw_rectangle_color(bar_x, bar_y - 4, bar_x + (16 * 10), bar_y + 4, 0, 0, 0, 0, false);
+		for (var i = 0; i < max_bar; i++) {
+			var segment = boost_juice div bar_frequency;
+			if (segment >= i) {
+				var anic = animcurve_get(anic_boost);
+				var flash_freq = ((boost_juice - (i * bar_frequency)) / bar_frequency);
+				var alpha = animcurve_channel_evaluate(animcurve_get_channel(anic, 1), flash_freq);
+				var size = 1;
+				if (boost_active) {
+					size = animcurve_channel_evaluate(animcurve_get_channel(anic, 0), flash_freq);
+				}
+				draw_sprite_ext(spr_ui_boost_bar, 0, bar_x + (8 + (i * 16)) * (10 / max_bar), bar_y+1, size / 2 * (10 / max_bar), size / 2, 0, boost_color, alpha);
+			}
+		}
+		
+		draw_set_valign(fa_middle);
+		draw_set_halign(fa_left);
+		// rpm odometer
+		var odometer_x = port_width_half - 64;
+		var odometer_y = port_height - 72;
+		odometer_rpm += ((engine_rpm / engine_rpm_max) - odometer_rpm) * 0.1;
+		draw_sprite(spr_odometer_bkg, 0, odometer_x, odometer_y);
+	
+		draw_set_valign(fa_bottom);
+		draw_set_halign(fa_center);
+		draw_text_transformed(odometer_x, odometer_y - 20, gear, 0.75, 0.75, 0);
+	
+		draw_line_width_color(
+			odometer_x,
+			odometer_y,
+			odometer_x + lengthdir_x(32,180 - (odometer_rpm * 180)),
+			odometer_y + lengthdir_y(32,180 - (odometer_rpm * 180)),
+			3,
+			c_red,
+			c_red
+		)
+		//draw_set_valign(fa_bottom);
+		//draw_set_halign(fa_center);
+		//draw_text(odometer_x, odometer_y - 64, $"{round(odometer_rpm * 10000)} RPM");
+	
+		// speed odometer
+		odometer_x = port_width_half + 64;
+		odometer_y = port_height - 72;
+		odometer_speed += ((velocity / 3000) - odometer_speed) * 0.1;
+		var speed_odometer_spr_index = 0;
+		switch (global.gameplay_measure_metrics) {
+			case MEASURE.METRIC:
+				speed_odometer_spr_index = 1;
+				break;
+			case MEASURE.IMPERIAL:
+				speed_odometer_spr_index = 2;
+				break;
+		}
+		draw_sprite(spr_odometer_bkg, speed_odometer_spr_index, odometer_x, odometer_y);
+	
+		// vehicle speed
+		draw_set_valign(fa_bottom);
+		draw_set_halign(fa_center);
+		var speed_unit = (global.gameplay_measure_metrics == MEASURE.METRIC ? "KMH" : "MPH");
+		var speed_scale = (global.gameplay_measure_metrics == MEASURE.METRIC ? 1 : KMH_TO_MPH);
+		draw_text_transformed(odometer_x, odometer_y - 20, $"{round(velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)}", 0.75, 0.75, 0);
+	
+		draw_line_width_color(
+			odometer_x,
+			odometer_y,
+			odometer_x + lengthdir_x(32,180 - (odometer_speed * 180)),
+			odometer_y + lengthdir_y(32,180 - (odometer_speed * 180)),
+			3,
+			c_red,
+			c_red
+		);
+	}
+	#endregion
+	
+	#region Simple UI
+	if (global.gameplay_race_interface_mode == INTERFACE_MODE.SIMPLE) {
+		// health
+		var bar_x = port_width_half - 108;
+		var bar_y = port_height - 48;
+		var bar_width = 12;
+		var bar_height = 72;
+		var bkg_color = 0;
+		var bar_color = c_green;
+		var bar_border = 2;
+		draw_bar_color_border(bar_x, bar_y, max_hp, max_hp, bar_width, bar_height, bar_border, bkg_color, bkg_color, bkg_color, bkg_color, bkg_color, true);
+		if (hp_frac < 0.3) {
+			var a_flash = animcurve_get(anic_fade_flash);
+			var alpha = animcurve_channel_evaluate(animcurve_get_channel(a_flash, 0), (counter%(100))/100);
+			draw_set_alpha(alpha);
+			draw_bar_color_border_no_bkg(bar_x, bar_y, max_hp, max_hp, bar_width, bar_height, bar_border, c_red, c_red, c_red, c_red, true);
+			draw_set_alpha(1)
+		}
+		draw_bar_color_border_no_bkg(bar_x, bar_y, max(0, hp), max_hp, bar_width, bar_height, bar_border, bar_color, bar_color, bar_color, bar_color, true);
+		
+		// speed
+		var odometer_x = port_width_half + 64;
+		var odometer_y = port_height - 48;
+		draw_set_valign(fa_bottom);
+		draw_set_halign(fa_center);
+		var speed_unit = (global.gameplay_measure_metrics == MEASURE.METRIC ? "KMH" : "MPH");
+		var speed_scale = (global.gameplay_measure_metrics == MEASURE.METRIC ? 1 : KMH_TO_MPH);
+        
+		draw_text_transformed(odometer_x, odometer_y - 20, $"{round(velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)}", 2, 2, 0);
+		draw_text_transformed(odometer_x, odometer_y, speed_unit, 0.75, 0.75, 0);
+		
+		// rpm
+		odometer_x = port_width_half - 64;
+		odometer_y = port_height - 48;
+		draw_text_transformed(odometer_x, odometer_y - 20, $"{gear}", 2, 2, 0);
+		draw_text_transformed(odometer_x, odometer_y - 17, $"{round(engine_rpm)}", 0.5, 0.5, 0);
+		draw_text_transformed(odometer_x, odometer_y, "RPM", 0.75, 0.75, 0);
+		
+		// boost
+		var boost_color = c_yellow;
+		var boost_text = string(round(boost_juice));
+		var alpha = 1;
+		var a_flash = animcurve_get(anic_flash);
+		if (boost_juice >= 100) {
+			boost_color = c_orange;
+			boost_text = "Boost";
+			alpha = animcurve_channel_evaluate(animcurve_get_channel(a_flash, 0), (counter%100)/100);
+		}
+		var boost_value_x = port_width_half;
+		var boost_value_y = port_height - 48;
+		
+		draw_set_alpha(alpha);
+		draw_set_color(boost_color);
+		draw_text_transformed(boost_value_x, boost_value_y, $"{boost_text}", 0.75, 0.75, 0);
+		draw_set_color(c_white);
+		draw_set_alpha(1);
+	}
+	#endregion
 }
 #endregion

@@ -12,6 +12,7 @@ function RoadNode(_Point) constructor {
 	length_to_point = 0;		// distance from the begining to this point
 	collision_points = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];	// list of collisions for this road node
 	shoulder = [true, true];	// shoulder for rendering for [left, right]
+	shoulder_z = [0, 0];		// extra z for shoulders
 	shoulder_image_index = 0;	// sprite index for shoulder
 	_id = -1;
 	next_road = -1;

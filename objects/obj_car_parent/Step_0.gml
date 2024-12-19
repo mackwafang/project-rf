@@ -189,22 +189,17 @@ else {
 						lengthdir_x(1, angle_difference(direction, cam_dir)),
 						lengthdir_y(1, angle_difference(direction, cam_dir))
 					);
-					var a_hor = new Point(
-						lengthdir_x(1, angle_difference(direction, cam_dir)),
-						lengthdir_y(1, angle_difference(direction, cam_dir))
-					);
 					var b = new Point(
 						(obj_controller.main_camera_pos.x - x) / length_to_cam,
 						(obj_controller.main_camera_pos.y - y) / length_to_cam
 					);
 					var _d = -dot_product(a.x, a.y, b.x, b.y);
-					var _d_hor = -dot_product(a.x, a.y, b.x, b.y);
 					
-					if (_d > 0.5) {
+					if (_d > 0.75) {
 						// forward
 						vehicle_detail_index = spr_bike_3d_detail_2_walk_up;
 					}
-					else if (_d < -0.5) {
+					else if (_d < -0.75) {
 						// towards
 						vehicle_detail_index = spr_bike_3d_detail_2_walk_down;
 					}
@@ -214,7 +209,7 @@ else {
 					}
 					
 					vehicle_detail_subimage = (counter div 10) % 6
-					image_xscale = sign(_d_hor);
+					image_xscale = sign(angle_difference(cam_dir, direction));
 				}
 			}
 			else {
@@ -285,7 +280,7 @@ if (is_completed) {
 var engine_to_wheel_ratio = gear_ratio[gear-1] * diff_ratio;
 var engine_torque_max = (torque_lookup(engine_rpm) + (300 * sqr(global.difficulty-1)));
 // var engine_torque_max = ((horsepower / engine_rpm * 5252) * 8 * global.difficulty);
-var engine_torque = engine_torque_max * (boost_active ? 2 : engine_power);
+var engine_torque = engine_torque_max * (boost_active ? 3 : engine_power);
 var drive_torque = engine_torque * engine_to_wheel_ratio * transfer_eff;
 	
 var f_drag = -c_drag * velocity;
@@ -314,7 +309,7 @@ if (vertical_on_road) {
 	engine_rpm = (wheel_rotation_rate * engine_to_wheel_ratio * 60 / (2 * pi));
 }
 velocity = clamp(velocity, 0, max_velocity);
-velocity = clamp(velocity, 0, speed_limit / ((global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH) * global.WORLD_TO_REAL_SCALE / 10));
+velocity = clamp(velocity, 0, speed_limit / ((global.gameplay_measure_metrics == MEASURE.METRIC ? 1 : KMH_TO_MPH) * global.WORLD_TO_REAL_SCALE / 10));
 
 if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
 
@@ -335,12 +330,10 @@ engine_sound_interval = (engine_sound_interval + 1) % (engine_rpm < 2000 ? 16 : 
 
 // remove non-participating cars when too far away
 if (abs(obj_controller.main_camera_target.dist_along_road - dist_along_road) > 5000) {
-	if (!global.DEBUG_FREE_CAMERA) {
-		if (!ai_behavior.part_of_race) {
-			//print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of view. {obj_controller.main_camera_target.dist_along_road} {dist_along_road} {abs(obj_controller.main_camera_target.dist_along_road-dist_along_road)} > 5000");
-			instance_destroy();
-		}
-	}
+    if (!ai_behavior.part_of_race) {
+        //print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of view. {obj_controller.main_camera_target.dist_along_road} {dist_along_road} {abs(obj_controller.main_camera_target.dist_along_road-dist_along_road)} > 5000");
+        instance_destroy();
+    }
 	// randomly destroy car to simulate crashes
 	if (irandom(100000) < ((global.total_participating_vehicles - race_rank + 1))) {
 		if (!is_player) {

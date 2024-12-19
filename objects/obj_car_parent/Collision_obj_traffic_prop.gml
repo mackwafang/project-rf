@@ -19,15 +19,17 @@ if (abs(z-other.z) < other.height) {
 				break;
 			case 1:
 				if (zspeed <= global.gravity_3d) {
-					zspeed += (other.height / 5) / (mass / velocity) * 0.25;
+					zspeed += (other.height / 10) / (mass / velocity) * 0.25;
 				}
-				audio_play_sound_on(engine_sound_emitter, snd_hit_light, false, 2);
+				audio_play_sound_on(engine_sound_emitter, snd_hit_light, false, 2, 1, 0, random_range(0.95, 1.05));
 				//if (is_player) {
 				//	print($"yeet {other.id} {zspeed}");
 				//}
 				break;
 			case 6:
-				on_collision_with_entity();
+				if (is_respawning) {
+					on_collision_with_entity(0.5);
+				}
 				break;
 		}
 	}

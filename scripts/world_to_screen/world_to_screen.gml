@@ -1,5 +1,6 @@
-function world_to_screen(xx, yy, zz, view_mat, proj_mat) {/// @param xx
+function world_to_screen(xx, yy, zz, view_mat, proj_mat) {
 	/// @function world_to_screen(xx, yy, zz, view_mat, proj_mat)
+    /// @param xx
 	/// @param yy
 	/// @param zz
 	/// @param view_mat
@@ -12,7 +13,9 @@ function world_to_screen(xx, yy, zz, view_mat, proj_mat) {/// @param xx
 	    Script created by TheSnidr
 	    www.thesnidr.com
 	*/
-	
+	if (typeof(view_mat) != "array") {throw typeof(view_mat);}
+	if (typeof(proj_mat) != "array") {throw typeof(proj_mat);}
+        
 	if (proj_mat[15] == 0) {   //This is a perspective projection
 	    var w = view_mat[2] * xx + view_mat[6] * yy + view_mat[10] * zz + view_mat[14];
 	    // If you try to convert the camera's "from" position to screen space, you will

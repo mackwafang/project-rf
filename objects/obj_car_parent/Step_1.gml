@@ -10,18 +10,6 @@ var dist_to_median = point_distance(x,y,vec_to_road.x,vec_to_road.y);
 // -1 left, 1 right
 var side_from_median = dsin(angle_difference(point_direction(x,y,vec_to_road.x,vec_to_road.y), on_road_index.direction));
 
-
-//var vec_to_road = point_to_line(
-//	new Point(on_road_index.x, on_road_index.y),
-//	new Point(on_road_index.next_road.x, on_road_index.next_road.y),
-//	new Point(x, y)
-//);
-//var vec_to_road = point_to_line_3d(
-//	on_road_index.x, on_road_index.y, on_road_index.z,
-//	on_road_index.next_road.x, on_eroad_index.next_road.y, on_road_index.next_road.z,
-//	x, y, z
-//);
-
 /************ vertical height ************/
 if (_z_restrict) {
 	var road = on_road_index;
@@ -110,25 +98,29 @@ if (!is_respawning) {
 				(obj_controller.main_camera_pos.y - y) / length_to_cam
 			);
 			var _d = dot_product(a.x, a.y, b.x, b.y);
+            var can_perform_wheelie = accelerating and velocity <= 200 * global.difficulty and gear == 1;
+			if (ai_behavior.part_of_race) {
+				if (can_perform_wheelie) {
+					vehicle_detail_index = spr_bike_3d_detail_2_start;
+				}
+			}
 			
 			if (abs(_d) > 0.25) {
 				if (velocity > 0) {
 					// angled sprite
+					vehicle_detail_index = spr_bike_3d_detail_2_side;
+                    if (can_perform_wheelie) {
+                        vehicle_detail_index = spr_bike_3d_detail_2_start;
+                        vehicle_detail_subimage = 1;
+                    }
+				}
+				else {
+					// angled stopped sprite
 					vehicle_detail_index = spr_bike_3d_detail_2;
 					vehicle_detail_subimage = 1;
 				}
-				else {
-					// angled sprite
-					vehicle_detail_index = spr_bike_3d_detail_2;
-					vehicle_detail_subimage = 2;
-				}
 				
 				image_xscale = -(_d == 0 ? 1 : sign(_d));
-			}
-			if (ai_behavior.part_of_race) {
-				if (accelerating and velocity <= 200 * global.difficulty and gear == 1) {
-					vehicle_detail_index = spr_bike_3d_detail_2_start;
-				}
 			}
 		}
 		else {
@@ -160,7 +152,7 @@ else {
 }
 
 // invisible walls to attempt to revent stuck behind buildings
-var side_limit = ((side_from_median == -1 ? on_road_index.get_lanes_left() : on_road_index.get_lanes_right())+1); // building limits
+var side_limit = ((side_from_median == -1 ? on_road_index.get_lanes_left() : on_road_index.get_lanes_right())+4); // building limits
 switch(on_road_index.zone) {
 	case ZONE.FOREST:
 		side_limit = 6;
@@ -175,6 +167,8 @@ switch(on_road_index.zone) {
 		side_limit = 6;
 		break;
 }
+side_limit -= 0.1;
+
 if (dist_to_median <= (side_limit * on_road_index.lane_width)) {
 	// move freely
 	x += dcos(direction) * vel;

@@ -28,7 +28,7 @@ if (global.CAMERA_MODE_3D) {
 	}
 	
 	if (global.GAMEPLAY_LIGHTING) {
-		cluck_set_light_ambient(c_black);
+		cluck_set_light_ambient($555555);
 		cluck_set_spec_camera_position(
 			obj_controller.main_camera_target.x,
 			obj_controller.main_camera_target.y,
@@ -45,12 +45,12 @@ if (global.CAMERA_MODE_3D) {
 				c_white,
 				car.x,
 				car.y,
-				car.z+8,
+				car.z + 8,
 				dcos(car.direction),
 				-dsin(car.direction),
-				dtan(car.on_road_index.elevation),
-				500,
-				15,
+				dsin(car.on_road_index.elevation*2),
+				1000,
+				35,
 				10
 			);
 			cluck_set_light_point(
@@ -59,32 +59,37 @@ if (global.CAMERA_MODE_3D) {
 				car.x+lengthdir_x(-8, car.direction),
 				car.y+lengthdir_y(-8, car.direction),
 				car.z+5,
-				16,
-				4
+				16 * (car.braking ? 3 : 1),
+				4 * (car.braking ? 3 : 1)
 			);
 			light_index += 2;
-		}
-	
-		//for (var i = 0; i < instance_number(obj_street_light); i++) {
-		//	var light = instance_find(obj_street_light, i);
-		//	if ((current_cp-2 <= light.assigned_cp) & (light.assigned_cp <= current_cp+2)) {
-		//		if (light_index < CLUCK_MAX_LIGHTS) {
-		//			cluck_set_light_point(
-		//				light_index,
-		//				 #fff5b6,
-		//				light.x,
-		//				light.y,
-		//				light.z + 256,
-		//				800,
-		//				400
-		//			);
+        }
+        
+        // street lights
+        for (var ri = max(0, (current_cp-2)*road_segments); ri < (current_cp+2)*road_segments; ri++) {
+            var road = road_list[ri];
+            var props = road.props;
+            for (var _pi = 0; _pi < array_length(props); _pi++) {
+                var prop = props[_pi];
+                if (prop.object_index != obj_street_light) {continue;}
+                
+				if (light_index < CLUCK_MAX_LIGHTS) {
+					cluck_set_light_point(
+						light_index,
+						 #fff5b6,
+						prop.x,
+						prop.y,
+						prop.z + 256,
+						800,
+						400
+					);
 				
-		//			light_index += 1;
-		//		}
-		//	}
-		//}
+					light_index += 1;
+				}
+            }
+		}
 		// disable other lights 
-		//for (var i = light_index; i < CLUCK_MAX_LIGHTS; i++) {cluck_set_light_disable(i);}
+		// for (var i = 0; i < CLUCK_MAX_LIGHTS; i++) {cluck_set_light_disable(i);}
 	
 		shader_reset();
 	}

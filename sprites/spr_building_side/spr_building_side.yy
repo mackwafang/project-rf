@@ -81,8 +81,8 @@
   "swatchColours":null,
   "swfPrecision":2.525,
   "textureGroupId":{
-    "name":"tex_road",
-    "path":"texturegroups/tex_road",
+    "name":"texgroup_road",
+    "path":"texturegroups/texgroup_road",
   },
   "type":0,
   "VTile":false,

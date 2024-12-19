@@ -8,15 +8,18 @@ global.DEBUG_STRAIGHT_MAP = false;
 global.DEBUG_SPRITE_UV_TESTER_UV = texture_get_uvs(sprite_get_texture(spr_uv_test, 0));
 global.DEBUG_PRINT = false;
 global.DEBUG_PRINT_VEHICLE_CRASH_REASON = false;
-
-global.DEBUG_FREE_CAMERA = false;
+global.DEBUG_GAME_RESTART_KEY_ENABLE = true;
+global.DEBUG_KEY_GAME_RESTART = vk_f5;
+global.DEBUG_FREE_CAMERA = true;
 
 global.GAMEPLAY_TURN_GUIDE = true;
 global.GAMEPLAY_CARS = true;
 global.GAMEPLAY_TREES = true;
-global.GAMEPLAY_MEASURE_METRICS = MEASURE.IMPERIAL;
 global.GAMEPLAY_LIGHTING = false;
-global.GAMEPLAY_COURSE = COURSES.CITY;
+global.gameplay_race_interface_mode = 1;
+global.gameplay_measure_metrics = MEASURE.METRIC;
+global.gameplay_course = COURSES.CITY;
+
 global.GAMEPLAY_COURSE_ZONE_WEIGHT = {
 	CITY: {
 		STARTING_ZONE: ZONE.CITY,

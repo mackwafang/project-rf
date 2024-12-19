@@ -15,7 +15,7 @@ if (proceed_to_level) {
 	if (wait_timer >= 3 * global.display_freq) {
 		global.level = level_options[LEVEL_OPTIONS_INDEX_DIFFICULTY];
 		global.difficulty = global.LEVEL_TO_DIFFICULTY[level_options[LEVEL_OPTIONS_INDEX_DIFFICULTY]];
-		global.GAMEPLAY_COURSE = level_options[LEVEL_OPTIONS_INDEX_COURSE];
+		global.gameplay_course = level_options[LEVEL_OPTIONS_INDEX_COURSE];
 		room_goto_next();
 	}
 }

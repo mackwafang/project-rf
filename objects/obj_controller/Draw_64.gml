@@ -1,8 +1,8 @@
 
 var port_width = view_wport[obj_controller.main_camera];
 var port_height = view_hport[obj_controller.main_camera];
-var dist_unit = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? "km" : "mi");
-var dist_scale = (global.GAMEPLAY_MEASURE_METRICS == MEASURE.METRIC ? 1 : KMH_TO_MPH);	
+var dist_unit = (global.gameplay_measure_metrics == MEASURE.METRIC ? "km" : "mi");
+var dist_scale = (global.gameplay_measure_metrics == MEASURE.METRIC ? 1 : KMH_TO_MPH);	
 
 with (main_camera_target) {
 	event_perform(ev_draw, ev_gui);
