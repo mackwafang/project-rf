@@ -47,6 +47,11 @@ enum INTERFACE_MODE {
 	SIMPLE = 2
 }
 
+enum GAME_DISPLAY_MODE {
+    WINDOWED = 0,
+    BORDERLESS = 1
+}
+
 enum MEASURE {
 	METRIC,
 	IMPERIAL

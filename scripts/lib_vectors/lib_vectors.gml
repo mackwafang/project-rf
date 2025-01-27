@@ -1,3 +1,11 @@
+/// @desc Data container for a rectangle
+/// @param {real} _width width of rectangle
+/// @param {real} _height height of rectangle
+function Rect(_width, _height) constructor {
+    width = _width;
+    height = _height;
+}
+
 function Point(_x, _y) constructor {
 	x = _x;
 	y = _y;

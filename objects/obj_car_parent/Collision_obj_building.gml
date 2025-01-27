@@ -8,9 +8,6 @@ var b = new Point(
 	(other.y - y) / dist_to_building
 );
 var _d = clamp(abs(dot_product(b.x, b.y, a.x, a.y)), 0, 1);
-if (is_player) {
-    print(_d)
-}
 hp -= max_hp * _d;
 turn_rate *= _d * 2;
 velocity *= _d;

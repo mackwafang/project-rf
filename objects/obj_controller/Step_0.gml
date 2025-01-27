@@ -5,7 +5,7 @@ if (keyboard_check(vk_control)) {
 	if (global.DEBUG_FREE_CAMERA) {z += 1;}
 }
 
-if (keyboard_check_pressed(global.DEBUG_KEY_GAME_RESTART)) {
+if (keyboard_check_pressed(global.DEBUG_HOTKEY.GAME_RESTART)) {
 	if (global.DEBUG_GAME_RESTART_KEY_ENABLE) {
 		game_restart();
 	}
@@ -22,6 +22,56 @@ if (keyboard_check_pressed(ord("E"))) {
 		main_camera_target = participating_vehicles[participating_camera_index];
 	}
 }
+
+// hotkey to quickly swich display mode
+if (keyboard_check_pressed(global.game_settings.keybinds.display_mode_change)) {
+    var default_window_size = new Rect(1024, 768); 
+    var display_size = new Rect(
+        display_get_width(),
+        display_get_height()
+    );
+    var fullscreen_size = new Rect(
+        default_window_size.width * (display_size.width / default_window_size.width),
+        default_window_size.height * (display_size.height / default_window_size.height)
+    );
+    print(fullscreen_size);
+    global.game_settings.display_mode = (global.game_settings.display_mode+1) % 2;
+    
+    switch(global.game_settings.display_mode) {
+        case GAME_DISPLAY_MODE.WINDOWED:
+            window_set_fullscreen(false);
+            window_enable_borderless_fullscreen(false);
+            global.game_settings.display_mode_size.width = default_window_size.width;
+            global.game_settings.display_mode_size.height = default_window_size.height;
+            break;
+        //case GAME_DISPLAY_MODE.FULLSCREEN:
+            //window_set_fullscreen(true);
+            //window_enable_borderless_fullscreen(false);
+            //global.game_settings.display_mode_size.width = default_window_size.width * (display_size.width / default_window_size.width);
+            //global.game_settings.display_mode_size.height = default_window_size.height * (display_size.height / default_window_size.height);
+            //break;
+        case GAME_DISPLAY_MODE.BORDERLESS:
+            window_set_fullscreen(true);
+            window_enable_borderless_fullscreen(true);
+            global.game_settings.display_mode_size.width = fullscreen_size.width;
+            global.game_settings.display_mode_size.height = fullscreen_size.height;
+            break;
+    }    
+    
+    main_camera_size = {
+        width: global.game_settings.display_mode_size.width, 
+        height: global.game_settings.display_mode_size.height,
+    }
+    
+    view_set_wport(0, default_window_size.width);
+    view_set_hport(0, default_window_size.height);
+    
+    camera_set_view_size(main_camera, main_camera_size.width, main_camera_size.height);
+    window_set_size(main_camera_size.width, main_camera_size.height);
+    surface_resize(application_surface, main_camera_size.width, main_camera_size.height);
+
+}
+
 //if (mouse_wheel_up()) {cam_zoom += 2;}
 //if (mouse_wheel_down()) {cam_zoom -= 2;}
 if (keyboard_check_pressed(vk_f6)) {

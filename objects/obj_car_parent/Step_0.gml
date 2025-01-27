@@ -244,6 +244,8 @@ if (!on_road && vertical_on_road) {
 	if (velocity > 100) {
 		if (on_road_index.zone != ZONE.CITY or on_road_index.zone != ZONE.RIVER) {
 			var dust_part = instance_create_layer(x, y, "Instances", obj_dust_particle);
+            dust_part.direction = direction;
+            dust_part.speed = (velocity) * global.deltatime;;
 			dust_part.z = z;
 			switch(on_road_index.zone) {
 				case ZONE.SUBURBAN:
@@ -288,6 +290,9 @@ var f_rr = -c_rr * velocity;
 var f_surface = -mass * global.gravity_3d * ((on_road) ? 0.2 : 5) * (vertical_on_road ? 1 : 0);
 if (hp <= 0) {
 	f_surface = -mass * global.gravity_3d * (vertical_on_road ? 10 : 0);
+}
+if (vertical_on_road) {
+    f_surface *= 1 + (dsin(on_road_index.elevation) * 10);
 }
 var f_brake = ((braking) ? -braking_power * 1000 : 0);
 var f_turn = -abs(turn_rate) * mass / 1000;

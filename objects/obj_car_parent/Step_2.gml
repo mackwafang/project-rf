@@ -1,5 +1,4 @@
 if (global.game_state_paused) {exit;}
-
 // crash timer count down
 // from ground to standup
 if (crash_timer.to_stand > 0) {

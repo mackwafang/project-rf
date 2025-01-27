@@ -12,61 +12,73 @@ var side_from_median = dsin(angle_difference(point_direction(x,y,vec_to_road.x,v
 
 /************ vertical height ************/
 if (_z_restrict) {
-	var road = on_road_index;
-	//var lerp_value = point_distance(road.x, road.y, vec_to_road.x, vec_to_road.y) / road.length;
-	//zlerp = lerp(road.z, road.next_road.z, lerp_value);
-	if (is_undefined(on_road_index)) {
-		exit;
-	}
-	
-	var road_col_x = road.collision_points[0];
-	var road_col_y = road.collision_points[1];
-	var road_col_z = road.collision_points[2];
-	var lerp_value = point_distance_3d(road.x, road.y, road.z, vec_to_road_3d.x, vec_to_road_3d.y, vec_to_road_3d.z) / road.length;
-	var lerp_left = lerp_3d([road_col_x[0], road_col_y[0], road_col_z[0]], [road_col_x[1], road_col_y[1], road_col_z[1]], lerp_value);
-	var lerp_right = lerp_3d([road_col_x[3], road_col_y[3], road_col_z[3]], [road_col_x[2], road_col_y[2], road_col_z[2]], lerp_value);
-	zlerp = lerp_3d(lerp_left, lerp_right, point_distance_3d(x, y, z, vec_to_road_3d.x, vec_to_road_3d.y, vec_to_road_3d.z)  / road.length)[2];
-	
-	vertical_on_road = (z+zspeed <= zlerp);
-	
-	if (on_road_index.zone == ZONE.RIVER) {
-		if (!on_road) {
-			zlerp += on_road_index.sea_level;
-		}
-		
-		// vertical_on_road = on_road;
-		//if (on_road && z < zlerp - min(20, abs(on_road_index.z - on_road_index.next_road.z)*2)) {
-		//	vertical_on_road = false;
-		//	on_road = false;
-		//}
-	}
-	
-	if (vertical_on_road) {
-		drive_force *= cos(on_road_index.elevation) + (on_road_index.elevation < 0 ? 2 : 0);
-		zspeed += -sin(on_road_index.elevation) * global.deltatime;
-		if (!on_road && on_road_index.zone != ZONE.RIVER) {
-			zspeed += (global.gravity_3d) * global.deltatime / 2;
-		}
-	}
-	else {
-		// FREE FALLING
-		zspeed -= (global.gravity_3d) * 1 * global.deltatime;
-		if (z+zspeed <= zlerp) {
-			if (zspeed > global.gravity_3d) {
-				zspeed *= -1/3;
-				//turn_rate *= 3;
-			}
-		}
-	}
-	z += zspeed;
-	if (z <= zlerp) {
-		z = zlerp;
-	}
-	if (z < on_road_index.z - 400) {
-		hp = 0;
-		//print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of z-bound");
-	}
+    var road = on_road_index;
+    //var lerp_value = point_distance(road.x, road.y, vec_to_road.x, vec_to_road.y) / road.length;
+    //zlerp = lerp(road.z, road.next_road.z, lerp_value);
+    if (is_undefined(on_road_index)) {
+        exit;
+    }
+    
+    var road_col_x = road.collision_points[0];
+    var road_col_y = road.collision_points[1];
+    var road_col_z = road.collision_points[2];
+    var lerp_value = clamp(
+        point_distance_3d(road.x, road.y, road.z, vec_to_road_3d.x, vec_to_road_3d.y, vec_to_road_3d.z) / road.length,
+        0,
+        1
+    );
+    var lerp_left = lerp_3d(
+        [road_col_x[0], road_col_y[0], road_col_z[0]], 
+        [road_col_x[1], road_col_y[1], road_col_z[1]], 
+        lerp_value
+    );
+    var lerp_right = lerp_3d(
+        [road_col_x[3], road_col_y[3], road_col_z[3]], 
+        [road_col_x[2], road_col_y[2], road_col_z[2]], 
+        lerp_value
+    );
+    zlerp = lerp_3d(lerp_left, lerp_right, point_distance_3d(x, y, z, vec_to_road_3d.x, vec_to_road_3d.y, vec_to_road_3d.z)  / road.length)[2];
+    
+    vertical_on_road = (z+zspeed <= zlerp);
+    
+    if (on_road_index.zone == ZONE.RIVER) {
+        if (!on_road) {
+            zlerp += on_road_index.sea_level;
+        }
+        
+        // vertical_on_road = on_road;
+        //if (on_road && z < zlerp - min(20, abs(on_road_index.z - on_road_index.next_road.z)*2)) {
+        //	vertical_on_road = false;
+        //	on_road = false;
+        //}
+    }
+    
+    if (vertical_on_road) {
+        zspeed += -sin(on_road_index.elevation) * global.deltatime;
+        if (!on_road && on_road_index.zone != ZONE.RIVER) {
+            zspeed += (global.gravity_3d) * global.deltatime / 2;
+        }
+    }
+    else {
+        // FREE FALLING
+        zspeed -= (global.gravity_3d) * 1 * global.deltatime;
+        if (z+zspeed <= zlerp) {
+            if (zspeed > global.gravity_3d) {
+                zspeed *= -1/3;
+                //turn_rate *= 3;
+            }
+        }
+    }
+    z += zspeed;
+    z = clamp(z, zlerp, zlerp + 500);
+    // z = max(z, zlerp);
+    
+    if (z < on_road_index.z - 400) {
+        hp = 0;
+        //print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Out of z-bound");
+    }
 }
+
 
 // move car in direction
 if (!is_respawning) {
@@ -166,20 +178,26 @@ switch(on_road_index.zone) {
 	case ZONE.RIVER:
 		side_limit = 6;
 		break;
+    case ZONE.MOUNTAIN: case ZONE.TUNNEL:
+        side_limit = ((side_from_median == -1 ? on_road_index.get_lanes_left() : on_road_index.get_lanes_right())+1);
+        break;
 }
 side_limit -= 0.1;
 
+var move_x = 0, move_y = 0;
 if (dist_to_median <= (side_limit * on_road_index.lane_width)) {
 	// move freely
-	x += dcos(direction) * vel;
-	y -= dsin(direction) * vel;
+	move_x += dcos(direction) * vel;
+	move_y -= dsin(direction) * vel;
 }
 else {
 	// push back
 	var dir_to_median = point_direction(x, y, vec_to_road.x,vec_to_road.y);
-	x += dcos(dir_to_median) * vel / 2;
-	y -= dsin(dir_to_median) * vel / 2;
+	move_x += dcos(dir_to_median) * vel / 2;
+	move_y -= dsin(dir_to_median) * vel / 2;
 }
+
+move_and_collide(move_x, move_y, obj_railing);
 
 if (!crash_timer.is_walking) {
 	image_angle = direction;

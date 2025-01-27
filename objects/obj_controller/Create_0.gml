@@ -76,7 +76,7 @@ global.car_ranking = [];
 array_copy(global.car_ranking, 0, participating_vehicles, 0, array_length(participating_vehicles));
 debug_cam_obj = instance_create_layer(participating_vehicles[0].x, participating_vehicles[0].y, "Instances", obj_debug_cam);
 
-main_camera_size = {width: 1024, height: 768,}
+main_camera_size = {width: 1024, height: 768}
 main_camera_target = participating_vehicles[0];
 vehicle_current_pos_ping = 0;
 // set camera size
@@ -89,8 +89,8 @@ main_camera_pos_smooth = 0.05;
 view_set_wport(0, main_camera_size.width);
 view_set_hport(0, main_camera_size.height);
 
-window_set_size(main_camera_size.width, main_camera_size.height);
 camera_set_view_size(main_camera, main_camera_size.width, main_camera_size.height);
+window_set_size(main_camera_size.width, main_camera_size.height);
 surface_resize(application_surface, main_camera_size.width, main_camera_size.height);
 global.view_matrix = matrix_build_lookat(
     main_camera_target.x,
@@ -102,6 +102,7 @@ global.view_matrix = matrix_build_lookat(
     0, 0, 1
 );
 global.projection_matrix = matrix_build_projection_perspective_fov(-100, -4/3, 1, 4000);
+// global.projection_matrix = matrix_build_projection_ortho(1024, -768, -2000, 4000);
 
 // sounds
 var num = audio_get_listener_count();

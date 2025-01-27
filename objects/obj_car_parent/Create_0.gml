@@ -73,10 +73,10 @@ gear_ratio = [3, 2.5, 1.9, 6/4, 10/7, 14/10];
 gear_shift_rpm = [
 	[0, 4500],
 	[3000, 4500],
+	[3450, 4500],
 	[3550, 4500],
 	[3550, 4500],
-	[3150, 4500],
-	[3050, 4500],
+	[3750, 4500],
 ];
 
 // drive force required for gear shift
@@ -89,10 +89,10 @@ force_shift_rpm = [
 	[0, 100000],
 ];
 
-for (var g = 0; g < array_length(gear_shift_rpm); g++) {
-	gear_shift_rpm[g][0] *= global.difficulty;
-	gear_shift_rpm[g][1] *= global.difficulty;
-}
+//for (var g = 0; g < array_length(gear_shift_rpm); g++) {
+	//gear_shift_rpm[g][0] *= global.difficulty;
+	//gear_shift_rpm[g][1] *= global.difficulty;
+//}
 
 diff_ratio = 1.2 + global.difficulty;
 gear_shift_wait = 0;		//  time wait to change gear again
@@ -187,10 +187,14 @@ gear_shift = function() {
 	var gear_shift_rpm_lower = gear_shift_rpm[gear-1][0];
 	
 	if (gear_shift_wait <= 0) {
-		if (accelerating) {
+		if (accelerating | boost_active) {
 			if (engine_rpm > 9000 or drive_force < force_shift_rpm[gear-1][1]) {
 				gear_shift_up();
 			}
+            // resolve edge case where some collision may result in signicantly reduced rpm
+            if ((engine_rpm < gear_shift_rpm_lower)) {
+                gear_shift_down();
+            }
 		}
 		if (!accelerating or braking or !on_road) {
 			if ((engine_rpm < gear_shift_rpm_lower)) {
@@ -358,7 +362,7 @@ on_collision_with_entity = function(hp_lost_modifier=1) {
 			hit_immune = 1;
 		}
 	}
-	push_vector.y += abs(force);
+	drive_force -= abs(force);
 	if (hp <= 0) {
 		zspeed += abs(((vehicle_type == VEHICLE_TYPE.BIKE ? height/2 : height) - other.height) / 4) * (velocity / max_velocity);
 		turn_rate = 0;
