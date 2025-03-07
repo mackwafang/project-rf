@@ -1,5 +1,7 @@
 function calc_vertex_normal(vertex_buffer, vertex_format) {
-	var buff = buffer_create_from_vertex_buffer(vertex_buffer, buffer_fixed, 1);
+		
+	var buff = buffer_create_from_vertex_buffer_ext(vertex_buffer, buffer_fixed, 1, 0, vertex_get_number(vertex_buffer));
+	
 	for (var i = 0; i < buffer_get_size(buff); i += 36 * 3) {
 		
 		var x1 = buffer_peek(buff, i + 00, buffer_f32);

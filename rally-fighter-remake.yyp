@@ -167,6 +167,8 @@
     {"id":{"name":"spr_billboard_pillar","path":"sprites/spr_billboard_pillar/spr_billboard_pillar.yy",},},
     {"id":{"name":"spr_billboard","path":"sprites/spr_billboard/spr_billboard.yy",},},
     {"id":{"name":"spr_bkg_city","path":"sprites/spr_bkg_city/spr_bkg_city.yy",},},
+    {"id":{"name":"spr_bkg_mountain_ocean_flip","path":"sprites/spr_bkg_mountain_ocean_flip/spr_bkg_mountain_ocean_flip.yy",},},
+    {"id":{"name":"spr_bkg_mountain_ocean","path":"sprites/spr_bkg_mountain_ocean/spr_bkg_mountain_ocean.yy",},},
     {"id":{"name":"spr_bkg_mountain","path":"sprites/spr_bkg_mountain/spr_bkg_mountain.yy",},},
     {"id":{"name":"spr_bkg_sky","path":"sprites/spr_bkg_sky/spr_bkg_sky.yy",},},
     {"id":{"name":"spr_building_front_1_floor","path":"sprites/spr_building_front_1_floor/spr_building_front_1_floor.yy",},},

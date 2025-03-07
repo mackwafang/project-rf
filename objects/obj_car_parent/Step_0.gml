@@ -132,9 +132,12 @@ if (can_move) {
 			//if (ai_behavior.part_of_race) {
 			//	turn_rate *= max(1 - (velocity / max_velocity), (velocity / max_velocity)) * 1.2;
 			//}
-		
+			
+			if (abs(angle_diff) > 90) {
+				engine_power *= (1 - abs(angle_diff) / 90);
+			}
 			turn_rate += abs(turn_rate / 2) * global.deltatime;
-		
+			
 			// enables boost
 			if (boost_juice >= 100) {
 				if (irandom(400) < global.difficulty) {
@@ -270,7 +273,6 @@ if (!is_completed) {
 	}
 }
 
-
 if (is_completed) {
 	braking = true;
 	accelerating = false;
@@ -293,6 +295,7 @@ if (hp <= 0) {
 }
 if (vertical_on_road) {
     f_surface *= 1 + (dsin(on_road_index.elevation) * 10);
+	f_surface = min(drive_torque / wheel_radius, f_surface);
 }
 var f_brake = ((braking) ? -braking_power * 1000 : 0);
 var f_turn = -abs(turn_rate) * mass / 1000;

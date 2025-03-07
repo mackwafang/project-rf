@@ -27,7 +27,7 @@ if (abs(z-other.z) < other.height) {
 				//}
 				break;
 			case 6:
-				if (is_respawning) {
+				if (!is_respawning) {
 					on_collision_with_entity(0.5);
 				}
 				break;

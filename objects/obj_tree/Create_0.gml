@@ -1,4 +1,5 @@
 event_inherited();
+use_billboard = true;
 display_sprite_index = spr_tree;
 image_xscale = 8;
 image_yscale = 8;

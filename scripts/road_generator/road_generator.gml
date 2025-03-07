@@ -151,7 +151,7 @@ function generate_roads(control_points, _steps) {
 	var P = control_points;
 	var nP = array_length(control_points);
 	
-	_road_node_list = []; // hold the road nodes for rendering
+	var _road_node_list = []; // hold the road nodes for rendering
 	
 	//calculate secondary points
 	for (var i = 0; i < nP-3; i++) {

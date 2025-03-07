@@ -15,6 +15,8 @@ course_string = [
 	"The Desert",
 	"Snake Trail",
 	"Mountain View",
+	"Seaside Freeway",
+	"Chaos",
 ];
 
 wait_timer = 0;

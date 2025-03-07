@@ -9,7 +9,7 @@
   "bitRate":128,
   "compression":0,
   "conversionMode":0,
-  "duration":154.46204,
+  "duration":152.73793,
   "name":"snd_race_3",
   "parent":{
     "name":"Sounds",

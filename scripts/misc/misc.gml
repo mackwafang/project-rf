@@ -20,6 +20,10 @@ function get_course_weights(course) {
 			return global.GAMEPLAY_COURSE_ZONE_WEIGHT.MOUNTAIN;
 		case COURSES.HILL:
 			return global.GAMEPLAY_COURSE_ZONE_WEIGHT.HILL;
+		case COURSES.PACIFIC:
+			return global.GAMEPLAY_COURSE_ZONE_WEIGHT.PACIFIC;
+		case COURSES.RANDOM:
+			return global.GAMEPLAY_COURSE_ZONE_WEIGHT.RANDOM;
 		default:
 			show_error(
 				$"course {course} is not a known course to get weight data.\n"+

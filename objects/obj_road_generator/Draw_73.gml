@@ -14,7 +14,9 @@ if (global.CAMERA_MODE_3D) {
 	var tex = sprite_get_texture(spr_road_1_lane, 0);
 	var prop_tex = sprite_get_texture(spr_tree, 0);
 	var vehicle_tex = sprite_get_texture(spr_bike_3d_detail_2, 0);
-	vertex_submit(global.prop_vertex_buffer, pr_trianglelist, prop_tex);
+	if (vertex_get_number(global.prop_vertex_buffer) > 0) {
+		vertex_submit(global.prop_vertex_buffer, pr_trianglelist, prop_tex);
+	}
 	
 	gpu_set_cullmode(cull_clockwise);
 	vertex_submit(global.road_vertex_buffer, pr_trianglelist, tex);

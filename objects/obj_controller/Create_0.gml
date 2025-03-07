@@ -51,8 +51,9 @@ for (var i = 0; i < global.total_participating_vehicles; i++) {
 for (var i = 0; i < array_length(participating_vehicles); i++) {
 	var car = participating_vehicles[i];
 	car.race_rank = (array_length(participating_vehicles) - i);
-	var road = obj_road_generator.road_list[(i div 2) + 1];
-	var lane_position_x = (((i % 2) / 2) * road.length);
+	var vehicle_per_spawn_section = 3;
+	var road = obj_road_generator.road_list[(i div vehicle_per_spawn_section)*2 + 1];
+	var lane_position_x = (((i % vehicle_per_spawn_section) / vehicle_per_spawn_section) * road.length);
 	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width) * random_range(-0.5, 0.5));
 	//var road = obj_road_generator.road_list[i + 1];
 	//var lane_position_x = 0;
@@ -130,6 +131,17 @@ switch(global.gameplay_course) {
 		break;
 	case COURSES.MOUNTAIN: case COURSES.HILL:
 		global.bkg_sprite_index = spr_bkg_mountain;
+		break;
+	case COURSES.PACIFIC:
+		global.bkg_sprite_index = spr_bkg_mountain_ocean;
+		break;
+	case COURSES.RANDOM:
+		global.bkg_sprite_index = choose(
+			spr_bkg_city,
+			spr_bkg_mountain,
+			spr_bkg_mountain_ocean,
+			spr_bkg_sky
+		);
 		break;
 }
 // background override for night
