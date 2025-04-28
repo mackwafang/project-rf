@@ -95,7 +95,7 @@ if (keyboard_check_pressed(vk_f11)) {
 
 // play music
 if (alarm[0] == global.display_freq * 3) {
-	audio_play_sound(global.bkg_soundtrack, 128, false, 5);
+	audio_play_sound(global.bkg_soundtrack, 128, false, 3);
 }
 if (global.race_started) {
 	if (!audio_is_playing(global.bkg_soundtrack)) {
@@ -106,7 +106,7 @@ if (global.race_started) {
 			snd_race_4,
 			snd_race_5
 		)
-		audio_play_sound(global.bkg_soundtrack, 128, false, 5);
+		audio_play_sound(global.bkg_soundtrack, 128, false, 3);
 	}
 }
 
@@ -179,7 +179,7 @@ if (global.GAMEPLAY_CARS) {
 	var road_at_view_edge = obj_road_generator.road_list[road_edge_index];
 	var zone_modifier = 1;
 	switch(road_at_view_edge.zone) {
-		case ZONE.CITY: case ZONE.TOWN:
+		case ZONE.CITY: case ZONE.TOWN: case ZONE.BEACH:
 			zone_modifier = 0.25;
 			break;
 		case ZONE.SUBURBAN:

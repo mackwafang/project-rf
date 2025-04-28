@@ -8,7 +8,7 @@ z = 50;
 depth = -10000;
 
 participating_vehicles = [];
-global.total_participating_vehicles = 12;
+global.total_participating_vehicles = 15;
 global.gravity_3d = 9.8;
 global.race_completed = false;
 global.game_state_paused = false;
@@ -52,12 +52,12 @@ for (var i = 0; i < array_length(participating_vehicles); i++) {
 	var car = participating_vehicles[i];
 	car.race_rank = (array_length(participating_vehicles) - i);
 	var vehicle_per_spawn_section = 3;
-	var road = obj_road_generator.road_list[(i div vehicle_per_spawn_section)*2 + 1];
-	var lane_position_x = (((i % vehicle_per_spawn_section) / vehicle_per_spawn_section) * road.length);
-	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width) * random_range(-0.5, 0.5));
-	//var road = obj_road_generator.road_list[i + 1];
-	//var lane_position_x = 0;
-	//var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
+	//var road = obj_road_generator.road_list[(i div vehicle_per_spawn_section)*2 + 1];
+	//var lane_position_x = (((i % vehicle_per_spawn_section) / vehicle_per_spawn_section) * road.length);
+	//var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width) * random_range(-0.5, 0.5));
+	var road = obj_road_generator.road_list[i + 1];
+	var lane_position_x = 0;
+	var lane_position_y = ((i % road.get_lanes_right()) * road.lane_width) + (road.lane_width / 2) + (random(road.lane_width / 2) * random_range(-1, 1));
 	
 	var dist = point_distance(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y);
 	var dir = point_direction(road.x, road.y, road.x + lane_position_x, road.y + lane_position_y) + road.direction;

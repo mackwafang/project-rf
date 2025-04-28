@@ -95,22 +95,14 @@ else {
 }
 
 // invisible walls to attempt to revent stuck behind buildings
+var side_default = 8;
 var side_limit = ((side_from_median == -1 ? on_road_index.get_lanes_left() : on_road_index.get_lanes_right())+4); // building limits
 switch(on_road_index.zone) {
-	case ZONE.FOREST:
-		side_limit = 6;
-		break;
-	case ZONE.SUBURBAN:
-		side_limit = 6;
-		break;
-	case ZONE.DESERT:
-		side_limit = 6;
-		break;
-	case ZONE.RIVER:
-		side_limit = 6;
-		break;
     case ZONE.MOUNTAIN: case ZONE.TUNNEL:
         side_limit = ((side_from_median == -1 ? on_road_index.get_lanes_left() : on_road_index.get_lanes_right())+1);
+        break;
+    default:
+        side_limit = side_default;
         break;
 }
 side_limit -= 0.1;
@@ -128,8 +120,6 @@ else {
 	move_y -= dsin(dir_to_median) * vel / 2;
 }
 
-move_and_collide(move_x, move_y, obj_railing);
-
 if (!crash_timer.is_walking) {
 	image_angle = direction;
 }
@@ -139,3 +129,33 @@ else {
 
 velocity += acceleration * global.deltatime;// * gear_ratio[gear-1];
 hp = clamp(hp, 0, max_hp);
+
+var col_obj = move_and_collide(move_x, move_y, [obj_railing, obj_building]);
+for (var i = 0; i< array_length(col_obj); i++) {
+    var obj = col_obj[i];
+    switch(obj.object_index) {
+        case obj_building:
+            var dist_to_building = max(1, point_distance(x, y, other.x, other.y));
+            var a = new Point(
+            	lengthdir_x(1, direction),
+            	lengthdir_y(1, direction)
+            );
+            var b = new Point(
+            	(other.x - x) / dist_to_building,
+            	(other.y - y) / dist_to_building
+            );
+            var _d = clamp(abs(dot_product(b.x, b.y, a.x, a.y)), 0, 1);
+            hp -= max_hp * (1-_d);
+            turn_rate *= _d * 2;
+            velocity *= _d;
+            // print(_d);
+            //var dist_to_center = sqrt(sqr(other.building_width / 2) + sqr(other.building_height / 2));
+            //var other_center_x = other.x + lengthdir_x(dist_to_center, other.direction);
+            //var other_center_y = other.y + lengthdir_y(dist_to_center, other.direction);
+            //var push_dir = point_direction(other_center_x, other_center_y, x, y);
+            // move_and_collide(dcos(push_dir), dsin(push_dir), obj_building);
+            // move_outside_all(point_direction(x, y, other_center_x, other_center_y), velocity);
+        default:
+            event_perform(ev_collision, obj);
+    }
+}

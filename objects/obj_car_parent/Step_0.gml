@@ -31,11 +31,13 @@ if (can_move) {
 		accelerating = !is_completed;
 	}
 
+    // getting new direction to change to
 	var angle_diff = angle_difference(nav_road.direction, direction);
 	if (ai_behavior.reversed_direction) {
 		angle_diff = angle_difference(nav_road.direction-180, direction);
 	}
 
+    // engine power to accelerate
 	if (accelerating) {
 		if (is_player and turning == 0) {
 			engine_power += 0.1;
@@ -80,7 +82,12 @@ if (can_move) {
 		//var is_off_road_left = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle+90), y+lengthdir_y(look_ahead_threshold/4, image_angle+90), last_road_index) ? 1 : 0;
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
-		engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle());
+        if (ai_behavior.part_of_race) {
+		    engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle() * 1.1);
+        }
+        else {
+            engine_power = 1;
+        }
 		turning = 0;
 			
 		var evade_turn_rate = 0.05;
@@ -113,7 +120,7 @@ if (can_move) {
 			if (!on_road) {
 				// off road, trying to get back on it
 				// but only for non-bridge zone, median barrier giving issue with turning
-				turn_rate += clamp(sign(side) / 40, -1, 1);
+				turn_rate += clamp(sign(side) / 80, -1, 1);
 			}
 			else {
 				// car turning on curved road and moving to its desired lane
@@ -248,7 +255,7 @@ if (!on_road && vertical_on_road) {
 		if (on_road_index.zone != ZONE.CITY or on_road_index.zone != ZONE.RIVER) {
 			var dust_part = instance_create_layer(x, y, "Instances", obj_dust_particle);
             dust_part.direction = direction;
-            dust_part.speed = (velocity) * global.deltatime;;
+            dust_part.speed = (velocity) * global.deltatime;
 			dust_part.z = z;
 			switch(on_road_index.zone) {
 				case ZONE.SUBURBAN:

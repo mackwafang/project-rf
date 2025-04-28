@@ -52,13 +52,14 @@ c_rr = 20 * c_drag;										// constant value for car's drag
 _z_restrict = true;
 
 // max gear based on difficulty
-switch(global.difficulty) {
-	case 1:		max_gear = 2; break;
-	case 1.25:	max_gear = 3; break;
-	case 1.5:	max_gear = 4; break;
-	case 1.75:	max_gear = 5; break;
-	case 2:		max_gear = 6; break;
-}
+max_gear = 6;
+//switch(global.difficulty) {
+	//case 1:		max_gear = 2; break;
+	//case 1.25:	max_gear = 3; break;
+	//case 1.5:	max_gear = 4; break;
+	//case 1.75:	max_gear = 5; break;
+	//case 2:		max_gear = 6; break;
+//}
 
 //gear's ratio
 gear_ratio = [3, 2.5, 1.9, 6/4, 10/7, 14/10];
@@ -94,7 +95,7 @@ force_shift_rpm = [
 	//gear_shift_rpm[g][1] *= global.difficulty;
 //}
 
-diff_ratio = 1.2 + global.difficulty;
+diff_ratio = 1 + global.difficulty;
 gear_shift_wait = 0;		//  time wait to change gear again
 
 accelerating = false;		// flag to check if car is accelerating

@@ -118,7 +118,7 @@ road_offset_list = {
 }
 
 print("Rendering Road");
-var race_length_modifier = [1.25, 1.1, 1, 1, 1];
+var race_length_modifier = [2, 1.5, 1.2, 1, 1];
 global.destination_road_index = round(array_length(road_list) * ((global.difficulty * 0.8) - 0.6) * race_length_modifier[global.level]) - (road_segments * 10);
 global.race_length = 0;
 
@@ -1224,7 +1224,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 		case ZONE.BEACH:
 			//create trees
 			if (global.GAMEPLAY_TREES) {
-				if (road.id % 2 == 0) {
+				if (road._id % 2 == 0) {
 					for (var tid = 0; tid < 2; tid++) {
 						var begin_length = [
 							lane_width*(left_lanes+1),
@@ -1307,9 +1307,9 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					tree_obj.direction = ((i/10) * 90) + (irandom(3) * 90);
 					tree_obj.z = road.z - irandom(32);
 					tree_obj.assigned_cp = i div road_segments;
-					tree_obj.render_scale.x = 2 * choose(-1,1);
-					tree_obj.render_scale.y = 2;
-					tree_obj.render_scale.z = 4;
+					tree_obj.render_scale.x = 4 * choose(-1,1);
+					tree_obj.render_scale.y = 4;
+					tree_obj.render_scale.z = 8;
 					array_push(road.props, tree_obj);
 				}
 				
