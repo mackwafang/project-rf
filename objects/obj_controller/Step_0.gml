@@ -117,8 +117,9 @@ if (keyboard_check_pressed(vk_escape)) {
 
 var speed_zoom = (main_camera_target.velocity / main_camera_target.max_velocity);
 
-//main_camera_pos.x += (main_camera_target.x - main_camera_pos.x) * main_camera_pos_smooth;
-//main_camera_pos.y += (main_camera_target.y - main_camera_pos.y) * main_camera_pos_smooth;
+var cam_dist = point_distance(main_camera_pos.x, main_camera_pos.y, main_camera_target.x, main_camera_target.y);
+//main_camera_pos.x += ((main_camera_target.x - main_camera_pos.x) + lengthdir_x(min(-60+cam_zoom, cam_dist), main_camera_target.image_angle)) * main_camera_pos_smooth;
+//main_camera_pos.y += ((main_camera_target.y - main_camera_pos.y) + lengthdir_y(min(-60+cam_zoom, cam_dist), main_camera_target.image_angle)) * main_camera_pos_smooth;
 main_camera_pos.z += (main_camera_target.z - main_camera_pos.z + z) * main_camera_pos_smooth * 2;
 
 main_camera_pos.x = main_camera_target.x+lengthdir_x(-60+cam_zoom, main_camera_target.image_angle);

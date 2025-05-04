@@ -170,6 +170,7 @@
     {"name":"spr_road_shoulder","order":4,"path":"sprites/spr_road_shoulder/spr_road_shoulder.yy",},
     {"name":"spr_road_side","order":6,"path":"sprites/spr_road_side/spr_road_side.yy",},
     {"name":"spr_smoke","order":8,"path":"sprites/spr_smoke/spr_smoke.yy",},
+    {"name":"spr_spectators","order":28,"path":"sprites/spr_spectators/spr_spectators.yy",},
     {"name":"spr_starting_number","order":7,"path":"sprites/spr_starting_number/spr_starting_number.yy",},
     {"name":"spr_street_light","order":10,"path":"sprites/spr_street_light/spr_street_light.yy",},
     {"name":"spr_traffic_light","order":11,"path":"sprites/spr_traffic_light/spr_traffic_light.yy",},

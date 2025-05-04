@@ -207,6 +207,7 @@
     {"id":{"name":"spr_road_shoulder","path":"sprites/spr_road_shoulder/spr_road_shoulder.yy",},},
     {"id":{"name":"spr_road_side","path":"sprites/spr_road_side/spr_road_side.yy",},},
     {"id":{"name":"spr_smoke","path":"sprites/spr_smoke/spr_smoke.yy",},},
+    {"id":{"name":"spr_spectators","path":"sprites/spr_spectators/spr_spectators.yy",},},
     {"id":{"name":"spr_starting_number","path":"sprites/spr_starting_number/spr_starting_number.yy",},},
     {"id":{"name":"spr_street_light","path":"sprites/spr_street_light/spr_street_light.yy",},},
     {"id":{"name":"spr_traffic_light","path":"sprites/spr_traffic_light/spr_traffic_light.yy",},},

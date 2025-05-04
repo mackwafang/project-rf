@@ -4,46 +4,48 @@ zlerp = 0;
 
 height = 24;
 
-is_player = false;		// does car belong to player?
-can_move = true;		// can car be affected by movement or collision?
+is_player = false;		 // does car belong to player?
+can_move = true;		 // can car be affected by movement or collision?
 
-max_hp = 100;			// car max health
-hp = max_hp;			// car health
-hp_display = 1;			// smooth hp thingy
-hp_regen_delay = 0;		// delay for health regen
+max_hp = 100;			 // car max health
+hp = max_hp;			 // car health
+hp_display = 1;			 // smooth hp thingy
+hp_regen_delay = 0;		 // delay for health regen
 
-engine_rpm_max = 10000;	// max rpm
-engine_rpm = 1000;		// engine rpm
+engine_rpm_max = 10000;	 // max rpm
+engine_rpm = 1000;		 // engine rpm
 test_rpm = 0;
-velocity = 0;			// car's speed
-max_velocity = 3000;	// car's max speed
-speed_limit = 999;		// vehicle's limit based on global.gameplay_measure_metrics, should be used for debugging
-wheel_radius = 0.32;	// wheel radius in m
-mass = 300;				// vehicle mass, in kg
-horsepower = 300;		// horsepower
-turn_rate = 0;			// car's turning rate
-gear = 1;				// car's gear 
-engine_power = 0;		// throttle position
-transfer_eff = 0.8;		// transfer efficiency
-acceleration = 0;		// acceleration value
-braking_power = 25;		// braking magnetude
-zspeed = 0;				// vertical 
-boost_juice = 0;		// boosting meter
-boost_usable = false;	// is boost usable
-boost_active = false;	// if boost is using
-boost_juice_penalty = 0;// penalty for using boost
+velocity = 0;			 // car's speed
+max_velocity = 3000;	 // car's max speed
+speed_limit = 999;		 // vehicle's limit based on global.gameplay_measure_metrics, should be used for debugging
+wheel_radius = 0.32;	 // wheel radius in m
+mass = 300;				 // vehicle mass, in kg
+horsepower = 300;		 // horsepower
+turn_rate = 0;			 // car's turning rate
+gear = 1;				 // car's gear 
+engine_power = 0;		 // throttle position
+transfer_eff = 0.8;		 // transfer efficiency
+acceleration = 0;		 // acceleration value
+braking_power = 25;		 // braking magnetude
+zspeed = 0;				 // vertical 
+boost_juice = 0;		 // boosting meter
+boost_usable = false;    // is boost usable
+boost_active = false;    // if boost is using
+boost_juice_penalty = 0; // penalty for using boost
+dist_to_lane = 0;        // distance to road's median
+side_from_median = 1;    // which side of the road is the vehicle on (-1 = left, 1 = right)
 hit_immune = 0;
-name = "";				// racer name
+name = "";				 // racer name
 
-is_completed = false;	// did vehicle completed race
+is_completed = false;	 // did vehicle completed race
 
-air_drag_coef = 0.3;	// air drag coefficient
-drag_area = 1.2;		// cross sectional area
+air_drag_coef = 0.3;	 // air drag coefficient
+drag_area = 1.2;		 // cross sectional area
 
 is_respawning = false;	// car is respawning
 engine_sound_interval = 0;
 
-car_id = -1;			// car id
+car_id = -1;			 // car id
 
 inertia = mass * (wheel_radius * wheel_radius) / 2;		// constant value for car's inertia
 c_drag = 0.5 * air_drag_coef * drag_area * AIR_DENSITY;	// constant value for car's air drag

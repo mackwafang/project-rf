@@ -1073,36 +1073,67 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	}
 	
 	// finish line prop
-	if (global.destination_road_index - 5 < i and i <= global.destination_road_index) {
-		for (var j = 0; j < 5; j++) {
-			var prop_obj = instance_create_layer(
-				road.x + lengthdir_x(left_lanes * road.lane_width, road.direction+90),
-				road.y + lengthdir_y(left_lanes * road.lane_width, road.direction+90),
-				"Instances",
-				obj_traffic_prop
-			);
-			prop_obj.display_image_index = 7;
-			prop_obj.z = road.z;
-			prop_obj.image_xscale = 8;
-			prop_obj.image_yscale = 24;
-			prop_obj.direction = road.direction;
-			array_push(road.props, prop_obj);
-			
-			var prop_obj = instance_create_layer(
-				road.x + lengthdir_x(right_lanes * road.lane_width, road.direction-90),
-				road.y + lengthdir_y(right_lanes * road.lane_width, road.direction-90),
-				"Instances",
-				obj_traffic_prop
-			);
-			prop_obj.display_image_index = 7;
-			prop_obj.z = road.z;
-			prop_obj.image_xscale = 8;
-			prop_obj.image_yscale = 8;
-			prop_obj.direction = road.direction;
-			prop_obj.assigned_cp = i div road_segments;
-			array_push(road.props, prop_obj);
-		}
+	if (global.destination_road_index - 5 < i and i <= global.destination_road_index+5) {
+        var sides = [left_lanes, right_lanes];
+        for (var s = 0; s <= 1; s++) {
+            var prop_obj = instance_create_layer(
+                road.x + lengthdir_x(sides[s] * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                road.y + lengthdir_y(sides[s] * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                "Instances",
+                obj_traffic_prop
+            );
+            prop_obj.display_image_index = 7;
+            prop_obj.z = road.z;
+            prop_obj.image_xscale = 8;
+            prop_obj.image_yscale = 24;
+            prop_obj.direction = road.direction;
+            prop_obj.assigned_cp = i div road_segments;
+            array_push(road.props, prop_obj);
+        }
+        
+        // create crowd prop as well
+        for (var r = 0; r < 2; r++) { // create extra 4 spectators
+            for (var s = 0; s <= 1; s++) {
+                var prop_obj = instance_create_layer(
+                    road.x + irandom_range(-128, 128) + lengthdir_x((sides[s]+2) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                    road.y + irandom_range(-128, 128) + lengthdir_y((sides[s]+2) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                    "Instances",
+                    obj_prop
+                );
+                prop_obj.display_sprite_index = spr_spectators;
+                prop_obj.display_image_index = irandom(sprite_get_number(prop_obj.display_sprite_index));
+                prop_obj.z = road.z;
+                prop_obj.render_scale.x = 0.25;
+                prop_obj.render_scale.y = 0.25;
+                prop_obj.render_scale.z = 0.25;
+                prop_obj.direction = road.direction;
+                prop_obj.assigned_cp = i div road_segments;
+                array_push(road.props, prop_obj);
+            }
+        }
 	}
+    
+    // create spectators at starting
+    if (i < 10) {
+        var sides = [left_lanes, right_lanes];
+        for (var s = 0; s <= 1; s++) {
+            var prop_obj = instance_create_layer(
+                road.x + irandom_range(-128, 128) + lengthdir_x((sides[s]+2) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                road.y + irandom_range(-128, 128) + lengthdir_y((sides[s]+2) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                "Instances",
+                obj_prop
+            );
+            prop_obj.display_sprite_index = spr_spectators;
+            prop_obj.display_image_index = irandom(sprite_get_number(prop_obj.display_sprite_index));
+            prop_obj.z = road.z;
+            prop_obj.render_scale.x = 0.25;
+            prop_obj.render_scale.y = 0.25;
+            prop_obj.render_scale.z = 0.25;
+            prop_obj.direction = road.direction;
+            prop_obj.assigned_cp = i div road_segments;
+            array_push(road.props, prop_obj);
+        }
+    }
 	
 	
 	// zone specific props

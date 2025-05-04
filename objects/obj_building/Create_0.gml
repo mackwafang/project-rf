@@ -75,7 +75,7 @@ function init_vertex_buffer() {
             new Point3D(x3, y3, z_end),
             new Point3D(x2, y2, z_start),
             building_side_uv,
-            c_white
+            building_color
         )
     );
 
@@ -88,7 +88,7 @@ function init_vertex_buffer() {
             new Point3D(x2, y2, z_start),
             new Point3D(x1, y1, z_start),
             building_side_uv,
-            c_white
+            building_color
         )
     );
 
@@ -101,7 +101,7 @@ function init_vertex_buffer() {
             new Point3D(x0, y0, z_end),
             new Point3D(x3, y3, z_end),
             building_side_uv,
-            c_white
+            building_color
         )
     );
     

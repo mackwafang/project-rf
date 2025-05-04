@@ -10,9 +10,12 @@ var nav_road = on_road_index;//obj_road_generator.road_list[max(0, on_road_index
 
 dist_along_road = on_road_index.length_to_point + point_distance(on_road_index.x, on_road_index.y, vec_to_road.x, vec_to_road.y);
 
-vec_to_road.x += lengthdir_x(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
-vec_to_road.y += lengthdir_y(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
-var dist_to_lane = point_distance(x,y,vec_to_road.x,vec_to_road.y);
+// set desired vector along road based on desired lane
+if (!is_player) {
+    vec_to_road.x += lengthdir_x(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
+    vec_to_road.y += lengthdir_y(((ai_behavior.desired_lane + 0.5) * on_road_index.lane_width), on_road_index.direction-90);
+}
+dist_to_lane = point_distance(x,y,vec_to_road.x,vec_to_road.y);
 //if (dist_to_lane > 1024) {
 //	hp = 0;
 //}
@@ -83,7 +86,7 @@ if (can_move) {
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
         if (ai_behavior.part_of_race) {
-		    engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle() * 1.1);
+		    engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle() * 1.05);
         }
         else {
             engine_power = 1;
@@ -255,7 +258,7 @@ if (!on_road && vertical_on_road) {
 		if (on_road_index.zone != ZONE.CITY or on_road_index.zone != ZONE.RIVER) {
 			var dust_part = instance_create_layer(x, y, "Instances", obj_dust_particle);
             dust_part.direction = direction;
-            dust_part.speed = (velocity) * global.deltatime;
+            dust_part.speed = -(velocity) * global.deltatime;
 			dust_part.z = z;
 			switch(on_road_index.zone) {
 				case ZONE.SUBURBAN:
@@ -421,6 +424,5 @@ if (obj_controller.alarm[0] < 0) {
 		hp = 0;
 	}
 }
-
 
 counter = (counter + 1) % 1000;

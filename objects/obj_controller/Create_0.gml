@@ -83,7 +83,11 @@ vehicle_current_pos_ping = 0;
 // set camera size
 participating_camera_index = 0;
 main_camera = view_camera[view_current];
-main_camera_pos = new Point3D(0, 0, 0);
+main_camera_pos = new Point3D(
+    participating_vehicles[0].x,
+    participating_vehicles[0].y,
+    participating_vehicles[0].z
+);
 main_camera_pos_to = new Point3D(0, 0, 0);
 main_camera_pos_smooth = 0.05;
 
