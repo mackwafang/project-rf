@@ -137,7 +137,13 @@ switch(global.gameplay_course) {
 		global.bkg_sprite_index = spr_bkg_mountain;
 		break;
 	case COURSES.PACIFIC:
-		global.bkg_sprite_index = spr_bkg_mountain_ocean;
+        var side = random_get_seed() % 2;
+        if (side == 0) {
+		    global.bkg_sprite_index = spr_bkg_mountain_ocean;
+        }
+        if (side == 1) {
+		    global.bkg_sprite_index = spr_bkg_mountain_ocean_flip;
+        }
 		break;
 	case COURSES.RANDOM:
 		global.bkg_sprite_index = choose(
@@ -204,6 +210,8 @@ if (global.DEBUG_DRAW_MINIMAP) {
 }
 
 game_surface = surface_create(main_camera_size.width, main_camera_size.height);
+minimap_surface = surface_create(main_camera_size.width, main_camera_size.height);
+level_minimap_sprite = init_level_minimap();
 
 cluck_init();
 

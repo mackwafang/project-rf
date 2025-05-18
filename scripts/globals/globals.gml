@@ -2,7 +2,7 @@ global.DEBUG_ROAD_DRAW_CONTROL_POINTS = false;
 global.DEBUG_ROAD_DRAW_ROAD_POINTS = false;
 global.DEBUG_ROAD_DRAW_ROAD_LANES_POINTS = false;
 global.DEBUG_ROAD_DRAW_COLLISION_POINTS = false;
-global.DEBUG_DRAW_MINIMAP = false;
+global.DEBUG_DRAW_MINIMAP = true;
 global.DEBUG_CAR = false;
 global.DEBUG_STRAIGHT_MAP = false;
 global.DEBUG_SPRITE_UV_TESTER_UV = texture_get_uvs(sprite_get_texture(spr_uv_test, 0));
@@ -28,6 +28,7 @@ global.game_settings = {
         display_mode_change: vk_f4,
     }
 }
+global.gameplay_zone_mountain_z = 1000; // height to mountain area
 
 global.GAMEPLAY_COURSE_ZONE_WEIGHT = {
 	CITY: {
@@ -72,8 +73,8 @@ global.GAMEPLAY_COURSE_ZONE_WEIGHT = {
 	},
 	PACIFIC: {
 		STARTING_ZONE: ZONE.BEACH,
-		ZONES: [ZONE.BEACH, ZONE.SUBURBAN, ZONE.TOWN],
-		WEIGTHS: [100, 20, 20],
+		ZONES: [ZONE.BEACH, ZONE.SUBURBAN, ZONE.TOWN, ZONE.MOUNTAIN],
+		WEIGTHS: [100, 20, 20, 20],
 		MIN_LANES: 2,
 		MAX_LANES: 2,
 		Z_ROUGHNESS: 100,

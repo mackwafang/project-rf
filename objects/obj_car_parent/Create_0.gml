@@ -341,7 +341,7 @@ on_collision_with_entity = function(hp_lost_modifier=1) {
 	var dir = point_direction(other.x,other.y,x,y);
 	var side = sign(angle_difference(dir, direction));
 	var force = ((mass * velocity) + (other.mass + other.velocity)) / global.deltatime;
-	var base_collision_hp_lost = (force / 750000) * hp_lost_modifier;
+	var base_collision_hp_lost = (force / 650000) * hp_lost_modifier;
 	if (!is_completed) {
 		if (hit_immune <= 0) {
 			var collision_sound_max_dist = 256;

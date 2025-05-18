@@ -34,6 +34,7 @@ for (var i = 0; i < grid_height*grid_width; i++) {ds_list_add(grid, 0);}
 control_path = [];
 
 // generating level
+// get level data (tileset, tileset weight, curviness, etc)
 var course_data = get_course_weights(global.gameplay_course);
 var curve_modifier = 0.4;
 switch (global.gameplay_course) {
@@ -47,11 +48,12 @@ switch (global.gameplay_course) {
 		curve_modifier = 0.1;
 		break;
 }
+// generate perlin noise and find select one square on column 0 and find fastest path to a square on column grid_width
 while (array_length(control_path) == 0) {
 	print("Creating grid");
 	// generating terrain
 	perlin_config = {
-		inc: global.difficulty * curve_modifier,	// determines rough ness of noise. higher = more noise
+		inc: global.difficulty * curve_modifier / 10,	// determines rough ness of noise. higher = more noise
 		X: random(1000),
 		Y: random(1000),
 	}
@@ -69,10 +71,12 @@ while (array_length(control_path) == 0) {
 	}
 	print($"{ds_list_size(grid)} =? {grid_height * grid_width}");
 	print("Creating road");
-	// generating road
+	// get the fastest grid pah
 	var init_grid = irandom(grid_height-1);
 	var control_start = init_grid * grid_width;
-	var control_end = (min(grid_height, max(0, init_grid + irandom_range(-2 * global.difficulty, 2 * global.difficulty))) * grid_width) - 1;
+	var control_end = (min(grid_height, max(0, init_grid + irandom_range(-20 * global.difficulty, 20 * global.difficulty))) * grid_width) - 1;
+    
+    print($"start grid: {control_start} | end grid: {control_end}");
 	control_path = a_star(grid, control_start, control_end, grid_width, a_star_heuristic); // holds grid values to generate control poitns
 }
 
@@ -110,7 +114,7 @@ for (var s = 0; s < array_length(control_points); s++) {
 	generation_progress.initial.current += 1;
 }
 
-// actually create road via catmull-rom
+// actually create road nodes from control nodes
 road_list = generate_roads(control_points, road_segments);
 road_offset_list = {
 	left: generate_roads(control_points_offset.left, road_segments),
@@ -118,7 +122,7 @@ road_offset_list = {
 }
 
 print("Rendering Road");
-var race_length_modifier = [2, 1.5, 1.2, 1, 1];
+var race_length_modifier = [1.5, 1.7, 1.5, 1.2, 1]; // modifier to increase lnegth based on difficulty
 global.destination_road_index = round(array_length(road_list) * ((global.difficulty * 0.8) - 0.6) * race_length_modifier[global.level]) - (road_segments * 10);
 global.race_length = 0;
 
@@ -266,20 +270,31 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 	// set which side is mountain for mountain zone
 	if (road.zone == ZONE.MOUNTAIN) {
 		var mnt_side = random_get_seed() % 2;
-		road.beyond_range[mnt_side].z += 3000;
-		road.beyond_range[(mnt_side + 1) % 2].z -= 1000;
+		road.beyond_range[mnt_side].z += global.gameplay_zone_mountain_z;
+		road.beyond_range[(mnt_side + 1) % 2].z -= global.gameplay_zone_mountain_z/3;
 		
 		if (random_get_seed() % 69420 == 0) {
 			road.zone_feature |= (1 << (ZONE_FEATURE.MOUNTAIN_SIDE_LEFT-1));
 			road.zone_feature |= (1 << (ZONE_FEATURE.MOUNTAIN_SIDE_RIGHT-1));
 			
-			road.beyond_range[0].z += 3000;
-			road.beyond_range[1].z += 3000;
+			road.beyond_range[0].z += global.gameplay_zone_mountain_z;
+			road.beyond_range[1].z += global.gameplay_zone_mountain_z;
 		}
 		else {
 			if (mnt_side == 0) {road.zone_feature |= (1 << (ZONE_FEATURE.MOUNTAIN_SIDE_LEFT-1));}
 			if (mnt_side == 1) {road.zone_feature |= (1 << (ZONE_FEATURE.MOUNTAIN_SIDE_RIGHT-1));}
 		}
+        
+        if (i > 30) {
+            if (prev_road.zone != ZONE.MOUNTAIN) {
+                // set the edge of off road area for segments that is near mountain to slowly increase to mountain z
+                for (var j = 1; j < 29; j++) {
+                    var r = road_list[i-j];
+                    r.beyond_range[mnt_side].z += (global.gameplay_zone_mountain_z / 30) * (30-j);
+                    r.beyond_range[(mnt_side + 1) % 2].z -= (global.gameplay_zone_mountain_z / 3 / 30) * (30-j);
+                }
+            }
+        }
 	}
 	
 	// sea level height
@@ -1073,7 +1088,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	}
 	
 	// finish line prop
-	if (global.destination_road_index - 5 < i and i <= global.destination_road_index+5) {
+	if (global.destination_road_index - 5 < i and i <= global.destination_road_index+15) {
         var sides = [left_lanes, right_lanes];
         for (var s = 0; s <= 1; s++) {
             var prop_obj = instance_create_layer(
@@ -1095,8 +1110,8 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
         for (var r = 0; r < 2; r++) { // create extra 4 spectators
             for (var s = 0; s <= 1; s++) {
                 var prop_obj = instance_create_layer(
-                    road.x + irandom_range(-128, 128) + lengthdir_x((sides[s]+2) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
-                    road.y + irandom_range(-128, 128) + lengthdir_y((sides[s]+2) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                    road.x + lengthdir_x((sides[s]+2+irandom(5)) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                    road.y + lengthdir_y((sides[s]+2+irandom(5)) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
                     "Instances",
                     obj_prop
                 );
@@ -1252,6 +1267,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					array_push(road.props, tree_obj);
 				}
 			}
+            break;
 		case ZONE.BEACH:
 			//create trees
 			if (global.GAMEPLAY_TREES) {
@@ -1477,7 +1493,8 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 					obj_traffic_prop
 				);
 				prop_obj.display_image_index = 4 + sign(angle);
-				prop_obj.z = r.z;
+				prop_obj.z = r.z; 
+                prop_obj.assigned_cp = i div road_segments;
 				prop_obj.direction = road_list[i].direction;
 				with (prop_obj) {event_user(0);}
 				array_push(r.props, prop_obj);
