@@ -1,7 +1,14 @@
 if (global.game_state_paused) {exit;}
 
 // road fidning
-var nav_road = on_road_index;//obj_road_generator.road_list[max(0, on_road_index.get_id() + (ai_behavior.reversed_direction ? -1 : 1))];
+// var nav_road = on_road_index;
+var nodes_look_ahead = 0;
+if (ai_behavior.part_of_race) {
+	if (global.level >= 3) {
+		nodes_look_ahead = 1;
+	}
+}
+var nav_road = obj_road_generator.road_list[max(0, on_road_index.get_id() + (ai_behavior.reversed_direction ? -nodes_look_ahead: nodes_look_ahead))];
 //vec_to_road = point_to_line(
 //	on_road_index.x, on_road_index.y,
 //	on_road_index.next_road.x, on_road_index.next_road.y,
@@ -21,6 +28,13 @@ dist_to_lane = point_distance(x,y,vec_to_road.x,vec_to_road.y);
 //}
 
 if (can_move) {
+
+    // getting new direction to change to
+	var angle_diff = angle_difference(nav_road.direction, direction);
+	if (ai_behavior.reversed_direction) {
+		angle_diff = angle_difference(nav_road.direction-180, direction);
+	}
+
 	// moving, not crashed
 	if (is_player) {
 		if (!is_completed) {
@@ -32,14 +46,15 @@ if (can_move) {
 	}
 	else {
 		accelerating = !is_completed;
+		if (ai_behavior.part_of_race) {
+			if (abs(angle_diff) > 2) {
+				accelerating = false;
+			}
+			
+			braking = (abs(angle_diff) > 7);
+		}
 	}
-
-    // getting new direction to change to
-	var angle_diff = angle_difference(nav_road.direction, direction);
-	if (ai_behavior.reversed_direction) {
-		angle_diff = angle_difference(nav_road.direction-180, direction);
-	}
-
+	
     // engine power to accelerate
 	if (accelerating) {
 		if (is_player and turning == 0) {

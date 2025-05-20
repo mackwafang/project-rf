@@ -72,7 +72,7 @@ function a_star(_grid, _start, _end, width, _h) {
 			
 			// skips sharp turns
 			var dir = point_direction(current % width, current div width, n % width, n div width);
-			if (abs(angle_difference(dir, last_dir)) > 65) {continue;}
+			if (abs(angle_difference(dir, last_dir)) > 90) {continue;}
 			
 			if ((ds_priority_find_priority(frontier, n) != undefined) && (cost < g[|n])) {
 				// new path is better

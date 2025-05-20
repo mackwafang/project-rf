@@ -662,13 +662,41 @@ function render_control_point(cp, range=0) {
 				right_grass_uv
 			),
 		);
+        
+        #region Add polygon to cover hole from transition from non-mountain to mountain
+        
+		if (road.zone != ZONE.MOUNTAIN and next_road.zone == ZONE.MOUNTAIN) {
+            road_seg_data = array_concat(
+                road_seg_data, 
+                polygon_create_triangle_points_3d(
+                    new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z),
+                    new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z+100),
+                    new Point3D(grass_coord.left[2][0], grass_coord.left[2][1], next_off_shoulder_left_z),
+                    new Point(left_grass_uv[0], left_grass_uv[1]),
+                    new Point(left_grass_uv[2], left_grass_uv[3]),
+                    new Point(left_grass_uv[2], left_grass_uv[1])
+                ),
+            );
+            road_seg_data = array_concat(
+                road_seg_data, 
+                polygon_create_triangle_points_3d(
+                    new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z),
+                    new Point3D(shoulder_coord.right[3][0], shoulder_coord.right[3][1], next_road.z+100),
+                    new Point3D(grass_coord.right[3][0], grass_coord.right[3][1], next_off_shoulder_right_z),
+                    new Point(right_grass_uv[0], right_grass_uv[1]),
+                    new Point(right_grass_uv[2], right_grass_uv[3]),
+                    new Point(right_grass_uv[2], right_grass_uv[1])
+                ),
+            );
+        }
+        #endregion
 		
 		// create tunnel polygons
 		if (road.zone == ZONE.TUNNEL) {
 			#region main tunnel
 			road_seg_data = array_concat(
 				road_seg_data, 
-				//left tunnel wall
+				//right tunnel wall
 				polygon_create_square_points_3d(
 					new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + (tunnel_height / 2)),
 					new Point3D(shoulder_coord.left[2][0], shoulder_coord.left[2][1], next_road.z + (tunnel_height / 2)),
@@ -723,7 +751,7 @@ function render_control_point(cp, range=0) {
 						new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z + tunnel_height),
 						new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height),
 						new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + (tunnel_height / 2)),
-						new Point(tunnel_outer_uv[0], tunnel_outer_uv[1]),
+						new Point(left_grass_uv[0], tunnel_outer_uv[1]),
 						new Point(tunnel_outer_uv[2], tunnel_outer_uv[1]),
 						new Point(tunnel_outer_uv[2], tunnel_outer_uv[3])
 					),
@@ -1088,7 +1116,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	}
 	
 	// finish line prop
-	if (global.destination_road_index - 5 < i and i <= global.destination_road_index+15) {
+	if (global.destination_road_index - 5 < i and i <= global.destination_road_index+30) {
         var sides = [left_lanes, right_lanes];
         for (var s = 0; s <= 1; s++) {
             var prop_obj = instance_create_layer(
@@ -1110,8 +1138,8 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
         for (var r = 0; r < 2; r++) { // create extra 4 spectators
             for (var s = 0; s <= 1; s++) {
                 var prop_obj = instance_create_layer(
-                    road.x + lengthdir_x((sides[s]+2+irandom(5)) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
-                    road.y + lengthdir_y((sides[s]+2+irandom(5)) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                    road.x + lengthdir_x((sides[s]+0.5+random(2)) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                    road.y + lengthdir_y((sides[s]+0.5+random(2)) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
                     "Instances",
                     obj_prop
                 );
@@ -1120,7 +1148,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
                 prop_obj.z = road.z;
                 prop_obj.render_scale.x = 0.25;
                 prop_obj.render_scale.y = 0.25;
-                prop_obj.render_scale.z = 0.25;
+                prop_obj.render_scale.z = 0.2;
                 prop_obj.direction = road.direction;
                 prop_obj.assigned_cp = i div road_segments;
                 array_push(road.props, prop_obj);
@@ -1129,12 +1157,12 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
 	}
     
     // create spectators at starting
-    if (i < 10) {
+    if (i < 30) {
         var sides = [left_lanes, right_lanes];
         for (var s = 0; s <= 1; s++) {
             var prop_obj = instance_create_layer(
-                road.x + irandom_range(-128, 128) + lengthdir_x((sides[s]+2) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
-                road.y + irandom_range(-128, 128) + lengthdir_y((sides[s]+2) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                road.x + lengthdir_x((sides[s]+0.5+random(2)) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
+                road.y + lengthdir_y((sides[s]+0.5+random(2)) * road.lane_width, road.direction+90 * (s == 0 ? -1 : 1)),
                 "Instances",
                 obj_prop
             );
@@ -1143,7 +1171,7 @@ for (var i = 0; i < array_length(road_list) - 1; i++) {
             prop_obj.z = road.z;
             prop_obj.render_scale.x = 0.25;
             prop_obj.render_scale.y = 0.25;
-            prop_obj.render_scale.z = 0.25;
+            prop_obj.render_scale.z = 0.2;
             prop_obj.direction = road.direction;
             prop_obj.assigned_cp = i div road_segments;
             array_push(road.props, prop_obj);

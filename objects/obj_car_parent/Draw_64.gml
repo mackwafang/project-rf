@@ -161,6 +161,11 @@ if (obj_controller.main_camera_target.id == id) {
 	draw_text(port_width_half + 160, port_height - 64, (instance_exists(closest_car_index) ? closest_car_index.name : ""));
 	
 	draw_sprite(spr_race_rank, race_rank-1, port_width_half, port_height - 128);
+	
+	if (braking) {draw_circle_color(port_width_half-8, port_height - 124, 4, c_red, c_red, false);}
+	if (boost_active) {draw_circle_color(port_width_half, port_height - 124, 4, c_yellow, c_yellow, false);}
+	if (accelerating) {draw_circle_color(port_width_half+8, port_height - 124, 4, c_green, c_green, false);}
+	
 	#endregion
 	
 	#region Full UI
