@@ -39,7 +39,7 @@ var course_data = get_course_weights(global.gameplay_course);
 var curve_modifier = 0.4;
 switch (global.gameplay_course) {
 	case COURSES.MOUNTAIN:
-		curve_modifier = 1.4;
+		curve_modifier = 1;
 		break;
 	case COURSES.CITY:
 		curve_modifier = 0.5;
@@ -86,8 +86,8 @@ for (var s = 0; s < array_length(control_path); s++) {
 	var rand_x = 0;
 	var rand_y = 0;
 	if (!global.DEBUG_STRAIGHT_MAP) {
-		rand_x = (irandom(control_points_dist / 5) * choose(-1,1));
-		rand_y = (irandom(control_points_dist / 5) * choose(-1,1));
+		rand_x = (irandom(control_points_dist / 6) * choose(-1,1));
+		rand_y = (irandom(control_points_dist / 6) * choose(-1,1));
 	}
 	var xx = ((control_path[s] % grid_width) * control_points_dist) + rand_x;
 	var yy = ((control_path[s] div grid_width) * control_points_dist) + rand_y;
@@ -96,6 +96,7 @@ for (var s = 0; s < array_length(control_path); s++) {
 	generation_progress.initial.current += 1;
 }
 
+// generate off road control points
 for (var s = 0; s < array_length(control_points); s++) {
 	var p = undefined;
 	var p_next = undefined;
@@ -111,6 +112,7 @@ for (var s = 0; s < array_length(control_points); s++) {
 	var angle = point_direction(p.x, p.y, p_next.x, p_next.y);
 	control_points_offset.left[s] = new Point3D(p.x+lengthdir_x(beyond_shoulder_range, angle+90), p.y+lengthdir_y(beyond_shoulder_range, angle+90), p.z);
 	control_points_offset.right[s] = new Point3D(p.x+lengthdir_x(beyond_shoulder_range, angle-90), p.y+lengthdir_y(beyond_shoulder_range, angle-90), p.z);
+	
 	generation_progress.initial.current += 1;
 }
 
@@ -121,8 +123,50 @@ road_offset_list = {
 	right: generate_roads(control_points_offset.right, road_segments),
 }
 
+
+// look back at previous nodes, if this node intersects with a previous, set the road's offset coordinate at the intersect to avoid overlap during sharp turns
+for (var s = 0; s < array_length(road_list); s++) {
+	var road = road_list[s];
+	
+	for (var i = 0; i < 10; i++) {
+		var index = s-i;
+		var left_offset_point = road_offset_list.left[s];
+		var right_offset_point = road_offset_list.right[s];
+		if (index < 0) {continue;}
+		
+		var prev_road = road_list[index];
+		var prev_left_offset_point = road_offset_list.left[index];
+		var prev_right_offset_point = road_offset_list.right[index];
+		var left_intersect_info = lines_intersect(
+			road.x, road.y, 
+			left_offset_point.x, left_offset_point.y, 
+			prev_road.x, prev_road.y,
+			prev_left_offset_point.x, prev_left_offset_point.y
+		);
+		var right_intersect_info = lines_intersect(
+			road.x, road.y, 
+			right_offset_point.x, right_offset_point.y, 
+			prev_road.x, prev_road.y,
+			prev_right_offset_point.x, prev_right_offset_point.y
+		);
+		
+		if (left_intersect_info.intersect) {
+			left_offset_point.x = left_intersect_info.x;
+			left_offset_point.y = left_intersect_info.y;
+			left_offset_point.z = prev_left_offset_point.z;
+			break;
+		}
+		if (right_intersect_info.intersect) {
+			right_offset_point.x = right_intersect_info.x;
+			right_offset_point.y = right_intersect_info.y;
+			right_offset_point.z = prev_right_offset_point.z;
+			break;
+		}
+	}
+}
+
 print("Rendering Road");
-var race_length_modifier = [1.5, 1.7, 1.5, 1.2, 1]; // modifier to increase lnegth based on difficulty
+var race_length_modifier = [1.5, 1.7, 0.9, 0.7, 1]; // modifier to increase lnegth based on difficulty
 global.destination_road_index = round(array_length(road_list) * ((global.difficulty * 0.8) - 0.6) * race_length_modifier[global.level]) - (road_segments * 10);
 global.race_length = 0;
 
@@ -176,16 +220,14 @@ for (var i = 0; i < array_length(road_list)-1; i++) {
 		lane_change_to = course_data.MIN_LANES+irandom(course_data.MAX_LANES-course_data.MIN_LANES);
 		
 		cur_zone = choose_weight(course_data.ZONES, course_data.WEIGTHS, 1)[0];
-		//if (irandom(2) == 0) {
-		//	// change zone
-		//	if (prev_road.zone != ZONE.RIVER) {
-		//		cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT, ZONE.RIVER);
-		//	}
-		//	else {
-		//		// pick a different zone thats not a river, 
-		//		cur_zone = choose(ZONE.SUBURBAN, ZONE.CITY, ZONE.DESERT);
-		//	}
-		//}
+		
+		// hard set zone to river is height map value at this grid is below certain value
+		var grid_x = road.x div control_points_dist;
+		var grid_y = road.y div control_points_dist;
+		var grid_index = grid_x + (grid_y * grid_width);
+		if (grid[| grid_index] < -0.15) {
+			cur_zone = ZONE.RIVER;
+		}
 		
 		switch(cur_zone) {
 			case ZONE.RIVER:
@@ -541,16 +583,16 @@ function render_control_point(cp, range=0) {
 		}
 		var grass_coord = {
 			left: [
-				[road.x+lengthdir_x(lane_width * (left_lanes+0.5), road.direction+90),					road.y+lengthdir_y(lane_width * (left_lanes+0.5), road.direction+90),				 road.z],
-				[next_road.x+lengthdir_x(lane_width * (next_left_lanes+0.5), next_road.direction+90),	next_road.y+lengthdir_y(lane_width * (next_left_lanes+0.5), next_road.direction+90), next_road.z],
+				[road.x+lengthdir_x(lane_width * (left_lanes+1), road.direction+90),					road.y+lengthdir_y(lane_width * (left_lanes+1), road.direction+90),				 road.z],
+				[next_road.x+lengthdir_x(lane_width * (next_left_lanes+1), next_road.direction+90),	next_road.y+lengthdir_y(lane_width * (next_left_lanes+1), next_road.direction+90), next_road.z],
 				[next_road.beyond_range[0].x, next_road.beyond_range[0].y, next_road.beyond_range[0].z],
 				[road.beyond_range[0].x, road.beyond_range[0].y, next_road.beyond_range[0].z]
 				//[shoulder_coord.left[2][0]+lengthdir_x(next_road.beyond_range, next_road.direction+90), shoulder_coord.left[2][1]+lengthdir_y(next_road.beyond_range, next_road.direction+90)],
 				//[shoulder_coord.left[3][0]+lengthdir_x(road.beyond_range, road.direction+90), shoulder_coord.left[3][1]+lengthdir_y(road.beyond_range, road.direction+90)]
 			],
 			right: [
-				[next_road.x+lengthdir_x(lane_width * (next_right_lanes+0.5), next_road.direction-90),	next_road.y+lengthdir_y(lane_width * (next_right_lanes+0.5), next_road.direction-90),	next_road.z],
-				[road.x+lengthdir_x(lane_width * (right_lanes+0.5), road.direction-90),					road.y+lengthdir_y(lane_width * (right_lanes+0.5), road.direction-90),					road.z],
+				[next_road.x+lengthdir_x(lane_width * (next_right_lanes+1), next_road.direction-90),	next_road.y+lengthdir_y(lane_width * (next_right_lanes+1), next_road.direction-90),	next_road.z],
+				[road.x+lengthdir_x(lane_width * (right_lanes+1), road.direction-90),					road.y+lengthdir_y(lane_width * (right_lanes+1), road.direction-90),					road.z],
 				[road.beyond_range[1].x, road.beyond_range[1].y, next_road.beyond_range[1].z],
 				[next_road.beyond_range[1].x, next_road.beyond_range[1].y, next_road.beyond_range[1].z],
 				//[shoulder_coord.right[2][0]+lengthdir_x(road.beyond_range, road.direction-90), shoulder_coord.right[2][1]+lengthdir_y(road.beyond_range, road.direction-90)],
@@ -751,7 +793,7 @@ function render_control_point(cp, range=0) {
 						new Point3D(shoulder_coord.left[0][0], shoulder_coord.left[0][1], road.z + tunnel_height),
 						new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + tunnel_height),
 						new Point3D(shoulder_coord.left[3][0], shoulder_coord.left[3][1], road.z + (tunnel_height / 2)),
-						new Point(left_grass_uv[0], tunnel_outer_uv[1]),
+						new Point(tunnel_outer_uv[0], tunnel_outer_uv[1]),
 						new Point(tunnel_outer_uv[2], tunnel_outer_uv[1]),
 						new Point(tunnel_outer_uv[2], tunnel_outer_uv[3])
 					),

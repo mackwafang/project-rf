@@ -27,7 +27,7 @@ function get_course_weights(course) {
 		default:
 			show_error(
 				$"course {course} is not a known course to get weight data.\n"+
-				"Check get_course_weights to see if course {course} has data"
+				$"Check get_course_weights to see if course {course} has data"
 			, true);
 	}
 }

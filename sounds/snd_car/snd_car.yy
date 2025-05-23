@@ -9,7 +9,7 @@
   "bitRate":32,
   "compression":1,
   "conversionMode":0,
-  "duration":0.313469,
+  "duration":0.2060771,
   "name":"snd_car",
   "parent":{
     "name":"Sounds",

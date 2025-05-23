@@ -64,7 +64,7 @@ max_gear = 6;
 //}
 
 //gear's ratio
-gear_ratio = [3, 2.5, 1.9, 6/4, 10/7, 14/10];
+gear_ratio = [3, 2.5, 1.9, 1.7, 1.5, 1.47];
 //gear_shift_rpm = [
 //	[0, 4000],
 //	[3000, 4000],
@@ -76,20 +76,20 @@ gear_ratio = [3, 2.5, 1.9, 6/4, 10/7, 14/10];
 gear_shift_rpm = [
 	[0, 4500],
 	[3000, 4500],
-	[3450, 4500],
-	[3550, 4500],
-	[3550, 4500],
-	[3750, 4500],
+	[4050, 4500],
+	[4500, 4500],
+	[5000, 4500],
+	[5250, 4500],
 ];
 
 // drive force required for gear shift
 force_shift_rpm = [
 	[0, 4000],
-	[0, 2000],
-	[0, 1000],
-	[0, 200],
-	[0, 100],
-	[0, 100000],
+	[-6000, 2000],
+	[-7000, 1000],
+	[-7000, 300],
+	[-7000, 50],
+	[-8000, 100000],
 ];
 
 //for (var g = 0; g < array_length(gear_shift_rpm); g++) {
@@ -169,20 +169,20 @@ gear_shift_up = function() {
 	//shift up
 	if (gear+1 < max_gear) {
 		engine_power = 0;
-		gear_shift_wait = 60;
+		gear_shift_wait = 120;
 	}
 	gear = min(gear+1, min(max_gear, array_length(gear_shift_rpm)));
-	gear_shift_wait = 60;
+	gear_shift_wait = 120;
 }
 
 gear_shift_down = function() {
 	//shift down
 	if (gear-1 > 0) {
-		gear_shift_wait = 60;
+		gear_shift_wait = 120;
 		engine_power = 0;
 	}
 	gear = max(gear-1, 1);
-	gear_shift_wait = 60;
+	gear_shift_wait = 120;
 }
 
 gear_shift = function() {
@@ -190,17 +190,18 @@ gear_shift = function() {
 	var gear_shift_rpm_lower = gear_shift_rpm[gear-1][0];
 	
 	if (gear_shift_wait <= 0) {
-		if (accelerating | boost_active) {
+		if (boost_active or accelerating) {
 			if (engine_rpm > 9000 or drive_force < force_shift_rpm[gear-1][1]) {
 				gear_shift_up();
 			}
             // resolve edge case where some collision may result in signicantly reduced rpm
-            if ((engine_rpm < gear_shift_rpm_lower)) {
+			// down shift
+            if (engine_rpm < 2000 * global.difficulty) {
                 gear_shift_down();
             }
 		}
-		if (!accelerating or braking or !on_road) {
-			if ((engine_rpm < gear_shift_rpm_lower)) {
+		if ((!accelerating or braking or !on_road) and !boost_active) {
+			if ((drive_force > force_shift_rpm[gear-1][0])) {
 				gear_shift_down();
 			}
 		}

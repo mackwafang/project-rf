@@ -13,7 +13,7 @@ if (global.CAMERA_MODE_3D) {
 			shader_set_uniform_f(global.sbcr_color, true);
 			shader_set_uniform_f_array(global.sbcr_src_color, global.racer_color_replace_src);
 			shader_set_uniform_f_array(global.sbcr_dst_color, racer_color_replace_dst);
-			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 0, 0, image_xscale*0.6, -0.6, -turn_rate, c_white, 1);
+			draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 0, 0, image_xscale*0.6, -0.6, -turn_rate*10, c_white, 1);
 			break;
 		case VEHICLE_TYPE.CAR:
 			// draw_sprite_ext(vehicle_detail_index, vehicle_detail_subimage, 64, 64, image_xscale, 1, 0, vehicle_color.primary, 1);

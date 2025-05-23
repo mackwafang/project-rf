@@ -1,14 +1,19 @@
 if (global.game_state_paused) {exit;}
 
 // road fidning
-// var nav_road = on_road_index;
+var nav_road = on_road_index; // this road is used to track which direction to drive
 var nodes_look_ahead = 0;
 if (ai_behavior.part_of_race) {
 	if (global.level >= 3) {
-		nodes_look_ahead = 1;
+		nodes_look_ahead = 2;
+	}
+	if (!on_road) {
+		nodes_look_ahead = 0;
 	}
 }
-var nav_road = obj_road_generator.road_list[max(0, on_road_index.get_id() + (ai_behavior.reversed_direction ? -nodes_look_ahead: nodes_look_ahead))];
+
+// tis road is used for throttle/break control
+var look_ahead_road = obj_road_generator.road_list[max(0, on_road_index.get_id() + (ai_behavior.reversed_direction ? -nodes_look_ahead: nodes_look_ahead))];
 //vec_to_road = point_to_line(
 //	on_road_index.x, on_road_index.y,
 //	on_road_index.next_road.x, on_road_index.next_road.y,
@@ -31,8 +36,10 @@ if (can_move) {
 
     // getting new direction to change to
 	var angle_diff = angle_difference(nav_road.direction, direction);
+	var look_ahead_angle_diff = angle_difference(look_ahead_road.direction, direction);
 	if (ai_behavior.reversed_direction) {
 		angle_diff = angle_difference(nav_road.direction-180, direction);
+		look_ahead_angle_diff = angle_difference(look_ahead_road.direction-180, direction);
 	}
 
 	// moving, not crashed
@@ -46,12 +53,15 @@ if (can_move) {
 	}
 	else {
 		accelerating = !is_completed;
-		if (ai_behavior.part_of_race) {
-			if (abs(angle_diff) > 2) {
-				accelerating = false;
+		
+		if (on_road) {
+	 		if (ai_behavior.part_of_race) {
+				if (abs(look_ahead_angle_diff) > 20) {
+					accelerating = false;
+				}
+				
+				braking = (abs(look_ahead_angle_diff) > 40);
 			}
-			
-			braking = (abs(angle_diff) > 7);
 		}
 	}
 	
@@ -101,7 +111,7 @@ if (can_move) {
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
         if (ai_behavior.part_of_race) {
-		    engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle() * 1.05);
+		    engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle() * 1.01);
         }
         else {
             engine_power = 1;
@@ -147,7 +157,7 @@ if (can_move) {
 				// moving go desired lane
 				if (on_road_index.zone != ZONE.RIVER) {
 					if (dist_to_lane > on_road_index.lane_width / 2) {
-						tr += sign(side) / 10;
+						tr += sign(side) / 5;
 					}
 				}
 				turn_rate += (tr / 10);
@@ -348,15 +358,15 @@ if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
 
 gear_shift(); // auto gear shift
 engine_power = clamp(engine_power, 0, 1);
-gear_shift_wait = clamp(gear_shift_wait-1, 0, 60);
+gear_shift_wait = clamp(gear_shift_wait-1, 0, 120);
 
 // play engine
 var engine_sound_pitch = ((engine_rpm / engine_rpm_max)+1.0);// - (gear / 12);
 if (engine_sound_interval == 0) {
+	audio_emitter_pitch(engine_sound_emitter, engine_sound_pitch);
+	audio_emitter_position(engine_sound_emitter, x, y, z);
 	audio_play_sound_on(engine_sound_emitter, (boost_active ? snd_boost : snd_car), false, 2);
 }
-audio_emitter_pitch(engine_sound_emitter, engine_sound_pitch);
-audio_emitter_position(engine_sound_emitter, x, y, z);
 //audio_emitter_velocity(engine_sound_emitter, cos(direction), sin(direction), 0);
 engine_sound_interval = (engine_sound_interval + 1) % (engine_rpm < 2000 ? 16 : 8);
 

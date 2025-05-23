@@ -193,6 +193,7 @@
     {"id":{"name":"spr_health_bar_small","path":"sprites/spr_health_bar_small/spr_health_bar_small.yy",},},
     {"id":{"name":"spr_night","path":"sprites/spr_night/spr_night.yy",},},
     {"id":{"name":"spr_odometer_bkg","path":"sprites/spr_odometer_bkg/spr_odometer_bkg.yy",},},
+    {"id":{"name":"spr_offroad_indicator","path":"sprites/spr_offroad_indicator/spr_offroad_indicator.yy",},},
     {"id":{"name":"spr_ping","path":"sprites/spr_ping/spr_ping.yy",},},
     {"id":{"name":"spr_prop","path":"sprites/spr_prop/spr_prop.yy",},},
     {"id":{"name":"spr_race_rank","path":"sprites/spr_race_rank/spr_race_rank.yy",},},

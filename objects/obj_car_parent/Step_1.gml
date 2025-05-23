@@ -43,7 +43,7 @@ if (_z_restrict) {
     switch(road.zone) {
         case ZONE.RIVER:
             if (!on_road) {
-                zlerp += road.sea_level;
+                zlerp -= road.sea_level;
             }
             break;
         case ZONE.CITY: case ZONE.TOWN: case ZONE.TUNNEL:

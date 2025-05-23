@@ -137,7 +137,7 @@ var cam_direction = point_direction(
     main_camera_pos_to.y
 );
 audio_listener_position(main_camera_pos.x, main_camera_pos.y, main_camera_pos.z);
-audio_listener_orientation(dcos(cam_direction), dsin(cam_direction), 0, 0, 0, 1);
+audio_listener_orientation(dcos(cam_direction), dsin(cam_direction), -1, 0, 1, 0);
 gpu_set_zwriteenable(false);
 global.view_matrix = matrix_build_lookat(
     main_camera_pos.x,

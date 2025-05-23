@@ -6,10 +6,10 @@
     "path":"audiogroups/audiogroup_default",
   },
   "bitDepth":1,
-  "bitRate":128,
+  "bitRate":144,
   "compression":0,
   "conversionMode":0,
-  "duration":10.414833,
+  "duration":0.20256236,
   "name":"snd_car_2",
   "parent":{
     "name":"Sounds",
@@ -20,6 +20,6 @@
   "resourceVersion":"2.0",
   "sampleRate":44100,
   "soundFile":"snd_car_2.wav",
-  "type":0,
-  "volume":0.2,
+  "type":2,
+  "volume":1.0,
 }

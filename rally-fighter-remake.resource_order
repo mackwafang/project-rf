@@ -156,6 +156,7 @@
     {"name":"spr_health_bar_small","order":9,"path":"sprites/spr_health_bar_small/spr_health_bar_small.yy",},
     {"name":"spr_night","order":20,"path":"sprites/spr_night/spr_night.yy",},
     {"name":"spr_odometer_bkg","order":1,"path":"sprites/spr_odometer_bkg/spr_odometer_bkg.yy",},
+    {"name":"spr_offroad_indicator","order":8,"path":"sprites/spr_offroad_indicator/spr_offroad_indicator.yy",},
     {"name":"spr_ping","order":2,"path":"sprites/spr_ping/spr_ping.yy",},
     {"name":"spr_prop","order":25,"path":"sprites/spr_prop/spr_prop.yy",},
     {"name":"spr_race_rank","order":3,"path":"sprites/spr_race_rank/spr_race_rank.yy",},

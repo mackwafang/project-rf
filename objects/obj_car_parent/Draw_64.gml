@@ -91,7 +91,7 @@ if (obj_controller.main_camera_target.id == id) {
 	#region Globally available U
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
-	//draw_text(64, 64, $"{drive_force}");
+	draw_text(64, 64, $"{drive_force}");
 	//draw_text(16, 16, $"accel: {accelerating}");
 	//draw_text(16, 32, $"boost: {boosting}");
 	//draw_text(16, 48, $"brake: {braking}");
@@ -253,6 +253,10 @@ if (obj_controller.main_camera_target.id == id) {
 				break;
 		}
 		draw_sprite(spr_odometer_bkg, speed_odometer_spr_index, odometer_x, odometer_y);
+		// adds off road indicator
+		if (!on_road) {
+			draw_sprite(spr_offroad_indicator, 0, odometer_x, odometer_y - 64);
+		}
 	
 		// vehicle speed
 		draw_set_valign(fa_bottom);
@@ -303,6 +307,10 @@ if (obj_controller.main_camera_target.id == id) {
         
 		draw_text_transformed(odometer_x, odometer_y - 20, $"{round(velocity * speed_scale * global.WORLD_TO_REAL_SCALE / 10)}", 2, 2, 0);
 		draw_text_transformed(odometer_x, odometer_y, speed_unit, 0.75, 0.75, 0);
+		// adds off road indicator
+		if (!on_road) {
+			draw_sprite(spr_offroad_indicator, 0, odometer_x, odometer_y - 64);
+		}
 		
 		// rpm
 		odometer_x = port_width_half - 64;
