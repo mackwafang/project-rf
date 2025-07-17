@@ -86,82 +86,10 @@ if (!is_respawning) {
 	turn_rate += -turn_rate * 0.05;
 	turn_rate = clamp(turn_rate, -10, 10);
 	
-	// change bike sprite at at certain behavior and direction to camera
-	if (vehicle_type == VEHICLE_TYPE.BIKE) {
-		if (velocity <= 0 || !global.race_started) {
-			// stopped sprite
-			vehicle_detail_index = spr_bike_3d_detail_2;
-			vehicle_detail_subimage = 0;
-		}
-		else {
-			// turning sprite
-			vehicle_detail_index = spr_bike_3d_detail_2_turn;
-			vehicle_detail_subimage = round(min(sprite_get_number(vehicle_detail_index), (abs(turn_rate) / 4 / global.deltatime) / 100 * sprite_get_number(vehicle_detail_index)));
-		}
-		image_xscale = -(turn_rate == 0 ? 1 : sign(turn_rate));
-		if (!is_completed) {
-			var length_to_cam = point_distance(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
-			var a = new Point(
-				lengthdir_x(1, direction + 90),
-				lengthdir_y(1, direction + 90)
-			);
-			
-			var b = new Point(
-				(obj_controller.main_camera_pos.x - x) / length_to_cam,
-				(obj_controller.main_camera_pos.y - y) / length_to_cam
-			);
-			var _d = dot_product(a.x, a.y, b.x, b.y);
-            var can_perform_wheelie = accelerating and velocity <= 200 * global.difficulty and gear == 1;
-			if (ai_behavior.part_of_race) {
-				if (can_perform_wheelie) {
-					vehicle_detail_index = spr_bike_3d_detail_2_start;
-				}
-			}
-			
-			if (abs(_d) > 0.25) {
-				if (velocity > 0) {
-					// angled sprite
-					vehicle_detail_index = spr_bike_3d_detail_2_side;
-                    if (can_perform_wheelie) {
-                        vehicle_detail_index = spr_bike_3d_detail_2_start;
-                        vehicle_detail_subimage = 1;
-                    }
-				}
-				else {
-					// angled stopped sprite
-					vehicle_detail_index = spr_bike_3d_detail_2;
-					vehicle_detail_subimage = 1;
-				}
-				
-				image_xscale = -(_d == 0 ? 1 : sign(_d));
-			}
-		}
-		else {
-			if (ai_behavior.part_of_race && completed_race_rank <= 3) {
-				vehicle_detail_index = spr_bike_3d_detail_2_victory;
-				vehicle_detail_subimage = (round(global.race_timer * 10) div 3) % 2;
-			}
-		}
-	}
-	
 	if (z - zlerp < 1) {
 		direction += turn_rate * 75 * global.deltatime;
 	}
-}
-else {
-	if (velocity > 400) {
-		vehicle_detail_index = spr_bike_3d_detail_2_crashed_roll;
-		vehicle_detail_subimage = (counter div 20) % 6;
-	}
-	else {
-		if (crash_timer.to_stand > 0) {
-			vehicle_detail_index = spr_bike_3d_detail_2_stand;
-			vehicle_detail_subimage = min(max(0, round(crash_timer.to_stand / crash_timer.TIME_TO_STAND * 4)), 4);
-		}
-		else {
-			vehicle_detail_index = spr_bike_3d_detail_2_crashed;
-		}
-	}
+	biker_state = BIKER_STATE.DRIVING;
 }
 
 // invisible walls to attempt to revent stuck behind buildings
@@ -199,6 +127,169 @@ else {
 
 velocity += acceleration * global.deltatime;// * gear_ratio[gear-1];
 hp = clamp(hp, 0, max_hp);
+
+// swapping sprites based on state
+switch(vehicle_type) {
+	case VEHICLE_TYPE.BIKE:
+		switch(biker_state) {
+			case BIKER_STATE.DRIVING:
+				if (velocity <= 0 || !global.race_started) {
+					// stopped sprite
+					vehicle_detail_index = spr_bike_3d_detail_2;
+					vehicle_detail_subimage = 0;
+				}
+				else {
+					// turning sprite
+					vehicle_detail_index = spr_bike_3d_detail_2_turn;
+					vehicle_detail_subimage = round(min(sprite_get_number(vehicle_detail_index), (abs(turn_rate) / 4 / global.deltatime) / 100 * sprite_get_number(vehicle_detail_index)));
+				}
+				image_xscale = -(turn_rate == 0 ? 1 : sign(turn_rate));
+				
+				if (!is_completed) {
+					var length_to_cam = point_distance(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
+					var a = new Point(
+						lengthdir_x(1, direction + 90),
+						lengthdir_y(1, direction + 90)
+					);
+					
+					var b = new Point(
+						(obj_controller.main_camera_pos.x - x) / length_to_cam,
+						(obj_controller.main_camera_pos.y - y) / length_to_cam
+					);
+					var _d = dot_product(a.x, a.y, b.x, b.y);
+					var can_perform_wheelie = accelerating and velocity <= 200 * global.difficulty and gear == 1;
+					if (ai_behavior.part_of_race) {
+						if (can_perform_wheelie) {
+							vehicle_detail_index = spr_bike_3d_detail_2_start;
+						}
+					}
+					
+					if (abs(_d) > 0.25) {
+						if (velocity > 0) {
+							// angled sprite
+							vehicle_detail_index = spr_bike_3d_detail_2_side;
+							if (can_perform_wheelie) {
+								vehicle_detail_index = spr_bike_3d_detail_2_start;
+								vehicle_detail_subimage = 1;
+							}
+						}
+						else {
+							// angled stopped sprite
+							vehicle_detail_index = spr_bike_3d_detail_2;
+							vehicle_detail_subimage = 1;
+						}
+						
+						image_xscale = -(_d == 0 ? 1 : sign(_d));
+					}
+				}
+				break;
+			
+			case BIKER_STATE.ROLLING:
+				if (velocity > 400) {
+					vehicle_detail_index = spr_bike_3d_detail_2_crashed_roll;
+					vehicle_detail_subimage = (counter div 20) % 6;
+				}
+				else {
+					vehicle_detail_index = spr_bike_3d_detail_2_crashed;
+					
+					if (velocity <= 0) {
+						crash_timer.to_stand = crash_timer.TIME_TO_STAND;
+						biker_state = BIKER_STATE.GETUP;
+					}
+				}
+			
+				break;
+			
+			case BIKER_STATE.GETUP:
+				if (crash_timer.to_stand > 0) {
+					vehicle_detail_index = spr_bike_3d_detail_2_stand;
+					vehicle_detail_subimage = min(max(0, round(crash_timer.to_stand / crash_timer.TIME_TO_STAND * 4)), 4);
+					
+					crash_timer.to_stand -= global.deltatime;
+					if (crash_timer.to_stand <= 0) {
+						crash_timer.is_walking = true;
+						on_stand_up();
+					}
+				}
+				break;
+			
+			case BIKER_STATE.WALKING:
+				if (instance_exists(bike_obj)) {
+					if (point_distance(x, y, bike_obj.x, bike_obj.y) > 16) {
+						// walking to bike
+						if (crash_timer.is_walking) {
+							direction += angle_difference(point_direction(x, y, bike_obj.x, bike_obj.y), direction) * 0.05;
+							velocity = 80;
+							
+							// changing sprite basd on walking direction
+							var cam_dir = image_angle;//point_direction(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
+							var length_to_cam = point_distance(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
+		
+							var a = new Point(
+								lengthdir_x(1, angle_difference(direction, cam_dir)),
+								lengthdir_y(1, angle_difference(direction, cam_dir))
+							);
+							var b = new Point(
+								(obj_controller.main_camera_pos.x - x) / length_to_cam,
+								(obj_controller.main_camera_pos.y - y) / length_to_cam
+							);
+							var _d = -dot_product(a.x, a.y, b.x, b.y);
+							
+							if (_d > 0.75) {
+								// forward
+								vehicle_detail_index = spr_bike_3d_detail_2_walk_up;
+							}
+							else if (_d < -0.75) {
+								// towards
+								vehicle_detail_index = spr_bike_3d_detail_2_walk_down;
+							}
+							else {
+								//side
+								vehicle_detail_index = spr_bike_3d_detail_2_walk_side;
+							}
+							
+							vehicle_detail_subimage = (counter div 10) % 6
+							image_xscale = sign(angle_difference(cam_dir, direction));
+						}
+					}
+					else {
+						biker_state = BIKER_STATE.GETON;
+					}
+				}
+				break;
+			
+			case BIKER_STATE.GETON:
+				// getting on bike
+				if (crash_timer.to_get_on <= 0 and crash_timer.is_walking) {
+					crash_timer.to_get_on = crash_timer.TIME_TO_GET_ON;
+					crash_timer.is_walking = false;
+					bike_obj.display_sprite_index = spr_1x1;
+				}
+				direction = on_road_index.direction;
+				velocity = 0;
+				vehicle_detail_index = spr_bike_3d_detail_2_get_on;
+				vehicle_detail_subimage = min(max(0, round(crash_timer.to_get_on / crash_timer.TIME_TO_GET_ON * 10)), 10);
+			
+			
+				if (crash_timer.to_get_on > 0) {
+					crash_timer.to_get_on -= global.deltatime;
+					if (crash_timer.to_get_on <= 0) {
+						crash_timer.is_walking = false;
+						on_respawn();
+					}
+				}
+				break;
+			
+			case BIKER_STATE.WIN:
+				if (ai_behavior.part_of_race && completed_race_rank <= 3) {
+					vehicle_detail_index = spr_bike_3d_detail_2_victory;
+					vehicle_detail_subimage = (round(global.race_timer * 10) div 3) % 2;
+				}
+				break;
+		}
+		break;
+	
+}
 
 // moving and handling smooth collision handling
 var col_obj = move_and_collide(move_x, move_y, [obj_railing, obj_building]);

@@ -12,6 +12,16 @@ enum VEHICLE_TYPE {
 	TRUCK
 }
 
+// defines the state of the bike (i.e. driving, rolling, walking)
+enum BIKER_STATE {
+	DRIVING, // ditto
+	ROLLING, // after crash while going at a high speed
+	GETUP,	 // recover from rolling
+	WALKING, // walking to bike
+	GETON,   // getting on bike
+	WIN, 	 // placed a certain rank after crossing victory line
+}
+
 enum ZONE {
 	CITY,
 	TOWN,

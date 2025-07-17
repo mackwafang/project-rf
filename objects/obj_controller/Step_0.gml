@@ -175,7 +175,7 @@ if (keyboard_check_pressed(ord("R"))) {
 
 if (global.game_state_paused) {exit;}
 // other car spawning
-if (global.GAMEPLAY_CARS) {
+if (global.GAMEPLAY_CARS and !main_camera_target.is_completed) {
     var road_edge_index = max(0, main_camera_target.on_road_index._id + choose(-15,15));
 	var road_at_view_edge = obj_road_generator.road_list[road_edge_index];
 	var zone_modifier = 1;

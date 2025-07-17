@@ -15,7 +15,7 @@ global.game_state_paused = false;
 global.race_started = false;
 global.race_timer = 0;
 global.deltatime = delta_time / 1000000;
-global.display_freq = display_get_frequency();
+global.display_freq = 60;//display_get_frequency();
 player_obj = noone;
 
 // cam stuff

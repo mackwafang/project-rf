@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"road_generator",
+  "%Name":"road_post_gen",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"road_generator",
+  "name":"road_post_gen",
   "parent":{
     "name":"road",
     "path":"folders/Scripts/road.yy",

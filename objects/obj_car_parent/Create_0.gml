@@ -33,9 +33,11 @@ boost_usable = false;    // is boost usable
 boost_active = false;    // if boost is using
 boost_juice_penalty = 0; // penalty for using boost
 dist_to_lane = 0;        // distance to road's median
+max_rpm_burn_penalty = 0;// time until hp start to burn due to staying in high rpm (band-aid fix for spamming low gear
 side_from_median = 1;    // which side of the road is the vehicle on (-1 = left, 1 = right)
 hit_immune = 0;
 name = "";				 // racer name
+biker_state = BIKER_STATE.DRIVING;
 
 is_completed = false;	 // did vehicle completed race
 
@@ -185,7 +187,7 @@ gear_shift_down = function() {
 	gear_shift_wait = 120;
 }
 
-gear_shift = function() {
+auto_gear_shift = function() {
 	var gear_shift_rpm_upper = gear_shift_rpm[gear-1][1]
 	var gear_shift_rpm_lower = gear_shift_rpm[gear-1][0];
 	
@@ -276,6 +278,7 @@ on_respawn = function() {
 		z = on_road_index.z;
 		on_road = true;
 		vertical_on_road = true;
+		biker_state = BIKER_STATE.DRIVING;
 		instance_destroy(bike_obj);
 	}
 }
@@ -295,27 +298,31 @@ on_stand_up = function() {
 		bike_obj.racer_color_replace_dst = racer_color_replace_dst;
 		bike_obj.z = road.z;
 		bike_obj.image_angle = road.direction;
-		
 		if (on_road_index.zone == ZONE.RIVER && !on_road) {
 			road = obj_road_generator.road_list[on_road_index._id - 3];
 			x = road.x + lengthdir_x(road.get_lanes_right() * road.lane_width, road.direction - 90);
 			y = road.y + lengthdir_y(road.get_lanes_right() * road.lane_width, road.direction - 90);
 		}
 	}
+	biker_state = BIKER_STATE.WALKING;
 }
 
 on_death = function() {
 	if (!is_respawning) {
 		instance_create_layer(x, y, "Instances", obj_explosion);
 		if (ai_behavior.part_of_race) {
+			
 			image_alpha = 0;
 			is_respawning = true;
+			accelerating = false;
+			braking = false;
 			boosting = false;
 			can_move = false;
 			//solid = false;
 			mask_index = spr_empty;
 			direction = on_road_index.direction;
 			z += height / 2;
+			biker_state = BIKER_STATE.ROLLING;
 			if (global.DEBUG_PRINT_VEHICLE_CRASH_REASON) {
 				print($"object {id} (part_of_race: {ai_behavior.part_of_race}, reverse: {ai_behavior.reversed_direction}) destroyed. Crashed");
 			}
@@ -373,9 +380,9 @@ on_collision_with_entity = function(hp_lost_modifier=1) {
 	}
 	
 	if (is_respawning and other.object_index != obj_prop) {
-		if (crash_timer.is_walking) {
+		if (biker_state == BIKER_STATE.WALKING) {
 			hp = 0;
-			on_death();
+			biker_state = BIKER_STATE.ROLLING;
 			crash_timer.is_walking = false;
 			crash_timer.to_get_on = -1;
 			crash_timer.to_stand = crash_timer.TIME_TO_STAND;

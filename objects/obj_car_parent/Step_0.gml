@@ -1,5 +1,6 @@
 if (global.game_state_paused) {exit;}
 
+
 // road fidning
 var nav_road = on_road_index; // this road is used to track which direction to drive
 var nodes_look_ahead = 0;
@@ -201,70 +202,13 @@ if (can_move) {
 		// checking turning
 		if (turning & 1 == 0) {
 			// checking left turn
-			turn_rate -= max(10, abs(turn_rate / 2)) * global.deltatime;
+			turn_rate -= 6 * global.deltatime;
 		}
 		else if (turning & 2 == 0) {
 			// checking right turn
-			turn_rate += max(10, abs(turn_rate / 2)) * global.deltatime;
+			turn_rate += 6 * global.deltatime;
 		}
 	}
-}
-else {
-	#region crashed, walking to bike
-	if (is_respawning) {
-		if (instance_exists(bike_obj)) {
-			if (point_distance(x, y, bike_obj.x, bike_obj.y) > 16) {
-				// walking to bike
-				if (crash_timer.is_walking) {
-					direction += angle_difference(point_direction(x, y, bike_obj.x, bike_obj.y), direction) * 0.05;
-					velocity = 80;
-					
-					// changing sprite basd on walking direction
-					var cam_dir = image_angle;//point_direction(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
-					var length_to_cam = point_distance(obj_controller.main_camera_pos.x, obj_controller.main_camera_pos.y, x, y);
-
-					var a = new Point(
-						lengthdir_x(1, angle_difference(direction, cam_dir)),
-						lengthdir_y(1, angle_difference(direction, cam_dir))
-					);
-					var b = new Point(
-						(obj_controller.main_camera_pos.x - x) / length_to_cam,
-						(obj_controller.main_camera_pos.y - y) / length_to_cam
-					);
-					var _d = -dot_product(a.x, a.y, b.x, b.y);
-					
-					if (_d > 0.75) {
-						// forward
-						vehicle_detail_index = spr_bike_3d_detail_2_walk_up;
-					}
-					else if (_d < -0.75) {
-						// towards
-						vehicle_detail_index = spr_bike_3d_detail_2_walk_down;
-					}
-					else {
-						//side
-						vehicle_detail_index = spr_bike_3d_detail_2_walk_side;
-					}
-					
-					vehicle_detail_subimage = (counter div 10) % 6
-					image_xscale = sign(angle_difference(cam_dir, direction));
-				}
-			}
-			else {
-				// getting on bike
-				if (crash_timer.to_get_on <= 0 and crash_timer.is_walking) {
-					crash_timer.to_get_on = crash_timer.TIME_TO_GET_ON;
-					crash_timer.is_walking = false;
-					bike_obj.display_sprite_index = spr_1x1;
-				}
-				direction = on_road_index.direction;
-				velocity = 0;
-				vehicle_detail_index = spr_bike_3d_detail_2_get_on;
-				vehicle_detail_subimage = min(max(0, round(crash_timer.to_get_on / crash_timer.TIME_TO_GET_ON * 10)), 10);
-			}
-		}
-	}
-	#endregion
 }
 
 // turning = (turn_rate < 0.1 ? 2 : (turn_rate > 0.1 ? 1 : 0));
@@ -307,8 +251,7 @@ if (!is_completed) {
 		completed_race_rank = race_rank;
 	}
 }
-
-if (is_completed) {
+else {
 	braking = true;
 	accelerating = false;
 	boosting = false;
@@ -325,7 +268,7 @@ var drive_torque = engine_torque * engine_to_wheel_ratio * transfer_eff;
 var f_drag = -c_drag * velocity;
 var f_rr = -c_rr * velocity;
 var f_surface = -mass * global.gravity_3d * ((on_road) ? 0.2 : 5) * (vertical_on_road ? 1 : 0);
-if (hp <= 0) {
+if (biker_state == BIKER_STATE.ROLLING) {
 	f_surface = -mass * global.gravity_3d * (vertical_on_road ? 10 : 0);
 }
 if (vertical_on_road) {
@@ -354,9 +297,21 @@ if (vertical_on_road) {
 velocity = clamp(velocity, 0, max_velocity);
 velocity = clamp(velocity, 0, speed_limit / ((global.gameplay_measure_metrics == MEASURE.METRIC ? 1 : KMH_TO_MPH) * global.WORLD_TO_REAL_SCALE / 10));
 
+// burn hp when rpm is very high for long amount of time
+// band-aid fix for down-gear exploit
+if (engine_rpm > 9500) {
+	max_rpm_burn_penalty += global.deltatime;
+	if (max_rpm_burn_penalty >= 1) {
+		hp -= max_rpm_burn_penalty * 20 * global.deltatime;
+	}
+}
+else {
+	max_rpm_burn_penalty = 0;
+}
+
 if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
 
-gear_shift(); // auto gear shift
+auto_gear_shift(); // auto gear shift
 engine_power = clamp(engine_power, 0, 1);
 gear_shift_wait = clamp(gear_shift_wait-1, 0, 120);
 
@@ -409,24 +364,9 @@ else {
 }
 
 //check alive
-if (hp <= 0) {
+if (hp <= 0 and biker_state == BIKER_STATE.DRIVING) {
 	// respawning
-	// respawning process:
-	// when hp <= 0
-	// on_death is called
-	// changes player to a person rolling, this causes constant deceleration until stopping (begin step)
-	// once stopped, change state to standing up
-	// calls on_stand_up, create a bike object
-	// walks to bike object
-	// once close, change animation to get on
-	// once get on is done, turn off is_respawning and restore health
-	// go to idle state
 	on_death();
-	if (velocity <= 0) {
-		if (crash_timer.to_stand <= 0 and crash_timer.to_get_on <= 0) {
-			crash_timer.to_stand = crash_timer.TIME_TO_STAND;
-		}
-	}
 }
 else {
 	// health regen

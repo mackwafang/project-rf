@@ -91,7 +91,7 @@ if (obj_controller.main_camera_target.id == id) {
 	#region Globally available U
 	draw_set_valign(fa_top);
 	draw_set_halign(fa_left);
-	draw_text(64, 64, $"{drive_force}");
+	// draw_text(64, 64, $"{drive_force}");
 	//draw_text(16, 16, $"accel: {accelerating}");
 	//draw_text(16, 32, $"boost: {boosting}");
 	//draw_text(16, 48, $"brake: {braking}");
@@ -109,8 +109,9 @@ if (obj_controller.main_camera_target.id == id) {
 	
 	//draw_set_valign(fa_top);
 	//draw_set_halign(fa_left);
-	//draw_text(64, 80, $"to_stand: {string_replace(crash_timer, ":", "\n")}");
-	// draw_text(64, 96, $"walking: {crash_timer}");
+	draw_text(64, 64, biker_state);
+	draw_text(64, 80, $"to_stand: {string_replace(crash_timer, ":", "\n")}");
+	draw_text(64, 128, $"is_respawning: {is_respawning}");
 	var hp_frac = (hp / max_hp);
 	
 	// distance

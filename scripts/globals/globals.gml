@@ -95,7 +95,7 @@ global.WORLD_TO_REAL_SCALE = 1.4;
 global.REAL_TO_WORLD_SCALE = 1/global.WORLD_TO_REAL_SCALE;
 
 global.ROAD_SPRITE_INDEX = [
-	undefined,
+	spr_road_1_lane,
 	spr_road_1_lane,
 	spr_road_2_lane,
 	spr_road_3_lane,
