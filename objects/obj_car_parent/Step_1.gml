@@ -157,7 +157,7 @@ switch(vehicle_type) {
 						(obj_controller.main_camera_pos.y - y) / length_to_cam
 					);
 					var _d = dot_product(a.x, a.y, b.x, b.y);
-					var can_perform_wheelie = accelerating and velocity <= 200 * global.difficulty and gear == 1;
+					var can_perform_wheelie = accelerating and velocity <= 200 * global.difficulty and engine.gear == 1;
 					if (ai_behavior.part_of_race) {
 						if (can_perform_wheelie) {
 							vehicle_detail_index = spr_bike_3d_detail_2_start;

@@ -12,19 +12,43 @@ hp = max_hp;			 // car health
 hp_display = 1;			 // smooth hp thingy
 hp_regen_delay = 0;		 // delay for health regen
 
-engine_rpm_max = 10000;	 // max rpm
-engine_rpm = 1000;		 // engine rpm
-test_rpm = 0;
+engine = {
+	rpm_max: 10000,
+	rpm: 1000,
+	test_rpm: 0,
+	horsepower: 300,
+	diff_ratio: 1 + global.difficulty,
+	gear: 1,
+	max_gear: 6,
+	engine_power: 0,		 // throttle (0 = foot off paddle, 1 = floor it)
+	transfer_eff: 0.8,		 // transfer efficiency
+	gear_shift_wait: 0,		//  time wait to change gear again
+	gear_ratio: [3, 2.5, 1.9, 1.7, 1.5, 1.47], //gear's ratio
+	gear_shift_rpm: [
+		[0, 4500],
+		[3000, 4500],
+		[4050, 4500],
+		[4500, 4500],
+		[5000, 4500],
+		[5250, 4500],
+	],
+	
+	// drive force required for gear shift
+	force_shift_rpm: [
+		[0, 4000],
+		[-6000, 2000],
+		[-7000, 1000],
+		[-7000, 300],
+		[-7000, 50],
+		[-8000, 100000],
+	]
+}
 velocity = 0;			 // car's speed
 max_velocity = 3000;	 // car's max speed
 speed_limit = 999;		 // vehicle's limit based on global.gameplay_measure_metrics, should be used for debugging
 wheel_radius = 0.32;	 // wheel radius in m
 mass = 300;				 // vehicle mass, in kg
-horsepower = 300;		 // horsepower
 turn_rate = 0;			 // car's turning rate
-gear = 1;				 // car's gear 
-engine_power = 0;		 // throttle position
-transfer_eff = 0.8;		 // transfer efficiency
 acceleration = 0;		 // acceleration value
 braking_power = 25;		 // braking magnetude
 zspeed = 0;				 // vertical 
@@ -54,53 +78,6 @@ c_drag = 0.5 * air_drag_coef * drag_area * AIR_DENSITY;	// constant value for ca
 c_rr = 20 * c_drag;										// constant value for car's drag
 
 _z_restrict = true;
-
-// max gear based on difficulty
-max_gear = 6;
-//switch(global.difficulty) {
-	//case 1:		max_gear = 2; break;
-	//case 1.25:	max_gear = 3; break;
-	//case 1.5:	max_gear = 4; break;
-	//case 1.75:	max_gear = 5; break;
-	//case 2:		max_gear = 6; break;
-//}
-
-//gear's ratio
-gear_ratio = [3, 2.5, 1.9, 1.7, 1.5, 1.47];
-//gear_shift_rpm = [
-//	[0, 4000],
-//	[3000, 4000],
-//	[3550, 3850],
-//	[3550, 3650],
-//	[3150, 3275],
-//	[3050, 3100],
-//];
-gear_shift_rpm = [
-	[0, 4500],
-	[3000, 4500],
-	[4050, 4500],
-	[4500, 4500],
-	[5000, 4500],
-	[5250, 4500],
-];
-
-// drive force required for gear shift
-force_shift_rpm = [
-	[0, 4000],
-	[-6000, 2000],
-	[-7000, 1000],
-	[-7000, 300],
-	[-7000, 50],
-	[-8000, 100000],
-];
-
-//for (var g = 0; g < array_length(gear_shift_rpm); g++) {
-	//gear_shift_rpm[g][0] *= global.difficulty;
-	//gear_shift_rpm[g][1] *= global.difficulty;
-//}
-
-diff_ratio = 1 + global.difficulty;
-gear_shift_wait = 0;		//  time wait to change gear again
 
 accelerating = false;		// flag to check if car is accelerating
 braking = false;			// flag to check if car is braking
@@ -169,41 +146,41 @@ render_surface = surface_create(128, 64);
 // functions
 gear_shift_up = function() {
 	//shift up
-	if (gear+1 < max_gear) {
-		engine_power = 0;
-		gear_shift_wait = 120;
+	if (engine.gear+1 < engine.max_gear) {
+		engine.engine_power = 0;
+		engine.gear_shift_wait = 120;
 	}
-	gear = min(gear+1, min(max_gear, array_length(gear_shift_rpm)));
-	gear_shift_wait = 120;
+	engine.gear = min(engine.gear+1, min(engine.max_gear, array_length(engine.gear_shift_rpm)));
+	engine.gear_shift_wait = 120;
 }
 
 gear_shift_down = function() {
 	//shift down
-	if (gear-1 > 0) {
-		gear_shift_wait = 120;
-		engine_power = 0;
+	if (engine.gear-1 > 0) {
+		engine.gear_shift_wait = 120;
+		engine.engine_power = 0;
 	}
-	gear = max(gear-1, 1);
-	gear_shift_wait = 120;
+	engine.gear = max(engine.gear-1, 1);
+	engine.gear_shift_wait = 120;
 }
 
 auto_gear_shift = function() {
-	var gear_shift_rpm_upper = gear_shift_rpm[gear-1][1]
-	var gear_shift_rpm_lower = gear_shift_rpm[gear-1][0];
+	var gear_shift_rpm_upper = engine.gear_shift_rpm[engine.gear-1][1]
+	var gear_shift_rpm_lower = engine.gear_shift_rpm[engine.gear-1][0];
 	
-	if (gear_shift_wait <= 0) {
+	if (engine.gear_shift_wait <= 0) {
 		if (boost_active or accelerating) {
-			if (engine_rpm > 9000 or drive_force < force_shift_rpm[gear-1][1]) {
+			if (engine.rpm > 9000 or drive_force < engine.force_shift_rpm[engine.gear-1][1]) {
 				gear_shift_up();
 			}
             // resolve edge case where some collision may result in signicantly reduced rpm
 			// down shift
-            if (engine_rpm < 2000 * global.difficulty) {
+            if (engine.rpm < 2000 * global.difficulty) {
                 gear_shift_down();
             }
 		}
 		if ((!accelerating or braking or !on_road) and !boost_active) {
-			if ((drive_force > force_shift_rpm[gear-1][0])) {
+			if ((drive_force > engine.force_shift_rpm[engine.gear-1][0])) {
 				gear_shift_down();
 			}
 		}
@@ -268,7 +245,7 @@ on_respawn = function() {
 		image_alpha = 1;
 		//solid = true;
 		mask_index = sprite_index;
-		gear = 1;
+		engine.gear = 1;
 		
 		hp = max_hp;
 		can_move = true;
@@ -298,6 +275,7 @@ on_stand_up = function() {
 		bike_obj.racer_color_replace_dst = racer_color_replace_dst;
 		bike_obj.z = road.z;
 		bike_obj.image_angle = road.direction;
+		
 		if (on_road_index.zone == ZONE.RIVER && !on_road) {
 			road = obj_road_generator.road_list[on_road_index._id - 3];
 			x = road.x + lengthdir_x(road.get_lanes_right() * road.lane_width, road.direction - 90);
@@ -338,7 +316,7 @@ on_death = function() {
 		//rpm = 1000;
 		turn_rate = 0;
 		boost_active = false;
-		engine_power = 0;
+		engine.engine_power = 0;
 	}
 }
 

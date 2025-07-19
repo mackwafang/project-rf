@@ -69,14 +69,14 @@ if (can_move) {
     // engine power to accelerate
 	if (accelerating) {
 		if (is_player and turning == 0) {
-			engine_power += 0.1;
+			engine.engine_power += 0.1;
 			if (global.GAMEPLAY_TURN_GUIDE) {
 				turn_rate += (angle_diff / 720); // moving along curved road
 			}
 		}
 	}
 	else {
-		engine_power -= 0.1;
+		engine.engine_power -= 0.1;
 	}
 	
 	#region Non-Player Car Movement
@@ -112,10 +112,10 @@ if (can_move) {
 		//var is_off_road_right = !is_on_road(x+lengthdir_x(look_ahead_threshold/4, image_angle-90), y+lengthdir_y(look_ahead_threshold/4, image_angle-90), last_road_index) ? 1 : 0;
 			
         if (ai_behavior.part_of_race) {
-		    engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle() * 1.01);
+		    engine.engine_power = (is_completed ? 0 : nav_road.get_ideal_throttle() * 1.01);
         }
         else {
-            engine_power = 1;
+            engine.engine_power = 1;
         }
 		turning = 0;
 			
@@ -170,7 +170,7 @@ if (can_move) {
 			//}
 			
 			if (abs(angle_diff) > 90) {
-				engine_power *= (1 - abs(angle_diff) / 90);
+				engine.engine_power *= (1 - abs(angle_diff) / 90);
 			}
 			turn_rate += abs(turn_rate / 2) * global.deltatime;
 			
@@ -259,11 +259,11 @@ else {
 }
 
 // calculate engine stuff for acceleration
-var engine_to_wheel_ratio = gear_ratio[gear-1] * diff_ratio;
-var engine_torque_max = (torque_lookup(engine_rpm) + (300 * sqr(global.difficulty-1)));
-// var engine_torque_max = ((horsepower / engine_rpm * 5252) * 8 * global.difficulty);
-var engine_torque = engine_torque_max * (boost_active ? 3 : engine_power);
-var drive_torque = engine_torque * engine_to_wheel_ratio * transfer_eff;
+var engine_to_wheel_ratio = engine.gear_ratio[engine.gear-1] * engine.diff_ratio;
+var engine_torque_max = (torque_lookup(engine.rpm) + (300 * sqr(global.difficulty-1)));
+// var engine_torque_max = ((horsepower / rpm * 5252) * 8 * global.difficulty);
+var engine_torque = engine_torque_max * (boost_active ? 3 : engine.engine_power);
+var drive_torque = engine_torque * engine_to_wheel_ratio * engine.transfer_eff;
 	
 var f_drag = -c_drag * velocity;
 var f_rr = -c_rr * velocity;
@@ -292,38 +292,38 @@ drive_torque = drive_force * wheel_radius;
 if (vertical_on_road) {
 	acceleration = (drive_torque / inertia);
 	var wheel_rotation_rate = velocity * 100 / 3600 / wheel_radius;
-	engine_rpm = (wheel_rotation_rate * engine_to_wheel_ratio * 60 / (2 * pi));
+	engine.rpm = (wheel_rotation_rate * engine_to_wheel_ratio * 60 / (2 * pi));
 }
 velocity = clamp(velocity, 0, max_velocity);
 velocity = clamp(velocity, 0, speed_limit / ((global.gameplay_measure_metrics == MEASURE.METRIC ? 1 : KMH_TO_MPH) * global.WORLD_TO_REAL_SCALE / 10));
 
 // burn hp when rpm is very high for long amount of time
 // band-aid fix for down-gear exploit
-if (engine_rpm > 9500) {
-	max_rpm_burn_penalty += global.deltatime;
-	if (max_rpm_burn_penalty >= 1) {
-		hp -= max_rpm_burn_penalty * 20 * global.deltatime;
+if (engine.rpm > 9500) {
+	engine.max_rpm_burn_penalty += global.deltatime;
+	if (engine.max_rpm_burn_penalty >= 1) {
+		hp -= engine.max_rpm_burn_penalty * 20 * global.deltatime;
 	}
 }
 else {
-	max_rpm_burn_penalty = 0;
+	engine.max_rpm_burn_penalty = 0;
 }
 
-if (engine_rpm >= engine_rpm_max) {engine_rpm = engine_rpm_max;}
+if (engine.rpm >= engine.rpm_max) {engine.rpm = engine.rpm_max;}
 
 auto_gear_shift(); // auto gear shift
-engine_power = clamp(engine_power, 0, 1);
-gear_shift_wait = clamp(gear_shift_wait-1, 0, 120);
+engine.engine_power = clamp(engine.engine_power, 0, 1);
+engine.gear_shift_wait = clamp(engine.gear_shift_wait-1, 0, 120);
 
 // play engine
-var engine_sound_pitch = ((engine_rpm / engine_rpm_max)+1.0);// - (gear / 12);
+var engine_sound_pitch = ((engine.rpm / engine.rpm_max)+1.0);// - (gear / 12);
 if (engine_sound_interval == 0) {
 	audio_emitter_pitch(engine_sound_emitter, engine_sound_pitch);
 	audio_emitter_position(engine_sound_emitter, x, y, z);
 	audio_play_sound_on(engine_sound_emitter, (boost_active ? snd_boost : snd_car), false, 2);
 }
 //audio_emitter_velocity(engine_sound_emitter, cos(direction), sin(direction), 0);
-engine_sound_interval = (engine_sound_interval + 1) % (engine_rpm < 2000 ? 16 : 8);
+engine_sound_interval = (engine_sound_interval + 1) % (engine.rpm < 2000 ? 16 : 8);
 
 
 // remove non-participating cars when too far away

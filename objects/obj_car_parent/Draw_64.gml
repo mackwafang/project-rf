@@ -220,12 +220,12 @@ if (obj_controller.main_camera_target.id == id) {
 		// rpm odometer
 		var odometer_x = port_width_half - 64;
 		var odometer_y = port_height - 72;
-		odometer_rpm += ((engine_rpm / engine_rpm_max) - odometer_rpm) * 0.1;
+		odometer_rpm += ((engine.rpm / engine.rpm_max) - odometer_rpm) * 0.1;
 		draw_sprite(spr_odometer_bkg, 0, odometer_x, odometer_y);
 	
 		draw_set_valign(fa_bottom);
 		draw_set_halign(fa_center);
-		draw_text_transformed(odometer_x, odometer_y - 20, gear, 0.75, 0.75, 0);
+		draw_text_transformed(odometer_x, odometer_y - 20, engine.gear, 0.75, 0.75, 0);
 	
 		draw_line_width_color(
 			odometer_x,
@@ -316,8 +316,8 @@ if (obj_controller.main_camera_target.id == id) {
 		// rpm
 		odometer_x = port_width_half - 64;
 		odometer_y = port_height - 48;
-		draw_text_transformed(odometer_x, odometer_y - 20, $"{gear}", 2, 2, 0);
-		draw_text_transformed(odometer_x, odometer_y - 17, $"{round(engine_rpm)}", 0.5, 0.5, 0);
+		draw_text_transformed(odometer_x, odometer_y - 20, $"{engine.gear}", 2, 2, 0);
+		draw_text_transformed(odometer_x, odometer_y - 17, $"{round(engine.rpm)}", 0.5, 0.5, 0);
 		draw_text_transformed(odometer_x, odometer_y, "RPM", 0.75, 0.75, 0);
 		
 		// boost
