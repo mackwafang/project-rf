@@ -1,15 +1,17 @@
 {
-  "$GMSound":"",
+  "$GMSound":"v2",
   "%Name":"snd_car_2",
   "audioGroupId":{
     "name":"audiogroup_default",
     "path":"audiogroups/audiogroup_default",
   },
   "bitDepth":1,
-  "bitRate":144,
+  "channelFormat":2,
   "compression":0,
+  "compressionQuality":5,
   "conversionMode":0,
   "duration":0.20256236,
+  "exportDir":"",
   "name":"snd_car_2",
   "parent":{
     "name":"Sounds",
@@ -20,6 +22,5 @@
   "resourceVersion":"2.0",
   "sampleRate":44100,
   "soundFile":"snd_car_2.wav",
-  "type":2,
   "volume":1.0,
 }

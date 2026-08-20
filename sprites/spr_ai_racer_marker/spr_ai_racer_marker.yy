@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_ai_racer_marker",
   "bboxMode":0,
   "bbox_bottom":11,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"3ba9c87b-fb31-41ca-83c1-68d0f040ea44","name":"3ba9c87b-fb31-41ca-83c1-68d0f040ea44","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"fd67b89d-1cdc-49c1-b727-7a4f6af4230f","name":"fd67b89d-1cdc-49c1-b727-7a4f6af4230f","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"3ba9c87b-fb31-41ca-83c1-68d0f040ea44","name":"3ba9c87b-fb31-41ca-83c1-68d0f040ea44","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"fd67b89d-1cdc-49c1-b727-7a4f6af4230f","name":"fd67b89d-1cdc-49c1-b727-7a4f6af4230f","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":4,
   "gridY":4,

@@ -1,15 +1,17 @@
 {
-  "$GMSound":"",
+  "$GMSound":"v2",
   "%Name":"snd_boost",
   "audioGroupId":{
     "name":"audiogroup_default",
     "path":"audiogroups/audiogroup_default",
   },
   "bitDepth":1,
-  "bitRate":32,
+  "channelFormat":2,
   "compression":1,
+  "compressionQuality":0,
   "conversionMode":0,
   "duration":0.313469,
+  "exportDir":"",
   "name":"snd_boost",
   "parent":{
     "name":"Sounds",
@@ -20,6 +22,5 @@
   "resourceVersion":"2.0",
   "sampleRate":11025,
   "soundFile":"snd_boost.mp3",
-  "type":2,
   "volume":0.2,
 }

@@ -13,4 +13,4 @@ switch(vehicle_type) {
 		break;
 }
 z = on_road_index.z;
-image_blend = vehicle_color;
+image_blend = vehicle_color.primary;

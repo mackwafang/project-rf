@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_bike_shadow_simple",
   "bboxMode":0,
   "bbox_bottom":63,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"847aab3c-c14b-4792-bb85-ccca6fc131f5","name":"847aab3c-c14b-4792-bb85-ccca6fc131f5","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"847aab3c-c14b-4792-bb85-ccca6fc131f5","name":"847aab3c-c14b-4792-bb85-ccca6fc131f5","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

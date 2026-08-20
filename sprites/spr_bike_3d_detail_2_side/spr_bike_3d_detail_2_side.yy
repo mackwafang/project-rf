@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_bike_3d_detail_2_side",
   "bboxMode":0,
   "bbox_bottom":63,
@@ -12,9 +12,9 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"7c90c173-8067-4187-adaa-f76b618048f1","name":"7c90c173-8067-4187-adaa-f76b618048f1","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"20d79d62-ad4d-4dc6-8415-fb93d2299e01","name":"20d79d62-ad4d-4dc6-8415-fb93d2299e01","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"d105a6c0-7164-40ee-863a-69cebf81b4d5","name":"d105a6c0-7164-40ee-863a-69cebf81b4d5","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"7c90c173-8067-4187-adaa-f76b618048f1","name":"7c90c173-8067-4187-adaa-f76b618048f1","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"20d79d62-ad4d-4dc6-8415-fb93d2299e01","name":"20d79d62-ad4d-4dc6-8415-fb93d2299e01","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"d105a6c0-7164-40ee-863a-69cebf81b4d5","name":"d105a6c0-7164-40ee-863a-69cebf81b4d5","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

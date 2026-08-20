@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_bike_3d_detail_2_start",
   "bboxMode":0,
   "bbox_bottom":63,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"dbc31956-a4a8-43c4-8cd3-a5b711d6f52a","name":"dbc31956-a4a8-43c4-8cd3-a5b711d6f52a","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"2fdd9f9a-f361-4a6b-ad9a-4b00de127258","name":"2fdd9f9a-f361-4a6b-ad9a-4b00de127258","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"dbc31956-a4a8-43c4-8cd3-a5b711d6f52a","name":"dbc31956-a4a8-43c4-8cd3-a5b711d6f52a","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"2fdd9f9a-f361-4a6b-ad9a-4b00de127258","name":"2fdd9f9a-f361-4a6b-ad9a-4b00de127258","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":16,
   "gridY":16,

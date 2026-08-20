@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_vehicle_shadow",
   "bboxMode":0,
   "bbox_bottom":10,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"576ee0ee-4bad-45c1-8c49-0b881640ef57","name":"576ee0ee-4bad-45c1-8c49-0b881640ef57","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"576ee0ee-4bad-45c1-8c49-0b881640ef57","name":"576ee0ee-4bad-45c1-8c49-0b881640ef57","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":2,
   "gridY":2,

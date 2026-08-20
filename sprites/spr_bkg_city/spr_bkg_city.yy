@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_bkg_city",
   "bboxMode":0,
   "bbox_bottom":647,
@@ -12,7 +12,7 @@
   "edgeFiltering":false,
   "For3D":true,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"47a2fd84-e93e-418f-8f2e-cc5da73aa0dd","name":"47a2fd84-e93e-418f-8f2e-cc5da73aa0dd","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"47a2fd84-e93e-418f-8f2e-cc5da73aa0dd","name":"47a2fd84-e93e-418f-8f2e-cc5da73aa0dd","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_bike_3d_detail_2_victory",
   "bboxMode":0,
   "bbox_bottom":63,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"95fc2051-c870-4230-b79a-20bce3412c6b","name":"95fc2051-c870-4230-b79a-20bce3412c6b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"bfa87512-a6a4-497a-9323-b192dca5b0cb","name":"bfa87512-a6a4-497a-9323-b192dca5b0cb","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"95fc2051-c870-4230-b79a-20bce3412c6b","name":"95fc2051-c870-4230-b79a-20bce3412c6b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"bfa87512-a6a4-497a-9323-b192dca5b0cb","name":"bfa87512-a6a4-497a-9323-b192dca5b0cb","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":24,
   "gridY":16,

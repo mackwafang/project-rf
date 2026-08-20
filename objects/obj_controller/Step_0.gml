@@ -194,7 +194,7 @@ if (global.GAMEPLAY_CARS and !main_camera_target.is_completed) {
 			break;
 	}
 	if (alarm[0] == -1 and road_at_view_edge.get_id() > 30) {
-		if (irandom(120 / global.difficulty * zone_modifier) < 1 and instance_number(obj_car_parent) < 25) {
+		if (irandom(120 / global.difficulty * zone_modifier) < 1 and instance_number(obj_car_parent) < 30) {
 			var side = choose(-1, 1);
 			var road_function = (side == -1 ? road_at_view_edge.get_lanes_left : road_at_view_edge.get_lanes_right);
 			

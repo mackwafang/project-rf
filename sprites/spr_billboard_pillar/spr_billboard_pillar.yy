@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_billboard_pillar",
   "bboxMode":0,
   "bbox_bottom":31,
@@ -12,8 +12,8 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"99583047-1590-4111-843f-90ecaa5457af","name":"99583047-1590-4111-843f-90ecaa5457af","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"f2d34f26-c8e0-4d0f-898e-58174b16974b","name":"f2d34f26-c8e0-4d0f-898e-58174b16974b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"99583047-1590-4111-843f-90ecaa5457af","name":"99583047-1590-4111-843f-90ecaa5457af","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"f2d34f26-c8e0-4d0f-898e-58174b16974b","name":"f2d34f26-c8e0-4d0f-898e-58174b16974b","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

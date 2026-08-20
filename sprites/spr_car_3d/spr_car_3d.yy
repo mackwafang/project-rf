@@ -1,5 +1,5 @@
 {
-  "$GMSprite":"",
+  "$GMSprite":"v2",
   "%Name":"spr_car_3d",
   "bboxMode":0,
   "bbox_bottom":63,
@@ -12,9 +12,9 @@
   "edgeFiltering":false,
   "For3D":false,
   "frames":[
-    {"$GMSpriteFrame":"","%Name":"5533cc33-8237-4da1-b626-10bf75760eca","name":"5533cc33-8237-4da1-b626-10bf75760eca","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"b749447e-2efa-4064-9649-f34e946b5061","name":"b749447e-2efa-4064-9649-f34e946b5061","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
-    {"$GMSpriteFrame":"","%Name":"715654a3-02cd-47a8-abf7-912a179e1857","name":"715654a3-02cd-47a8-abf7-912a179e1857","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"5533cc33-8237-4da1-b626-10bf75760eca","name":"5533cc33-8237-4da1-b626-10bf75760eca","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"b749447e-2efa-4064-9649-f34e946b5061","name":"b749447e-2efa-4064-9649-f34e946b5061","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
+    {"$GMSpriteFrame":"v1","%Name":"715654a3-02cd-47a8-abf7-912a179e1857","name":"715654a3-02cd-47a8-abf7-912a179e1857","resourceType":"GMSpriteFrame","resourceVersion":"2.0",},
   ],
   "gridX":0,
   "gridY":0,

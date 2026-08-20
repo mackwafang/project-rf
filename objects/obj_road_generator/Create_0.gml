@@ -91,7 +91,7 @@ for (var s = 0; s < array_length(control_path); s++) {
 	}
 	var xx = ((control_path[s] % grid_width) * control_points_dist) + rand_x;
 	var yy = ((control_path[s] div grid_width) * control_points_dist) + rand_y;
-	var zz = grid[|s] * course_data.Z_ROUGHNESS * global.difficulty + 500;
+	var zz = (grid[|s] * course_data.Z_ROUGHNESS * global.difficulty * 3) + 500;
 	control_points[s] = new Point3D(xx, yy, zz);
 	generation_progress.initial.current += 1;
 }
